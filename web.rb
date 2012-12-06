@@ -5,7 +5,11 @@ get '/' do
 end
 
 get '/trello/puppet-dev-community/view' do
-  File.read('buffer')
+  begin
+    File.read('buffer')
+  rescue Errno::ENOENT => detail
+    "ERROR: #{detail.message}"
+  end
 end
 
 post '/trello/puppet-dev-community/?' do

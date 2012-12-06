@@ -5,6 +5,10 @@ This project responds to activity on GitHub.  Current features are:
 
  * [✓] Say "Hello World" from Sinatra [Try it](http://puppet-dev-community.herokuapp.com/)
  * [✓] Create a staging service [Try it](http://puppet-dev-community-staging.herokuapp.com/)
+ * [✓] Process the GitHub payload.
+   [Endpoint](http://puppet-dev-community-staging.herokuapp.com/trello/puppet-dev-community)
+   and the [Endpoint
+   Viewer](http://puppet-dev-community-staging.herokuapp.com/trello/puppet-dev-community/view)
  * [ ] Create a Trello Card when a Pull Request is created or synchronized.
  * [ ] Move a Trello Card when a Pull Request is closed.
 
