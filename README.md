@@ -12,6 +12,28 @@ This project responds to activity on GitHub.  Current features are:
  * [ ] Create a Trello Card when a Pull Request is created or synchronized.
  * [ ] Move a Trello Card when a Pull Request is closed.
 
+GitHub OAuth Tokens
+----
+
+In order to avoid exceeding the API rate limits authenticated API calls should
+be used.  Obtaining an OAuth2 token is pretty straight forward.  This grants
+access to all public re
+
+    curl -u gepetto-bot -d '
+    {
+      "note":"Puppet Web Hooks",
+      "note_url":"https://github.com/puppetlabs/puppet-webhooks"
+    }' https://api.github.com/authorizations
+
+The API token returned by this call should then be set as a configuration
+value:
+
+    TOKEN=abcdef0123456789abcdef01234567890abcdef0
+    heroku config:add GITHUB_ACCOUNT=gepetto-bot \
+      --app puppet-dev-community-staging
+    heroku config:add GITHUB_TOKEN=$TOKEN \
+      --app puppet-dev-community-staging
+
 GitHub Setup
 ----
 
@@ -21,8 +43,14 @@ pushed.  The API must be used to trigger generic WebHooks for other events.
 See:
 
  * [Repo Hooks API](http://developer.github.com/v3/repos/hooks/)
- * [The way I had to add a github repo webhook for pull requests](https://gist.github.com/2726012)
- * [github-services web.rb](https://github.com/github/github-services/blob/master/services/web.rb)
+ * [Add a github repo webhook for pull
+   requests](https://gist.github.com/2726012)
+ * [github-services
+   web.rb](https://github.com/github/github-services/blob/master/services/web.rb)
+ * [github OAuth token for command line
+   use](https://help.github.com/articles/creating-an-oauth-token-for-command-line-use)
+   (Our app will use this token to interact with github)
+ * [github scopes](http://developer.github.com/v3/oauth/#scopes)
 
 Check the current hooks:
 
