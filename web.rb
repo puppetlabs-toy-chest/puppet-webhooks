@@ -2,7 +2,7 @@ require 'sinatra'
 require 'json'
 
 get '/' do
-  "Hello, world"
+  'Hello World'
 end
 
 get '/trello/puppet-dev-community/view' do
