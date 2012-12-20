@@ -1,4 +1,5 @@
 require 'sinatra'
+require 'json'
 
 get '/' do
   "Hello, world"
@@ -13,8 +14,10 @@ get '/trello/puppet-dev-community/view' do
 end
 
 post '/trello/puppet-dev-community/?' do
+  payload = params['payload']
+
   # TODO thread safety
   File.open('buffer', 'w+') do |f|
-    f.write(params['payload'])
+    f.write(JSON.pretty_generate(JSON.load(payload)))
   end
 end
