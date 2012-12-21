@@ -9,30 +9,44 @@ This project responds to activity on GitHub.  Current features are:
    [Endpoint](http://puppet-dev-community-staging.herokuapp.com/trello/puppet-dev-community)
    and the [Endpoint
    Viewer](http://puppet-dev-community-staging.herokuapp.com/trello/puppet-dev-community/view)
- * [ ] Create a Trello Card when a Pull Request is created or synchronized.
+ * [✓] Create a Trello Card when a Pull Request is created or synchronized.
+ * [ ] Avoid duplicate cards being created when a pull request is synchronized or closed.
+ * [ ] Copy a comment to the card when a comment is added to the pull request.
  * [ ] Move a Trello Card when a Pull Request is closed.
 
-GitHub OAuth Tokens
+Trello OAuth Tokens
 ----
 
-In order to avoid exceeding the API rate limits authenticated API calls should
-be used.  Obtaining an OAuth2 token is pretty straight forward.  This grants
-access to all public re
+Four configuration settings determine how to authenticate against Trello and
+where to place cards.  These four settings are:
 
-    curl -u gepetto-bot -d '
-    {
-      "note":"Puppet Web Hooks",
-      "note_url":"https://github.com/puppetlabs/puppet-webhooks"
-    }' https://api.github.com/authorizations
+    TRELLO_APP_KEY=b8315fbed85ee3c20c41b58b4ad7b73a
+    TRELLO_SECRET=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    TRELLO_USER_TOKEN=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    TRELLO_TARGET_LIST_ID=50bd46a84c27cb74100036be
 
-The API token returned by this call should then be set as a configuration
-value:
+These are settable using the heroku command line interface:
 
-    TOKEN=abcdef0123456789abcdef01234567890abcdef0
-    heroku config:add GITHUB_ACCOUNT=gepetto-bot \
+    heroku config:add  \
+      TRELLO_APP_KEY=b8315fbed85ee3c20c41b58b4ad7b73a \
+      TRELLO_SECRET=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx \
+      TRELLO_USER_TOKEN=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx \
+      TRELLO_TARGET_LIST_ID=50bd46a84c27cb74100036be \
       --app puppet-dev-community-staging
-    heroku config:add GITHUB_TOKEN=$TOKEN \
-      --app puppet-dev-community-staging
+
+The Trello app key and secret can be retrieved from
+[https://trello.com/1/appKey/generate](https://trello.com/1/appKey/generate).
+
+The Trello user token can be generated with various expiration dates and
+permissions via instructions at
+[https://trello.com/docs/gettingstarted/index.html#getting-a-token-from-a-user](https://trello.com/docs/gettingstarted/index.html#getting-a-token-from-a-user)
+
+The Trello list ID where the cards should be created.  To find this value,
+navigate to the Trello board that you are interested in in your browser and
+copy the board id from the URL.  Then run the
+[show_lists_for_board.rb](https://github.com/cprice-puppet/redmine-trello/blob/master/bin/show_lists_for_board.rb)
+command line tool against that board id, and you'll see a list of available
+List Ids for that board.
 
 GitHub Setup
 ----
