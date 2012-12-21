@@ -8,5 +8,6 @@ gem 'thin'
 gem 'watchr', :group => :development
 gem 'rspec', :groups => [:development, :test]
 gem 'rack-test', :groups => [:development, :test]
+gem 'rake', :groups => [:development, :test]
 
 # vim:ft=ruby
