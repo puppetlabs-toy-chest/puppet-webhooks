@@ -17,7 +17,7 @@ Signal.trap('INT' ) { abort("\n") } # Ctrl-C
 # Helpers
 # --------------------------------------------------
 def rspec(*paths)
-  run "rspec -fp #{paths.flatten.join(' ')}"
+  run "rspec -fd #{paths.flatten.join(' ')}"
 end
 
 def tests

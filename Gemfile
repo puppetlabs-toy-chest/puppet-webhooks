@@ -5,8 +5,8 @@ gem 'ruby-trello'
 gem 'json'
 gem 'thin'
 
+gem 'watchr', :group => :development
 gem 'rspec', :groups => [:development, :test]
 gem 'rack-test', :groups => [:development, :test]
-gem 'watchr', :group => :development
 
 # vim:ft=ruby
