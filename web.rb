@@ -54,7 +54,10 @@ class TrelloAPI
   # @param [String] the Trello user token (can be generated with various expiration dates and
   #   permissions via instructions at https://trello.com/docs/gettingstarted/index.html#getting-a-token-from-a-user)
   def initialize(app_key, secret, user_token)
-    ::Trello::Authorization.const_set :AuthPolicy, OAuthPolicy
+    if ::Trello::Authorization::AuthPolicy != OAuthPolicy
+      ::Trello::Authorization.send :remove_const, :AuthPolicy
+      ::Trello::Authorization.const_set :AuthPolicy, OAuthPolicy
+    end
     # This line is a hack to allow multiple different Trello auths to be used
     # during a single run; the Trello module will cache the consumer otherwise.
     OAuthPolicy.instance_variable_set(:@consumer, nil)
