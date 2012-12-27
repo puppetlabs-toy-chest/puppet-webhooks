@@ -4,12 +4,23 @@ GEM
     activemodel (3.2.9)
       activesupport (= 3.2.9)
       builder (~> 3.0.0)
+    activerecord (3.2.9)
+      activemodel (= 3.2.9)
+      activesupport (= 3.2.9)
+      arel (~> 3.0.2)
+      tzinfo (~> 0.3.29)
     activesupport (3.2.9)
       i18n (~> 0.6)
       multi_json (~> 1.0)
     addressable (2.3.2)
+    arel (3.0.2)
     builder (3.0.4)
     daemons (1.1.9)
+    delayed_job (3.0.4)
+      activesupport (~> 3.0)
+    delayed_job_active_record (0.3.3)
+      activerecord (>= 2.1.0, < 4)
+      delayed_job (~> 3.0)
     diff-lcs (1.1.3)
     eventmachine (0.12.10)
     i18n (0.6.1)
@@ -17,6 +28,7 @@ GEM
     mime-types (1.19)
     multi_json (1.5.0)
     oauth (0.4.7)
+    pg (0.14.1)
     rack (1.4.1)
     rack-test (0.6.2)
       rack (>= 1.0)
@@ -45,13 +57,16 @@ GEM
       eventmachine (>= 0.12.6)
       rack (>= 1.0.0)
     tilt (1.3.3)
+    tzinfo (0.3.35)
     watchr (0.7)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
+  delayed_job_active_record
   json
+  pg
   rack-test
   rake
   rspec

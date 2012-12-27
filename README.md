@@ -14,6 +14,45 @@ This project responds to activity on GitHub.  Current features are:
  * [ ] Copy a comment to the card when a comment is added to the pull request.
  * [ ] Move a Trello Card when a Pull Request is closed.
 
+Delayed Job
+----
+
+Talking to the various API endpoints are a bit more time consuming than the
+500ms web dyno recommended response time.  To make sure the web dyno is nice
+and responsive, delayed job worker dynos are used to perform the heavy lifting.
+
+TODO: Make sure the worker dynos aren't running all the time and are instead
+only started on demand using the [workless gem][workless].
+
+Delayed job requires an SQL database.  Most of the documentation assumes Rails,
+but we're taking the Sinatra only approach.
+
+To configure an SQL database: (More detailed information at [heroku
+postgresql][heroku-postgresql].)
+
+    heroku addons:add heroku-postgresql:dev
+    Adding heroku-postgresql:dev on puppet-dev-community-staging... done, v23 (free)
+    Attached as HEROKU_POSTGRESQL_GREEN_URL
+    Database has been created and is available
+     ! This database is empty. If upgrading, you can transfer
+     ! data from another database with pgbackups:restore.
+    Use `heroku addons:docs heroku-postgresql:dev` to view documentation.
+
+Then promote this database to be the provisioned database.  You may need to
+replace `GREEN` with the color assigned by Heroku shown in the output of the
+above command.
+
+    heroku pg:promote HEROKU_POSTGRESQL_GREEN_URL
+    Promoting HEROKU_POSTGRESQL_GREEN_URL to DATABASE_URL... done
+
+If developing locally, the database configuration should be stored in
+`config/database.yml`.  Heroku will automatically replace this file according
+to [Ruby Support Build behavior][BuildBehavior].
+
+[workless]: https://github.com/lostboy/workless
+[heroku-postgresql]: https://devcenter.heroku.com/articles/heroku-postgresql
+[BuildBehavior]: https://devcenter.heroku.com/articles/ruby-support#build-behavior
+
 Trello OAuth Tokens
 ----
 

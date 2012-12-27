@@ -1,0 +1,8 @@
+development:
+  adapter: postgresql
+  host: localhost
+  encoding: unicode
+  database: puppet_webhooks_dev
+  pool: 5
+  username:
+  password:
