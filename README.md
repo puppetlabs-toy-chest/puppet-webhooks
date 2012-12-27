@@ -14,6 +14,16 @@ This project responds to activity on GitHub.  Current features are:
  * [ ] Copy a comment to the card when a comment is added to the pull request.
  * [ ] Move a Trello Card when a Pull Request is closed.
 
+Setup
+----
+
+TODO: (Verify this is all it takes)
+
+ 1. deploy the app
+ 2. Create the tables with `heroku run rake db:migrate`.
+ 3. Configure the API keys.  (TODO: Scrape them out of the following `heroku
+    config` commands.)
+
 Delayed Job
 ----
 
