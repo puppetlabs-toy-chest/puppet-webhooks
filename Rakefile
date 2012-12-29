@@ -11,8 +11,9 @@ task :help do
   sh 'rake -T'
 end
 
+desc 'Run example behaviors (specs)'
 task :spec do
-  sh 'rspec spec.rb'
+  sh 'rspec spec'
 end
 
 # Setup the environment for the application

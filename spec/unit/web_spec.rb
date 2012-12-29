@@ -1,7 +1,5 @@
-require 'rspec'
-require 'rack/test'
-require 'json'
-require_relative './web.rb'
+require 'spec_helper'
+require 'web'
 
 set :environment, :test
 
@@ -23,7 +21,7 @@ describe 'The App' do
   end
 
   def read_fixture(name)
-    File.read(File.dirname(__FILE__) + "/spec_fixtures/#{name}")
+    File.read(File.join(File.expand_path("..", __FILE__), "fixtures", name))
   end
 
   context  'runs when a pull request is opened' do
