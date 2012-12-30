@@ -11,9 +11,11 @@ gem 'json'
 gem 'thin'
 
 gem 'delayed_job_active_record'
+gem 'workless', '~> 1.1.1'
 
 gem 'watchr', :group => :development
 gem 'rspec', :groups => [:development, :test]
+gem 'sqlite3', :groups => [:development, :test]
 gem 'rack-test', :groups => [:development, :test]
 
 # vim:ft=ruby

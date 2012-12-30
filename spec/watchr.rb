@@ -6,6 +6,7 @@
 # --------------------------------------------------
 watch('^spec.rb') {|m| rspec(tests) }
 watch('^web.rb') {|m| rspec(tests) }
+watch('lib/*.rb') {|m| rspec(tests) }
 
 # --------------------------------------------------
 # Signal Handling
@@ -25,6 +26,8 @@ def tests
 end
 
 def run( cmd )
+  # Clear the screen, useful for ConqueTerm which cannot scroll down indefinitely.
+  print "\e[2J\e[f"
   puts   "[#{Time.now.strftime '%k:%M:%S'}] #{cmd}"
   system cmd
 end

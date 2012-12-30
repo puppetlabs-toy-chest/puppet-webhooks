@@ -1,1 +1,1 @@
-web: bundle exec ruby lib/web.rb -p $PORT
+web: bundle exec thin start -p $PORT -e $RACK_ENV

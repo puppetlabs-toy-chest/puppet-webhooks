@@ -1,4 +1,5 @@
 require 'rake'
+require 'erb'
 require 'delayed/tasks'
 
 ENV['RACK_ENV'] ||= 'development'
@@ -57,5 +58,17 @@ namespace :db do
     ActiveRecord::Base.logger = Logger.new(STDOUT)
     ActiveRecord::Migration.verbose = true
     ActiveRecord::Migrator.migrate("db/migrate")
+  end
+end
+
+namespace :api do
+  desc "Run the server using foreman form the Heroku toolbelt"
+  task :run do
+    sh 'foreman start'
+  end
+
+  desc "Submit a fake pull request"
+  task(:pull_request) do
+    sh 'curl -i --data "payload=$(cat spec/unit/fixtures/example_pull_request.json)" http://localhost:5000/event/pull_request'
   end
 end
