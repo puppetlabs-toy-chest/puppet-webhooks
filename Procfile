@@ -1,1 +1,2 @@
-web: bundle exec ruby web.rb -p $PORT
+web: bundle exec thin start -p $PORT -e $RACK_ENV
+worker: bundle exec rake jobs:work
