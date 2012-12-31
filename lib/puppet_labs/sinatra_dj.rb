@@ -1,5 +1,6 @@
 require 'active_record'
 require 'delayed_job_active_record'
+require 'erb'
 
 module PuppetLabs
   ##
@@ -29,7 +30,7 @@ module SinatraDJ
   #
   # @return [Hash] database configuration
   def dbconfig
-    YAML.load(read('config/database.yml'))
+    YAML.load(ERB.new(read('config/database.yml')).result)
   end
 
   def establish_connection(config)
