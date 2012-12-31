@@ -20,7 +20,12 @@ end
 # Setup the environment for the application
 task :environment do
   $LOAD_PATH.unshift(File.expand_path('../lib', __FILE__))
+  # Note, the order of these libraries appears to be important.  In order to
+  # get the worker jobs to reliably spin down, I think these need to be before
+  # the job libraries.
   require 'delayed_job_active_record'
+  require 'workless'
+  # The rest of the libraries come after workless
   require 'puppet_labs/pull_request_job'
   require 'active_record'
   require 'pg'
@@ -28,6 +33,13 @@ task :environment do
   require 'erb'
 
   Delayed::Worker.destroy_failed_jobs = false
+
+  case ENV['RACK_ENV'].to_s
+  when 'production'
+    Delayed::Worker.max_attempts = 3
+    Delayed::Backend::ActiveRecord::Job.send(:include, Delayed::Workless::Scaler)
+    Delayed::Job.scaler = :heroku_cedar
+  end
 
   logger = ActiveSupport::BufferedLogger.new(
     File.join(File.dirname(__FILE__), '/log', "#{ENV['RACK_ENV']}_delayed_jobs.log"), Logger::INFO

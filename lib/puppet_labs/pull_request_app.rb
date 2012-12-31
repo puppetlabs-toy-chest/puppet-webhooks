@@ -3,9 +3,18 @@ require 'time'
 require 'sinatra/base'
 require 'puppet_labs/pull_request'
 require 'puppet_labs/pull_request_job'
+require 'delayed_job_active_record'
+require 'workless'
+
 
 module PuppetLabs
   class PullRequestApp < Sinatra::Base
+    configure :production do
+      Delayed::Worker.max_attempts = 3
+      Delayed::Backend::ActiveRecord::Job.send(:include, Delayed::Workless::Scaler)
+      Delayed::Job.scaler = :heroku_cedar
+    end
+
     get '/' do
       "Hello World!"
     end
