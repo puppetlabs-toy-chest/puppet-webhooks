@@ -29,14 +29,44 @@ describe 'PuppetLabs::PullRequestApp' do
 
       before :each do
         fake_job = job
-        fake_job.stub(:queue)
         PuppetLabs::PullRequest.stub(:from_json).with(payload).and_return(pr_model)
         PuppetLabs::PullRequestJob.stub(:new).and_return(fake_job)
       end
 
       it "responds to /event/pull_request" do
         post route, params
-        last_response.should be_ok
+        last_response.status.should == 202
+      end
+
+      it "sets the content-type to application/json" do
+        post route, params
+        last_response.headers['Content-Type'].should == 'application/json'
+      end
+
+      describe 'the return json' do
+        subject do
+          post route, params
+          JSON.load(last_response.body)
+        end
+        it "returns a json hash" do
+          subject.should be_a Hash
+        end
+
+        it 'contains a job_id key with a Fixnum value' do
+          subject['job_id'].should be_a Fixnum
+        end
+
+        it 'contains a queue key with a String value' do
+          subject['queue'].should be_a String
+        end
+
+        it 'contains a priority key with a Fixnum value' do
+          subject['priority'].should be_a Fixnum
+        end
+
+        it 'contains a created_at key that works with Time.parse' do
+          expect { Time.parse(subject['created_at']) }.not_to raise_error
+        end
       end
 
       it "creates a PullRequest model using PullRequest.from_json" do

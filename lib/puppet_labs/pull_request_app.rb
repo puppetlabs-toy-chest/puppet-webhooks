@@ -1,3 +1,5 @@
+require 'json'
+require 'time'
 require 'sinatra/base'
 require 'puppet_labs/pull_request'
 require 'puppet_labs/pull_request_job'
@@ -13,6 +15,20 @@ module PuppetLabs
       job = PuppetLabs::PullRequestJob.new
       job.pull_request = pull_request
       delayed_job = job.queue
+
+      # Accepted
+      # The request has been accepted for processing, but the processing has
+      # not been completed. The request might or might not eventually be acted
+      # upon, as it might be disallowed when processing actually takes place.
+      status = 202
+      headers = {'Content-Type' => 'application/json'}
+      body = {
+        'job_id' => delayed_job.id,
+        'queue' => delayed_job.queue,
+        'priority' => delayed_job.priority,
+        'created_at' => delayed_job.created_at,
+      }
+      [status, headers, JSON.dump(body)]
     end
   end
 end
