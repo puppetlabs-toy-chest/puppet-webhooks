@@ -19,15 +19,32 @@ end
 
 # Setup the environment for the application
 task :environment do
+  $LOAD_PATH.unshift(File.expand_path('../lib', __FILE__))
   require 'delayed_job_active_record'
+  require 'puppet_labs/pull_request_job'
   require 'active_record'
   require 'pg'
   require 'logger'
   require 'erb'
 
+  Delayed::Worker.destroy_failed_jobs = false
+
+  logger = ActiveSupport::BufferedLogger.new(
+    File.join(File.dirname(__FILE__), '/log', "#{ENV['RACK_ENV']}_delayed_jobs.log"), Logger::INFO
+  )
+  Delayed::Worker.logger = logger
+
   dbconfig = YAML.load(ERB.new(File.read('config/database.yml')).result)
   ActiveRecord::Base.establish_connection dbconfig[ENV['RACK_ENV']]
 end
+
+desc "IRB REPL Shell"
+task :shell => :environment do
+  require 'irb'
+  ARGV.clear
+  IRB.start
+end
+
 
 # Delayed Job database
 namespace :db do
