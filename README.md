@@ -13,6 +13,9 @@ This project responds to activity on GitHub.  Current features are:
  * [ ] Avoid duplicate cards being created when a pull request is synchronized or closed.
  * [ ] Copy a comment to the card when a comment is added to the pull request.
  * [ ] Move a Trello Card when a Pull Request is closed.
+ * [ ] Check the `X-Hub-Signature` created by the [web service hook][web-service-hook].
+
+[web-service-hook]: https://github.com/github/github-services/blob/master/services/web.rb
 
 Setup
 ----
@@ -23,6 +26,40 @@ TODO: (Verify this is all it takes)
  2. Create the tables with `heroku run rake db:migrate`.
  3. Configure the API keys.  (TODO: Scrape them out of the following `heroku
     config` commands.)
+
+Shared Secret
+----
+
+In order to provide some authentication of the request a secret key may be
+configured in GitHub and in Heroku.  This shared secret key may then be used to
+validate a digital signature of the body of the request in the
+`X-Hub-Signature` header.  Validating the signature should just be a matter of
+comparing the value of the header with the computed value.
+
+See [web service hook][web-service-hook] for more information.  To configure
+the secret, make sure the `secret` key in the `config` hash posted to
+`https://api.github.com/repos/<account>/<repository>/hooks` matches the
+`GITHUB_X_HUB_SIGNATURE_SECRET` configuration setting in Heroku.
+
+To set these from the shell:
+
+    url="https://puppet-dev-community.herokuapp.com/event/pull_request"
+    secret="$(dd if=/dev/random bs=1k count=1 | openssl sha256 | awk '{print $2}')"
+    curl -i -u jeffmccune -d '
+    {
+      "name": "web",
+      "active": true,
+      "events": ["pull_request"],
+      "config": {
+        "url": "'"${url}"'",
+        "secret": "'"${secret}"'",
+        "content_type": "json"
+      }
+    }' https://api.github.com/repos/puppetlabs/puppet/hooks
+
+And finally the setting in heroku:
+
+    heroku config:set GITHUB_X_HUB_SIGNATURE_SECRET="$secret"
 
 Delayed Job
 ----
