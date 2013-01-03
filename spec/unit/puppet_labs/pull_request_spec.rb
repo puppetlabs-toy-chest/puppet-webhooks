@@ -8,26 +8,33 @@ describe 'PuppetLabs::PullRequest' do
 
   it 'creates a new instance using the from_json class method' do
     pr = PuppetLabs::PullRequest.from_json(payload)
-    pr.json.should == payload
-  end
-
-  it 'accepts json' do
-    subject.json = payload
-    subject.json.should == payload
   end
 
   it 'initializes with json' do
     pr = PuppetLabs::PullRequest.new(:json => payload)
-    pr.data.should == data
+    pr.action.should == "opened"
   end
 
   describe '#load_json' do
-    before :each do
-      subject.json = payload
-    end
     it 'loads a json hash readable through the data method' do
-      subject.load_json
-      subject.data.should == data
+      subject.load_json(payload)
+      subject.action.should == "opened"
+    end
+  end
+
+  describe "#action" do
+    actions = [ "opened", "closed", "synchronize" ]
+    payloads = [
+      read_fixture("example_pull_request.json"),
+      read_fixture("example_pull_request_closed.json"),
+      read_fixture("example_pull_request_synchronize.json"),
+    ]
+
+    actions.zip(payloads).each do |action, payload|
+      it "returns '#{action}' when the pull request is #{action}." do
+        subject.load_json(payload)
+        subject.action.should == action
+      end
     end
   end
 
