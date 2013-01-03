@@ -8,10 +8,15 @@ describe 'PuppetLabs::PullRequestApp' do
     PuppetLabs::PullRequestApp
   end
 
-  attr_reader :payload, :params
+  attr_reader :payload,
+    :params,
+    :payload_closed,
+    :payload_synchronize
 
   before :all do
     @payload = read_fixture("example_pull_request.json")
+    @payload_closed = read_fixture("example_pull_request_closed.json")
+    @payload_synchronize = read_fixture("example_pull_request_synchronize.json")
     @params = { 'payload' => @payload }
   end
 
@@ -22,10 +27,11 @@ describe 'PuppetLabs::PullRequestApp' do
   end
 
   context 'posting a pull request' do
+    let (:route) { '/event/pull_request' }
+    let (:job) { PuppetLabs::PullRequestJob.new }
+
     describe '/event/pull_request' do
-      let (:route) { '/event/pull_request' }
       let (:pr_model) { PuppetLabs::PullRequest.new(:json => payload) }
-      let (:job) { PuppetLabs::PullRequestJob.new }
 
       before :each do
         fake_job = job
@@ -87,6 +93,27 @@ describe 'PuppetLabs::PullRequestApp' do
       it "queues the job" do
         job.should_receive(:queue)
         post route, params
+      end
+    end
+
+    context 'posting a closed pull request' do
+      let (:params) { { 'payload' => payload_closed } }
+      let (:pr_model) { PuppetLabs::PullRequest.new(:json => payload_closed) }
+
+      before :each do
+        fake_job = job
+        PuppetLabs::PullRequest.stub(:from_json).with(payload_closed).and_return(pr_model)
+        PuppetLabs::PullRequestJob.stub(:new).and_return(fake_job)
+      end
+
+      it "responds with 200 to /event/pull_request" do
+        post route, params
+        last_response.status.should == 200
+      end
+
+      it "Says 'Action has been ignored.' in the response body." do
+        post route, params
+        JSON.load(last_response.body)['message'].should == 'Action has been ignored.'
       end
     end
   end

@@ -36,14 +36,14 @@ module PuppetLabs
 
     post '/event/pull_request' do
       headers = {'Content-Type' => 'application/json'}
-      my_body = request.body.read
+      request_body = request.body.read
 
       # Authenticate via X-Hub-Signature
       # TODO: This could be a Sinatra filter.  See:
       # http://sinatra.restafari.org/book.html#authentication
       if !(secret = ENV['GITHUB_X_HUB_SIGNATURE_SECRET'].to_s).empty?
         # The computed SHA1 signature.  This should match the header value.
-        sig_c = "sha1=#{OpenSSL::HMAC.hexdigest(HMAC_DIGEST, secret, my_body)}".downcase
+        sig_c = "sha1=#{OpenSSL::HMAC.hexdigest(HMAC_DIGEST, secret, request_body)}".downcase
         # The sent SHA1 sinagure.  Expected in the X-Hub-Signature request header.
         sig_s = env['HTTP_X_HUB_SIGNATURE'].to_s.downcase
         if sig_c != sig_s
@@ -59,25 +59,34 @@ module PuppetLabs
       payload = if request.form_data?
         request['payload']
       else
-        my_body
+        request_body
       end
 
       pull_request = PuppetLabs::PullRequest.from_json(payload)
-      job = PuppetLabs::PullRequestJob.new
-      job.pull_request = pull_request
-      delayed_job = job.queue
 
-      # Accepted
-      # The request has been accepted for processing, but the processing has
-      # not been completed. The request might or might not eventually be acted
-      # upon, as it might be disallowed when processing actually takes place.
-      status = 202
-      body = {
-        'job_id' => delayed_job.id,
-        'queue' => delayed_job.queue,
-        'priority' => delayed_job.priority,
-        'created_at' => delayed_job.created_at,
-      }
+      if pull_request.action == "opened"
+        job = PuppetLabs::PullRequestJob.new
+        job.pull_request = pull_request
+        delayed_job = job.queue
+
+        # Accepted
+        # The request has been accepted for processing, but the processing has
+        # not been completed. The request might or might not eventually be acted
+        # upon, as it might be disallowed when processing actually takes place.
+        status = 202
+        body = {
+          'job_id' => delayed_job.id,
+          'queue' => delayed_job.queue,
+          'priority' => delayed_job.priority,
+          'created_at' => delayed_job.created_at,
+        }
+      else
+        status = 200
+        body = {
+          'message' => 'Action has been ignored.'
+        }
+      end
+
       [status, headers, JSON.dump(body)]
     end
   end
