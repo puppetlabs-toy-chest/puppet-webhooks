@@ -34,9 +34,7 @@ describe 'PuppetLabs::PullRequestApp' do
       let (:pr_model) { PuppetLabs::PullRequest.new(:json => payload) }
 
       before :each do
-        fake_job = job
-        PuppetLabs::PullRequest.stub(:from_json).with(payload).and_return(pr_model)
-        PuppetLabs::PullRequestJob.stub(:new).and_return(fake_job)
+        PuppetLabs::PullRequestJob.any_instance.stub(:initialize_dj)
       end
 
       it "responds to /event/pull_request" do
@@ -81,17 +79,8 @@ describe 'PuppetLabs::PullRequestApp' do
       end
 
       it "creates a PullRequestJob" do
-        PuppetLabs::PullRequestJob.should_receive(:new).and_return(job)
-        post route, params
-      end
-
-      it "adds the pull request data to the job" do
-        post route, params
-        job.pull_request.should eq(pr_model)
-      end
-
-      it "queues the job" do
-        job.should_receive(:queue)
+        fake_job = job
+        PuppetLabs::PullRequestJob.should_receive(:new).and_return(fake_job)
         post route, params
       end
     end

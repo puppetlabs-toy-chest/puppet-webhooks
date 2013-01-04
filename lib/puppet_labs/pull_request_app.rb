@@ -22,17 +22,15 @@ module PuppetLabs
       end
     end
 
-    configure :development do
-      disable :show_exceptions
-      enable :logging
+    configure :production do
+      Delayed::Backend::ActiveRecord::Job.send(:include, Delayed::Workless::Scaler)
+      Delayed::Job.scaler = :heroku_cedar
     end
 
-    configure :production do
+    configure do
       disable :show_exceptions
       enable :logging
       Delayed::Worker.max_attempts = 3
-      Delayed::Backend::ActiveRecord::Job.send(:include, Delayed::Workless::Scaler)
-      Delayed::Job.scaler = :heroku_cedar
     end
 
     get '/' do
