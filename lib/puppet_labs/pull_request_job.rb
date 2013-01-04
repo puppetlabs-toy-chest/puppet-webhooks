@@ -1,5 +1,6 @@
 require 'puppet_labs/pull_request'
 require 'puppet_labs/sinatra_dj'
+require 'logger'
 require 'trello'
 
 module PuppetLabs
@@ -14,7 +15,6 @@ class PullRequestJob
   attr_reader :list_id, :key, :secret, :token
   attr_accessor :pull_request
   attr_writer :env
-
 
   def card_body
     pr = pull_request
@@ -93,9 +93,11 @@ class PullRequestJob
   end
   private :trello_api
 
+  ##
+  # display simply sends text to standard output for use in Heroku.
   def display(text)
-    Delayed::Worker.logger ||= Logger.new(STDOUT)
-    Delayed::Worker.logger.add(Logger::INFO, text)
+    @log ||= Logger.new(STDERR)
+    @log.info text
   end
   private :display
 end

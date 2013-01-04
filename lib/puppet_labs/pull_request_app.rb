@@ -7,6 +7,7 @@ require 'delayed_job_active_record'
 require 'openssl'
 require 'digest/sha1'
 require 'workless'
+require 'logger'
 
 
 module PuppetLabs
@@ -15,16 +16,20 @@ module PuppetLabs
 
     class UnauthenticatedError < StandardError; end
 
-    use Rack::Logger
-
     helpers do
       def logger
-        request.logger
+        @logger ||= Logger.new(STDERR)
       end
+    end
+
+    configure :development do
+      disable :show_exceptions
+      enable :logging
     end
 
     configure :production do
       disable :show_exceptions
+      enable :logging
       Delayed::Worker.max_attempts = 3
       Delayed::Backend::ActiveRecord::Job.send(:include, Delayed::Workless::Scaler)
       Delayed::Job.scaler = :heroku_cedar
@@ -69,6 +74,8 @@ module PuppetLabs
         job.pull_request = pull_request
         delayed_job = job.queue
 
+        logger.info "Successfully queued up opened pull request #{pull_request.repo_name}/#{pull_request.number} as job #{delayed_job.id}"
+
         # Accepted
         # The request has been accepted for processing, but the processing has
         # not been completed. The request might or might not eventually be acted
@@ -81,10 +88,9 @@ module PuppetLabs
           'created_at' => delayed_job.created_at,
         }
       else
-        status = 200
-        body = {
-          'message' => 'Action has been ignored.'
-        }
+        logger.info "Ignoring pull request #{pull_request.repo_name}/#{pull_request.number} because the action is #{pull_request.action}."
+        body = { 'message' => 'Action has been ignored.' }
+        halt 200, headers, JSON.dump(body)
       end
 
       [status, headers, JSON.dump(body)]
