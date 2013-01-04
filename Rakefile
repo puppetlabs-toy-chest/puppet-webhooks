@@ -33,21 +33,16 @@ task :environment do
   require 'erb'
 
   Delayed::Worker.destroy_failed_jobs = false
-
-  case ENV['RACK_ENV'].to_s
-  when 'production'
-    Delayed::Worker.max_attempts = 3
-    Delayed::Backend::ActiveRecord::Job.send(:include, Delayed::Workless::Scaler)
-    Delayed::Job.scaler = :heroku_cedar
-  end
+  Delayed::Worker.max_attempts = 3
+  Delayed::Backend::ActiveRecord::Job.send(:include, Delayed::Workless::Scaler)
+  Delayed::Job.scaler = :heroku_cedar
 
   logger = ActiveSupport::BufferedLogger.new(
     File.join(File.dirname(__FILE__), '/log', "#{ENV['RACK_ENV']}_delayed_jobs.log"), Logger::INFO
   )
   Delayed::Worker.logger = logger
-
   dbconfig = YAML.load(ERB.new(File.read('config/database.yml')).result)
-  ActiveRecord::Base.establish_connection dbconfig[ENV['RACK_ENV']]
+  ActiveRecord::Base.establish_connection(dbconfig[ENV['RACK_ENV']])
 end
 
 desc "IRB REPL Shell"
@@ -70,7 +65,7 @@ namespace :db do
     ar_dbconfig = dbconfig[ENV['RACK_ENV']]
     ar_dbconfig_sys = ar_dbconfig.merge(
       'database' => 'postgres',
-      'schema_search_path' => 'public',
+      'schema_search_path' => 'public'
     )
     # drops and create need to be performed with a connection to the 'postgres'
     # (system) database

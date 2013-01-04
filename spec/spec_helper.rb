@@ -39,11 +39,14 @@ end
 end
 end
 
+# FIXME much of this configuration is duplicated in the :environment task in
+# the Rakefile
 RSpec.configure do |config|
   include WebHook::Test::Methods
 
+  config.mock_with :rspec
+
   config.before :all do
-    # Initialize an in-memory database
     config = {
       :adapter => 'sqlite3',
       :database => ':memory:',
@@ -52,9 +55,5 @@ RSpec.configure do |config|
     # ActiveRecord::Base.logger = Logger.new(STDOUT)
     ActiveRecord::Migration.verbose = false
     ActiveRecord::Migrator.migrate("#{File.expand_path("../..", __FILE__)}/db/migrate")
-
-  end
-  config.before :suite do
-    ENV['RACK_ENV'] = 'development'
   end
 end

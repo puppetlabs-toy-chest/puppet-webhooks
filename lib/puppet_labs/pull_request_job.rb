@@ -76,9 +76,9 @@ class PullRequestJob
   def create_card
     trello = trello_api
     card_options = {
-      name: card_title,
-      list: list_id,
-      description: card_body,
+      :name => card_title,
+      :list => list_id,
+      :description => card_body,
     }
     trello.create_card(card_options)
   end
