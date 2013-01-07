@@ -6,6 +6,7 @@ require 'puppet_labs/pull_request_job'
 require 'delayed_job_active_record'
 require 'openssl'
 require 'digest/sha1'
+require 'digest/sha2'
 require 'workless'
 require 'logger'
 
@@ -37,7 +38,27 @@ module PuppetLabs
       "Hello World!"
     end
 
-    post '/event/pull_request' do
+    post '/event/travis_ci/?' do
+      headers = {'Content-Type' => 'application/json'}
+      json = JSON.load(params['payload'])
+      if !(secret = ENV['TRAVIS_AUTH_TOKEN'].to_s).empty?
+        repo = "#{json['repository']['owner_name']}" +
+               "/#{json['repository']['name']}"
+        shared_secret = repo + secret
+        auth_check = Digest::SHA2.hexdigest(shared_secret)
+        if auth_check == env['HTTP_AUTHORIZATION']
+          logger.info "[/event/travis_ci] Authorization: SUCCESS"
+        else
+          logger.info "Travis authentication failed.  Please check TRAVIS_AUTH_TOKEN matches your Travis profile token."
+        end
+      else
+        logger.info "Authentication disabled.  Please set TRAVIS_AUTH_TOKEN to the token shown on your travis profile page."
+      end
+      body = { 'status' => 'Job processing for Travis has not yet been been implemented. ' }
+      [200, headers, JSON.dump(body)]
+    end
+
+    post '/event/pull_request/?' do
       headers = {'Content-Type' => 'application/json'}
       request_body = request.body.read
 
