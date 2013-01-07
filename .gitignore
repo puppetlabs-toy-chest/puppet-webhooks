@@ -2,3 +2,5 @@
 doc/
 log/
 setup.env
+.bundle/
+vendor/
