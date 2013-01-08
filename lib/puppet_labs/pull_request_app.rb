@@ -21,6 +21,10 @@ module PuppetLabs
       def logger
         @logger ||= Logger.new(STDERR)
       end
+
+      def response_headers
+        @response_headers ||= {'Content-Type' => 'application/json'}
+      end
     end
 
     configure :production do
@@ -38,8 +42,18 @@ module PuppetLabs
       "Hello World!"
     end
 
+    # Previous, but dead, endpoint
+    post '/event/pull_request/?' do
+      payload = request.form_data? ? request['payload'] : request.body.read
+      json = JSON.load(payload)
+      repo = "%s/%s" % [json['repository']['owner_name'],
+                        json['repository']['name']]
+      logger.info "#{repo} should be using /event/github instead of /event/pull_request"
+      halt 204, response_headers
+    end
+
     post '/event/travis/?' do
-      headers = {'Content-Type' => 'application/json'}
+      headers = response_headers
       json = JSON.load(params['payload'])
       if !(secret = ENV['TRAVIS_AUTH_TOKEN'].to_s).empty?
         repo = "#{json['repository']['owner_name']}" +
@@ -47,12 +61,13 @@ module PuppetLabs
         shared_secret = repo + secret
         auth_check = Digest::SHA2.hexdigest(shared_secret)
         if auth_check == env['HTTP_AUTHORIZATION']
-          logger.info "[/event/travis] Authorization: SUCCESS"
+          logger.info "[/event/travis] Authentication: SUCCESS - Digest::SHA2.hexdigest(#{repo.inspect} + TRAVIS_AUTH_TOKEN) -= #{env['HTTP_AUTHORIZATION']}"
         else
-          logger.info "Travis authentication failed."
+          logger.info "[/event/travis] Authentication: FAILURE - Digest::SHA2.hexdigest(#{repo.inspect} + TRAVIS_AUTH_TOKEN) != #{env['HTTP_AUTHORIZATION']}"
+          logger.info "[/event/travis] Authentication failure does not prevent access. (FIXME)"
         end
       else
-        logger.info "Authentication disabled.  Please set TRAVIS_AUTH_TOKEN to the token shown on your travis profile page."
+        logger.info "[/event/travis] Authentication: DISABLED - Please configure the TRAVIS_AUTH_TOKEN environment variable to be the string shown on your travis profile page."
       end
       body = { 'status' => 'Job processing for Travis has not yet been been implemented. ' }
       [200, headers, JSON.dump(body)]
@@ -65,6 +80,7 @@ module PuppetLabs
       when 'pull_request'
         logger.info "Handling X-Github-Event: #{event}"
       else
+        logger.info "Ignoring X-Github-Event: #{event}"
         halt 204, headers
       end
 

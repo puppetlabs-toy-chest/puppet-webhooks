@@ -29,10 +29,10 @@ describe 'PuppetLabs::PullRequestApp' do
   end
 
   context 'posting a pull request' do
-    let (:route) { '/event/pull_request' }
+    let (:route) { '/event/github' }
     let (:job) { PuppetLabs::PullRequestJob.new }
 
-    describe '/event/pull_request' do
+    describe '/event/github' do
       let (:pr_model) { PuppetLabs::PullRequest.new(:json => payload) }
 
       before :each do
