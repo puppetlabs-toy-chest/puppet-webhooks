@@ -38,7 +38,7 @@ module PuppetLabs
       "Hello World!"
     end
 
-    post '/event/travis_ci/?' do
+    post '/event/travis/?' do
       headers = {'Content-Type' => 'application/json'}
       json = JSON.load(params['payload'])
       if !(secret = ENV['TRAVIS_AUTH_TOKEN'].to_s).empty?
@@ -47,9 +47,9 @@ module PuppetLabs
         shared_secret = repo + secret
         auth_check = Digest::SHA2.hexdigest(shared_secret)
         if auth_check == env['HTTP_AUTHORIZATION']
-          logger.info "[/event/travis_ci] Authorization: SUCCESS"
+          logger.info "[/event/travis] Authorization: SUCCESS"
         else
-          logger.info "Travis authentication failed.  Please check TRAVIS_AUTH_TOKEN matches your Travis profile token."
+          logger.info "Travis authentication failed."
         end
       else
         logger.info "Authentication disabled.  Please set TRAVIS_AUTH_TOKEN to the token shown on your travis profile page."
@@ -58,8 +58,16 @@ module PuppetLabs
       [200, headers, JSON.dump(body)]
     end
 
-    post '/event/pull_request/?' do
+    post '/event/github/?' do
       headers = {'Content-Type' => 'application/json'}
+
+      case event = env['HTTP_X_GITHUB_EVENT'].to_s
+      when 'pull_request'
+        logger.info "Handling X-Github-Event: #{event}"
+      else
+        halt 204, headers
+      end
+
       request_body = request.body.read
 
       # Authenticate via X-Hub-Signature
