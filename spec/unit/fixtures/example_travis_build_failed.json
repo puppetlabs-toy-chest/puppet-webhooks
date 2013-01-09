@@ -1,0 +1,166 @@
+{
+  "author_email": "jeff@puppetlabs.com",
+  "author_name": "Jeff McCune",
+  "branch": "master",
+  "build_url": "https://travis-ci.org/jeffmccune/puppet-webhooks/builds/4017990",
+  "commit": "b0c9e06f2a971a8b2b37fc461ef74c38205d9361",
+  "committed_at": "2013-01-08T07:48:57Z",
+  "committer_email": "jeff@puppetlabs.com",
+  "committer_name": "Jeff McCune",
+  "compare_url": "https://github.com/jeffmccune/puppet-webhooks/pull/5",
+  "config": {
+    ".result": "configured",
+    "bundler_args": "--without development",
+    "language": "ruby",
+    "notifications": {
+      "email": false,
+      "webhooks": {
+        "on_failure": "always",
+        "on_start": true,
+        "on_success": "always",
+        "urls": [
+          "https://puppet-dev-community.herokuapp.com/event/travis/",
+          "http://requestb.in/r189vnr1"
+        ]
+      }
+    },
+    "rvm": [
+      "1.9.3",
+      "ruby-head",
+      "1.8.7"
+    ],
+    "script": "bundle exec rake spec"
+  },
+  "duration": 215,
+  "finished_at": "2013-01-08T07:54:42Z",
+  "id": 4017990,
+  "matrix": [
+    {
+      "author_email": "jeff@puppetlabs.com",
+      "author_name": "Jeff McCune",
+      "branch": "master",
+      "commit": "b0c9e06f2a971a8b2b37fc461ef74c38205d9361",
+      "committed_at": "2013-01-08T07:48:57Z",
+      "committer_email": "jeff@puppetlabs.com",
+      "committer_name": "Jeff McCune",
+      "compare_url": "https://github.com/jeffmccune/puppet-webhooks/pull/5",
+      "config": {
+        ".result": "configured",
+        "bundler_args": "--without development",
+        "language": "ruby",
+        "notifications": {
+          "email": false,
+          "webhooks": {
+            "on_failure": "always",
+            "on_start": true,
+            "on_success": "always",
+            "urls": [
+              "https://puppet-dev-community.herokuapp.com/event/travis/",
+              "http://requestb.in/r189vnr1"
+            ]
+          }
+        },
+        "rvm": "1.9.3",
+        "script": "bundle exec rake spec"
+      },
+      "finished_at": "2013-01-08T07:54:27Z",
+      "id": 4017991,
+      "message": "Normalize URL's to /event/github and /event/travis\n\nThis should be the final URL scheme for the time being. I'm going to\ncontinue to refactor the Sinatra application though.\n\nI'm intentionally committing without updating the tests to see just how\nbad it is...\n",
+      "number": "23.1",
+      "parent_id": 4017990,
+      "repository_id": 395036,
+      "result": 1,
+      "state": "finished",
+      "status": 1
+    },
+    {
+      "author_email": "jeff@puppetlabs.com",
+      "author_name": "Jeff McCune",
+      "branch": "master",
+      "commit": "b0c9e06f2a971a8b2b37fc461ef74c38205d9361",
+      "committed_at": "2013-01-08T07:48:57Z",
+      "committer_email": "jeff@puppetlabs.com",
+      "committer_name": "Jeff McCune",
+      "compare_url": "https://github.com/jeffmccune/puppet-webhooks/pull/5",
+      "config": {
+        ".result": "configured",
+        "bundler_args": "--without development",
+        "language": "ruby",
+        "notifications": {
+          "email": false,
+          "webhooks": {
+            "on_failure": "always",
+            "on_start": true,
+            "on_success": "always",
+            "urls": [
+              "https://puppet-dev-community.herokuapp.com/event/travis/",
+              "http://requestb.in/r189vnr1"
+            ]
+          }
+        },
+        "rvm": "ruby-head",
+        "script": "bundle exec rake spec"
+      },
+      "finished_at": "2013-01-08T07:54:42Z",
+      "id": 4017992,
+      "message": "Normalize URL's to /event/github and /event/travis\n\nThis should be the final URL scheme for the time being. I'm going to\ncontinue to refactor the Sinatra application though.\n\nI'm intentionally committing without updating the tests to see just how\nbad it is...\n",
+      "number": "23.2",
+      "parent_id": 4017990,
+      "repository_id": 395036,
+      "result": 1,
+      "state": "finished",
+      "status": 1
+    },
+    {
+      "author_email": "jeff@puppetlabs.com",
+      "author_name": "Jeff McCune",
+      "branch": "master",
+      "commit": "b0c9e06f2a971a8b2b37fc461ef74c38205d9361",
+      "committed_at": "2013-01-08T07:48:57Z",
+      "committer_email": "jeff@puppetlabs.com",
+      "committer_name": "Jeff McCune",
+      "compare_url": "https://github.com/jeffmccune/puppet-webhooks/pull/5",
+      "config": {
+        ".result": "configured",
+        "bundler_args": "--without development",
+        "language": "ruby",
+        "notifications": {
+          "email": false,
+          "webhooks": {
+            "on_failure": "always",
+            "on_start": true,
+            "on_success": "always",
+            "urls": [
+              "https://puppet-dev-community.herokuapp.com/event/travis/",
+              "http://requestb.in/r189vnr1"
+            ]
+          }
+        },
+        "rvm": "1.8.7",
+        "script": "bundle exec rake spec"
+      },
+      "finished_at": "2013-01-08T07:54:26Z",
+      "id": 4017993,
+      "message": "Normalize URL's to /event/github and /event/travis\n\nThis should be the final URL scheme for the time being. I'm going to\ncontinue to refactor the Sinatra application though.\n\nI'm intentionally committing without updating the tests to see just how\nbad it is...\n",
+      "number": "23.3",
+      "parent_id": 4017990,
+      "repository_id": 395036,
+      "result": 1,
+      "state": "finished",
+      "status": 1
+    }
+  ],
+  "message": "Normalize URL's to /event/github and /event/travis\n\nThis should be the final URL scheme for the time being. I'm going to\ncontinue to refactor the Sinatra application though.\n\nI'm intentionally committing without updating the tests to see just how\nbad it is...\n",
+  "number": "23",
+  "repository": {
+    "id": 395036,
+    "name": "puppet-webhooks",
+    "owner_name": "jeffmccune",
+    "url": "https://github.com/jeffmccune/puppet-webhooks"
+  },
+  "result": 1,
+  "result_message": "Broken",
+  "started_at": "2013-01-08T07:53:20Z",
+  "status": 1,
+  "status_message": "Broken"
+}
