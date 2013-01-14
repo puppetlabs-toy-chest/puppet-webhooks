@@ -7,6 +7,7 @@ gem 'sinatra', '1.1.0'
 gem 'ruby-trello'
 gem 'json'
 
+gem 'sinatra-activerecord'
 gem 'delayed_job_active_record'
 gem 'workless', '~> 1.1.1'
 
