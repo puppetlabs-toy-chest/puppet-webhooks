@@ -80,6 +80,8 @@ module PuppetLabs
       # authenticate_travis returns true if the request is authenticated as a
       # travis request.
       def authenticate_travis(request)
+        return false unless json = json()
+
         if !(secret = ENV['TRAVIS_AUTH_TOKEN'].to_s).empty?
           repo = "#{json['repository']['owner_name']}" +
                  "/#{json['repository']['name']}"
