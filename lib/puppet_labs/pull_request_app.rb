@@ -149,6 +149,25 @@ module PuppetLabs
     before '/event/*' do
       authenticate!
       request.body.rewind
+      save_event
+    end
+
+    ##
+    # List the last 20 events stored in the database.
+    get '/events/?' do
+      body = Event.last(20).collect do |event|
+        # See: http://www.sinatrarb.com/intro#Accessing%20the%20Request%20Object
+        request = YAML.load(event.request)
+        { 'request' => {
+            'method' => request.request_method,
+            'url' => request.url,
+            'env' => request.env,
+            'params' => request.params,
+          },
+          'payload' => JSON.pretty_generate(JSON.load(event.payload))
+        }
+      end
+      [200, response_headers, JSON.pretty_generate(body) << "\n"]
     end
 
     get '/' do
@@ -164,7 +183,6 @@ module PuppetLabs
     end
 
     post '/event/travis/?' do
-      save_event
       status = 'Job processing for Travis has not yet been been implemented.'
       log status
       body = { 'status' => status }
@@ -172,7 +190,6 @@ module PuppetLabs
     end
 
     post '/event/github/?' do
-      save_event
       payload = payload()
 
       controller_options = { :route => self, :request => request }
