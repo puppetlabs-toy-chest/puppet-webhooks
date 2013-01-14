@@ -33,6 +33,7 @@ module PuppetLabs
     end
 
     configure :production do
+      ActiveRecord::Base.logger.level = Logger::INFO
       Delayed::Backend::ActiveRecord::Job.send(:include, Delayed::Workless::Scaler)
       Delayed::Job.scaler = :heroku_cedar
     end
