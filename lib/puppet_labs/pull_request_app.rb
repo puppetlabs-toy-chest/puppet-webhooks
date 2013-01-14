@@ -4,6 +4,7 @@ require 'sinatra/base'
 require 'sinatra/activerecord'
 require 'puppet_labs/pull_request'
 require 'puppet_labs/pull_request_job'
+require 'puppet_labs/event'
 require 'delayed_job_active_record'
 require 'openssl'
 require 'digest/sha1'
@@ -84,17 +85,33 @@ module PuppetLabs
     end
 
     post '/event/github/?' do
+      gh_event = env['HTTP_X_GITHUB_EVENT'].to_s
       headers = {'Content-Type' => 'application/json'}
 
-      case event = env['HTTP_X_GITHUB_EVENT'].to_s
-      when 'pull_request'
-        logger.info "Handling X-Github-Event: #{event}"
+      request.body.rewind
+      request_body = request.body.read
+      # If there is form data then we expect the payload in the payload parameter.
+      # otherwise, we expect all of the form data on the in
+      payload = if request.form_data?
+        request['payload']
       else
-        logger.info "Ignoring X-Github-Event: #{event}"
+        request_body
+      end
+
+      event = Event.new(:name => 'Saved Event',
+                        :payload => payload,
+                        :request => request.to_yaml)
+      event.save
+      logger.info "Saved event ID #{event.id}"
+
+      case gh_event
+      when 'pull_request'
+        logger.info "Handling X-Github-Event: #{gh_event}"
+      else
+        logger.info "Ignoring X-Github-Event: #{gh_event}"
         halt 204, headers
       end
 
-      request_body = request.body.read
 
       # Authenticate via X-Hub-Signature
       # TODO: This could be a Sinatra filter.  See:
@@ -111,14 +128,6 @@ module PuppetLabs
           halt 401, headers, JSON.dump(body)
         end
         logger.info "[/event/github] Authentication: SUCCESS - X-Hub-Signature header contains a valid signature."
-      end
-
-      # If there is form data then we expect the payload in the payload parameter.
-      # otherwise, we expect all of the form data on the in
-      payload = if request.form_data?
-        request['payload']
-      else
-        request_body
       end
 
       pull_request = PuppetLabs::PullRequest.from_json(payload)
