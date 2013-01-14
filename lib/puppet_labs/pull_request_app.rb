@@ -12,6 +12,7 @@ require 'digest/sha1'
 require 'digest/sha2'
 require 'workless'
 require 'logger'
+require 'ostruct'
 
 module PuppetLabs
   class PullRequestApp < Sinatra::Base
@@ -105,9 +106,15 @@ module PuppetLabs
       # save_event saves the payload and the request for later processing.
       # @return [Event] instance of the created event
       def save_event
+        req = OpenStruct.new(
+            :method => request.request_method,
+            :url => request.url,
+            :env => request.env,
+            :params => request.params
+        )
         event = Event.new(:name => "Event #{request.path_info}",
                           :payload => payload,
-                          :request => request.to_yaml)
+                          :request => req.to_yaml)
         event.save
         logger.info "Created event_id=#{event.id}"
         event
