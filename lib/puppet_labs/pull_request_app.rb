@@ -44,7 +44,13 @@ module PuppetLabs
 
     # Previous, but dead, endpoint
     post '/event/pull_request/?' do
-      payload = request.form_data? ? request['payload'] : request.body.read
+      if request.form_data?
+        payload = request['payload']
+      else
+        request.body.rewind
+        payload = request.body.read
+      end
+
       json = JSON.load(payload)
       repo = "%s/%s" % [json['repository']['owner_name'],
                         json['repository']['name']]
