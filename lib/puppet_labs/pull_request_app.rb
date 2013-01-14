@@ -100,6 +100,7 @@ module PuppetLabs
           }
           halt 401, headers, JSON.dump(body)
         end
+        logger.info "[/event/github] Authentication: SUCCESS - X-Hub-Signature header contains a valid signature."
       end
 
       # If there is form data then we expect the payload in the payload parameter.
