@@ -12,6 +12,7 @@ gem 'workless', '~> 1.1.1'
 
 group :development do
   gem 'watchr'
+  gem 'pry'
 end
 
 group :test do
