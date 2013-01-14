@@ -1,6 +1,7 @@
 require 'json'
 require 'time'
 require 'sinatra/base'
+require 'sinatra/activerecord'
 require 'puppet_labs/pull_request'
 require 'puppet_labs/pull_request_job'
 require 'delayed_job_active_record'
@@ -13,6 +14,9 @@ require 'logger'
 
 module PuppetLabs
   class PullRequestApp < Sinatra::Base
+    # config/database.yml is automatically picked up and may contain ERB.
+    register Sinatra::ActiveRecordExtension
+    # Authorizing Github hook events uses the HMAC_DIGEST constant.
     HMAC_DIGEST = OpenSSL::Digest::Digest.new('sha1')
 
     class UnauthenticatedError < StandardError; end
