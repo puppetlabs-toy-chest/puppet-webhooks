@@ -146,13 +146,13 @@ module PuppetLabs
       Delayed::Worker.max_attempts = 3
     end
 
-    before do
+    before '/event/*' do
       authenticate!
       request.body.rewind
     end
 
     get '/' do
-      "Hello World!"
+      "Hello World!\n"
     end
 
     # Previous, but dead, endpoint
