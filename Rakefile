@@ -95,6 +95,6 @@ namespace :api do
 
   desc "Submit a fake pull request"
   task(:pull_request) do
-    sh 'curl -i --data "payload=$(cat spec/unit/fixtures/example_pull_request.json)" http://localhost:5000/event/pull_request'
+    sh 'curl -i -H "Content-Type: application/json" --data "$(cat spec/unit/fixtures/example_pull_request.json)" http://localhost:5000/event/github/'
   end
 end
