@@ -10,6 +10,7 @@ describe 'PuppetLabs::PullRequestApp' do
 
   attr_reader :payload,
     :params,
+    :env,
     :payload_closed,
     :payload_synchronize
 
@@ -18,6 +19,7 @@ describe 'PuppetLabs::PullRequestApp' do
     @payload_closed = read_fixture("example_pull_request_closed.json")
     @payload_synchronize = read_fixture("example_pull_request_synchronize.json")
     @params = { 'payload' => @payload }
+    @env = { 'HTTP_X_GITHUB_EVENT' => 'pull_request' }
   end
 
   it 'says hello' do
@@ -27,29 +29,29 @@ describe 'PuppetLabs::PullRequestApp' do
   end
 
   context 'posting a pull request' do
-    let (:route) { '/event/pull_request' }
+    let (:route) { '/event/github' }
     let (:job) { PuppetLabs::PullRequestJob.new }
 
-    describe '/event/pull_request' do
+    describe '/event/github' do
       let (:pr_model) { PuppetLabs::PullRequest.new(:json => payload) }
 
       before :each do
         PuppetLabs::PullRequestJob.any_instance.stub(:initialize_dj)
       end
 
-      it "responds to /event/pull_request" do
-        post route, params
+      it "responds to /event/github" do
+        post route, params, env
         last_response.status.should == 202
       end
 
       it "sets the content-type to application/json" do
-        post route, params
+        post route, params, env
         last_response.headers['Content-Type'].should == 'application/json'
       end
 
       describe 'the return json' do
         subject do
-          post route, params
+          post route, params, env
           JSON.load(last_response.body)
         end
         it "returns a json hash" do
@@ -75,13 +77,13 @@ describe 'PuppetLabs::PullRequestApp' do
 
       it "creates a PullRequest model using PullRequest.from_json" do
         PuppetLabs::PullRequest.should_receive(:from_json).with(payload).and_return(pr_model)
-        post route, params
+        post route, params, env
       end
 
       it "creates a PullRequestJob" do
         fake_job = job
         PuppetLabs::PullRequestJob.should_receive(:new).and_return(fake_job)
-        post route, params
+        post route, params, env
       end
     end
 
@@ -96,12 +98,12 @@ describe 'PuppetLabs::PullRequestApp' do
       end
 
       it "responds with 200 to /event/pull_request" do
-        post route, params
+        post route, params, env
         last_response.status.should == 200
       end
 
       it "Says 'Action has been ignored.' in the response body." do
-        post route, params
+        post route, params, env
         JSON.load(last_response.body)['message'].should == 'Action has been ignored.'
       end
     end
