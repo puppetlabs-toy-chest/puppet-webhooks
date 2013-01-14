@@ -276,6 +276,30 @@ You should now see this job in your PostgreSQL database:
 
 This job will be cleared when you run `rake jobs:work`.
 
+Authentication
+----
+
+Incoming requests may be authentication against Github and Travis.  Travis uses
+the pattern `#{username}/#{repository}#{TRAVIS_AUTH_TOKEN}`.
+
+Configuring Github requires the same configuration as the deployment.  This is
+currently `gepetto-bot`.
+
+Get the specific URL of the travis hook by listing all of the hooks:
+
+    $ curl -i -u "jeffmccune:$PASSWORD" \
+    https://api.github.com/repos/jeffmccune/puppet-webhooks/hooks | tee hooks.json
+
+With the specific hook URL:
+
+    $ curl -i -u "jeffmccune:$PASSWORD" -d '
+    {  "config": {
+         "token": "'"$TRAVIS_AUTH_TOKEN"'",
+         "user": "gepetto-bot",
+         "domain": ""
+      }
+    }' https://api.github.com/repos/jeffmccune/puppet-webhooks/hooks/633908
+
 Maintainer
 ----
 
