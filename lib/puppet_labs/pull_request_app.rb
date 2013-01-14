@@ -30,6 +30,94 @@ module PuppetLabs
       def response_headers
         @response_headers ||= {'Content-Type' => 'application/json'}
       end
+
+      def authenticate!
+        logger.info "[#{request.path_info}] Authenticating request: #{request}"
+        if not authentic?
+          status 'Authentication: FAILURE'
+          body = { 'status' => status }
+          logger.info "[#{request.path_info}] #{status}"
+          halt 403, response_headers, JSON.dump(body) << "\n"
+        end
+        logger.info "[#{request.path_info}] Authentication: SUCCESS #{request}"
+      end
+
+      def authentic?
+        !!(authenticate_github(request) or authenticate_travis(request))
+      end
+
+      # Authenticate via X-Hub-Signature
+      # TODO: This could be a Sinatra filter.  See:
+      # http://sinatra.restafari.org/book.html#authentication
+      def authenticate_github(request)
+        request.body.rewind
+        request_body = request.body.read
+        if !(secret = ENV['GITHUB_X_HUB_SIGNATURE_SECRET'].to_s).empty?
+          # The computed SHA1 signature.  This should match the header value.
+          sig_c = "sha1=#{OpenSSL::HMAC.hexdigest(HMAC_DIGEST, secret, request_body)}".downcase
+          # The sent SHA1 sinagure.  Expected in the X-Hub-Signature request header.
+          sig_s = request.env['HTTP_X_HUB_SIGNATURE'].to_s.downcase
+          if sig_c == sig_s
+            logger.info "[#{request.path_info}] Github Authentication: SUCCESS - X-Hub-Signature header contains a valid signature."
+            return true
+          else
+            logger.info "[#{request.path_info}] Github Authentication: FAILURE - X-Hub-Signature header contains an invalid signature."
+            return false
+          end
+        else
+          logger.info "[#{request.path_info}] Github Authentication: DISABLED - Please configure the GITHUB_X_HUB_SIGNATURE_SECRET environment variable to match the Github hook configuration."
+          return false
+        end
+      end
+
+      ##
+      # authenticate_travis returns true if the request is authenticated as a
+      # travis request.
+      def authenticate_travis(request)
+        json = JSON.load(request.params['payload'])
+        if !(secret = ENV['TRAVIS_AUTH_TOKEN'].to_s).empty?
+          repo = "#{json['repository']['owner_name']}" +
+                 "/#{json['repository']['name']}"
+          shared_secret = repo + secret
+          auth_check = Digest::SHA2.hexdigest(shared_secret)
+          if auth_check == request.env['HTTP_AUTHORIZATION']
+            logger.info "[#{request.path_info}] Travis Authentication: SUCCESS - Digest::SHA2.hexdigest(#{repo.inspect} + TRAVIS_AUTH_TOKEN) -= #{env['HTTP_AUTHORIZATION']}"
+            true
+          else
+            logger.info "[#{request.path_info}] Travis Authentication: FAILURE - Digest::SHA2.hexdigest(#{repo.inspect} + TRAVIS_AUTH_TOKEN) != #{env['HTTP_AUTHORIZATION']}"
+            logger.info "[#{request.path_info}] Travis Authentication failure does not prevent access. (FIXME)"
+            false
+          end
+        else
+          logger.info "[#{request.path_info}] Travis Authentication: DISABLED - Please configure the TRAVIS_AUTH_TOKEN environment variable to be the string shown on your travis profile page."
+          false
+        end
+      end
+
+      ##
+      # save_event saves the payload and the request for later processing.
+      # @return [Event] instance of the created event
+      def save_event
+        event = Event.new(:name => "Event #{request.path_info}",
+                          :payload => payload,
+                          :request => request.to_yaml)
+        event.save
+        logger.info "Created event_id=#{event.id}"
+        event
+      end
+
+      ##
+      # Obtain the payload from the request.  If there is Form data, we expect
+      # this as a string in the parameter named payload.  If there is no form
+      # data, then we expect to the payload to be the body.
+      def payload
+        if request.form_data?
+          request['payload']
+        else
+          request.body.rewind
+          request.body.read
+        end
+      end
     end
 
     configure :production do
@@ -44,19 +132,17 @@ module PuppetLabs
       Delayed::Worker.max_attempts = 3
     end
 
+    before do
+      authenticate!
+      request.body.rewind
+    end
+
     get '/' do
       "Hello World!"
     end
 
     # Previous, but dead, endpoint
     post '/event/pull_request/?' do
-      if request.form_data?
-        payload = request['payload']
-      else
-        request.body.rewind
-        payload = request.body.read
-      end
-
       json = JSON.load(payload)
       repo = "%s/%s" % [json['repository']['owner_name'],
                         json['repository']['name']]
@@ -65,70 +151,23 @@ module PuppetLabs
     end
 
     post '/event/travis/?' do
-      headers = response_headers
-      json = JSON.load(params['payload'])
-      if !(secret = ENV['TRAVIS_AUTH_TOKEN'].to_s).empty?
-        repo = "#{json['repository']['owner_name']}" +
-               "/#{json['repository']['name']}"
-        shared_secret = repo + secret
-        auth_check = Digest::SHA2.hexdigest(shared_secret)
-        if auth_check == env['HTTP_AUTHORIZATION']
-          logger.info "[/event/travis] Authentication: SUCCESS - Digest::SHA2.hexdigest(#{repo.inspect} + TRAVIS_AUTH_TOKEN) -= #{env['HTTP_AUTHORIZATION']}"
-        else
-          logger.info "[/event/travis] Authentication: FAILURE - Digest::SHA2.hexdigest(#{repo.inspect} + TRAVIS_AUTH_TOKEN) != #{env['HTTP_AUTHORIZATION']}"
-          logger.info "[/event/travis] Authentication failure does not prevent access. (FIXME)"
-        end
-      else
-        logger.info "[/event/travis] Authentication: DISABLED - Please configure the TRAVIS_AUTH_TOKEN environment variable to be the string shown on your travis profile page."
-      end
-      body = { 'status' => 'Job processing for Travis has not yet been been implemented. ' }
-      [200, headers, JSON.dump(body)]
+      save_event
+      status = 'Job processing for Travis has not yet been been implemented.'
+      logger.info "[#{request.path_info}] #{status}"
+      body = { 'status' => status }
+      [204, response_headers, JSON.dump(body)]
     end
 
     post '/event/github/?' do
-      gh_event = env['HTTP_X_GITHUB_EVENT'].to_s
-      headers = {'Content-Type' => 'application/json'}
+      save_event
+      payload = payload()
 
-      request.body.rewind
-      request_body = request.body.read
-      # If there is form data then we expect the payload in the payload parameter.
-      # otherwise, we expect all of the form data on the in
-      payload = if request.form_data?
-        request['payload']
-      else
-        request_body
-      end
-
-      event = Event.new(:name => 'Saved Event',
-                        :payload => payload,
-                        :request => request.to_yaml)
-      event.save
-      logger.info "Saved event ID #{event.id}"
-
-      case gh_event
+      case gh_event = env['HTTP_X_GITHUB_EVENT'].to_s
       when 'pull_request'
         logger.info "Handling X-Github-Event: #{gh_event}"
       else
         logger.info "Ignoring X-Github-Event: #{gh_event}"
-        halt 204, headers
-      end
-
-
-      # Authenticate via X-Hub-Signature
-      # TODO: This could be a Sinatra filter.  See:
-      # http://sinatra.restafari.org/book.html#authentication
-      if !(secret = ENV['GITHUB_X_HUB_SIGNATURE_SECRET'].to_s).empty?
-        # The computed SHA1 signature.  This should match the header value.
-        sig_c = "sha1=#{OpenSSL::HMAC.hexdigest(HMAC_DIGEST, secret, request_body)}".downcase
-        # The sent SHA1 sinagure.  Expected in the X-Hub-Signature request header.
-        sig_s = env['HTTP_X_HUB_SIGNATURE'].to_s.downcase
-        if sig_c != sig_s
-          body = {
-            'message' => 'Permission denied. X-Hub-Signature header does not match body'
-          }
-          halt 401, headers, JSON.dump(body)
-        end
-        logger.info "[/event/github] Authentication: SUCCESS - X-Hub-Signature header contains a valid signature."
+        halt 204, response_headers
       end
 
       pull_request = PuppetLabs::PullRequest.from_json(payload)
@@ -154,7 +193,7 @@ module PuppetLabs
       else
         logger.info "Ignoring pull request #{pull_request.repo_name}/#{pull_request.number} because the action is #{pull_request.action}."
         body = { 'message' => 'Action has been ignored.' }
-        halt 200, headers, JSON.dump(body)
+        halt 204, response_headers, JSON.dump(body)
       end
 
       [status, headers, JSON.dump(body)]

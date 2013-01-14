@@ -22,6 +22,10 @@ describe 'PuppetLabs::PullRequestApp' do
     @env = { 'HTTP_X_GITHUB_EVENT' => 'pull_request' }
   end
 
+  before :each do
+    PuppetLabs::PullRequestApp.any_instance.stub(:authenticate!)
+  end
+
   it 'says hello' do
     get '/'
     last_response.should be_ok
