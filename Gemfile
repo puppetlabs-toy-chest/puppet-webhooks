@@ -3,7 +3,7 @@ source :rubygems
 gem 'rake'
 # A dev database add-on is provisioned if the Ruby application has the pg gem
 # in the Gemfile. This populates the DATABASE_URL environment var.
-gem 'sinatra', '1.1.0'
+gem 'sinatra'
 gem 'ruby-trello'
 gem 'json'
 
@@ -14,6 +14,7 @@ gem 'workless', '~> 1.1.1'
 group :development do
   gem 'watchr'
   gem 'pry'
+  gem 'pry-debugger'
 end
 
 group :test do
