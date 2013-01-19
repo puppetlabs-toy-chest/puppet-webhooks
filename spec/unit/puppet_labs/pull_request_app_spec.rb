@@ -29,7 +29,7 @@ describe 'PuppetLabs::PullRequestApp' do
   it 'says hello' do
     get '/'
     last_response.should be_ok
-    last_response.body.should == "Hello World!"
+    last_response.body.should == "Hello World!\n"
   end
 
   context 'posting a pull request' do
@@ -37,8 +37,6 @@ describe 'PuppetLabs::PullRequestApp' do
     let (:job) { PuppetLabs::PullRequestJob.new }
 
     describe '/event/github' do
-      let (:pr_model) { PuppetLabs::PullRequest.new(:json => payload) }
-
       before :each do
         PuppetLabs::PullRequestJob.any_instance.stub(:initialize_dj)
       end
@@ -51,6 +49,18 @@ describe 'PuppetLabs::PullRequestApp' do
       it "sets the content-type to application/json" do
         post route, params, env
         last_response.headers['Content-Type'].should == 'application/json'
+      end
+
+      it "creates a PullRequest model using PullRequest.from_json" do
+        pr_model = PuppetLabs::PullRequest.new(:json => payload)
+        PuppetLabs::PullRequest.should_receive(:from_json).with(payload).and_return(pr_model)
+        post route, params, env
+      end
+
+      it "creates a PullRequestJob" do
+        fake_job = job
+        PuppetLabs::PullRequestJob.should_receive(:new).and_return(fake_job)
+        post route, params, env
       end
 
       describe 'the return json' do
@@ -79,36 +89,25 @@ describe 'PuppetLabs::PullRequestApp' do
         end
       end
 
-      it "creates a PullRequest model using PullRequest.from_json" do
-        PuppetLabs::PullRequest.should_receive(:from_json).with(payload).and_return(pr_model)
-        post route, params, env
-      end
+      context 'posting a closed pull request' do
+        let (:params) { { 'payload' => payload_closed } }
 
-      it "creates a PullRequestJob" do
-        fake_job = job
-        PuppetLabs::PullRequestJob.should_receive(:new).and_return(fake_job)
-        post route, params, env
-      end
-    end
+        before :each do
+          fake_job = job
+          pr_model = PuppetLabs::PullRequest.new(:json => payload_closed)
+          PuppetLabs::PullRequest.stub(:from_json).with(payload_closed).and_return(pr_model)
+          PuppetLabs::PullRequestJob.stub(:new).and_return(fake_job)
+        end
 
-    context 'posting a closed pull request' do
-      let (:params) { { 'payload' => payload_closed } }
-      let (:pr_model) { PuppetLabs::PullRequest.new(:json => payload_closed) }
+        it "responds with 200" do
+          post route, params, env
+          last_response.status.should == 200
+        end
 
-      before :each do
-        fake_job = job
-        PuppetLabs::PullRequest.stub(:from_json).with(payload_closed).and_return(pr_model)
-        PuppetLabs::PullRequestJob.stub(:new).and_return(fake_job)
-      end
-
-      it "responds with 200 to /event/pull_request" do
-        post route, params, env
-        last_response.status.should == 200
-      end
-
-      it "Says 'Action has been ignored.' in the response body." do
-        post route, params, env
-        JSON.load(last_response.body)['message'].should == 'Action has been ignored.'
+        it "Says 'Action has been ignored.' in the response body." do
+          post route, params, env
+          JSON.load(last_response.body)['message'].should == 'Action has been ignored.'
+        end
       end
     end
   end

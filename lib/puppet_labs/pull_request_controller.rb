@@ -39,7 +39,7 @@ class PullRequestController < Controller
     else
       logger.info "Ignoring pull request #{pull_request.repo_name}/#{pull_request.number} because the action is #{pull_request.action}."
       body = { 'message' => 'Action has been ignored.' }
-      return [NO_CONTENT, {}, body]
+      return [OK, {}, body]
     end
   end
 end

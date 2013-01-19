@@ -23,7 +23,7 @@ module PuppetLabs
 
     class UnauthenticatedError < StandardError; end
 
-    helpers do
+    module AppHelpers
       def logger
         @logger ||= Logger.new(STDERR)
       end
@@ -141,6 +141,8 @@ module PuppetLabs
       end
     end
 
+    helpers AppHelpers
+
     configure :production do
       ActiveRecord::Base.logger.level = Logger::INFO
       Delayed::Backend::ActiveRecord::Job.send(:include, Delayed::Workless::Scaler)
@@ -203,15 +205,18 @@ module PuppetLabs
       gh_controller = GithubController.new(controller_options)
 
       if event_controller = gh_controller.event_controller
-        (status, headers_hsh, body) = event_controller.run
+        (status_code, headers_hsh, response_body) = event_controller.run
       else
         msg = 'Failed to obtain an event controller.'
         log msg
         halt 204, response_headers, JSON.dump({'status' => msg})
       end
 
-      # Response format
-      [status, headers_hsh.merge(response_headers), JSON.dump(body)]
+      json_body = JSON.dump(response_body)
+
+      status status_code
+      headers headers_hsh.merge(response_headers)
+      body json_body
     end
   end
 end
