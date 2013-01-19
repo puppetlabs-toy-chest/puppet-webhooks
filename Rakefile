@@ -98,3 +98,8 @@ namespace :api do
     sh 'curl -i -H "Content-Type: application/json" --data "$(cat spec/unit/fixtures/example_pull_request.json)" http://localhost:5000/event/github/'
   end
 end
+
+desc "Use watchr to auto test"
+task :watchr do
+  sh 'bundle exec watchr spec/watchr.rb'
+end
