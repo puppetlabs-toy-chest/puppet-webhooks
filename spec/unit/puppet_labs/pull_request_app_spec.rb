@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'ostruct'
 require 'puppet_labs/pull_request_app'
 
 describe 'PuppetLabs::PullRequestApp' do
@@ -43,7 +44,7 @@ describe 'PuppetLabs::PullRequestApp' do
 
       it "responds to /event/github" do
         post route, params, env
-        last_response.status.should == 202
+        last_response.should have_status 202
       end
 
       it "sets the content-type to application/json" do
@@ -68,7 +69,7 @@ describe 'PuppetLabs::PullRequestApp' do
           post route, params, env
           JSON.load(last_response.body)
         end
-        it "returns a json hash" do
+        it "returns a hash" do
           subject.should be_a Hash
         end
 
@@ -101,7 +102,7 @@ describe 'PuppetLabs::PullRequestApp' do
 
         it "responds with 200" do
           post route, params, env
-          last_response.status.should == 200
+          last_response.should have_status 200
         end
 
         it "Says 'Action has been ignored.' in the response body." do

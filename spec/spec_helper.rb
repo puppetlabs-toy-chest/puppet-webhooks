@@ -57,3 +57,19 @@ RSpec.configure do |config|
     ActiveRecord::Migrator.migrate("#{File.expand_path("../..", __FILE__)}/db/migrate")
   end
 end
+
+RSpec::Matchers.define :have_status do |expected_status|
+  match do |actual|
+    actual.status == expected_status
+  end
+  description do
+    "have a #{expected_status} status"
+  end
+  failure_message_for_should do |actual|
+    <<-EOM
+expected the response to have a #{expected_status} status but got a #{actual.status}.
+Errors:
+#{actual.errors}
+    EOM
+  end
+end
