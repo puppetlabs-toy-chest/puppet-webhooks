@@ -67,7 +67,7 @@ GEM
     oauth (0.4.7)
     pg (0.14.1)
     polyglot (0.3.3)
-    pry (0.9.11.3)
+    pry (0.9.11.4)
       coderay (~> 1.0.5)
       method_source (~> 0.8)
       slop (~> 3.4)
@@ -101,6 +101,7 @@ GEM
     rake (10.0.3)
     rdoc (3.12)
       json (~> 1.4)
+    redcarpet (2.2.2)
     rest-client (1.6.7)
       mime-types (>= 1.16)
     rspec (2.12.0)
@@ -151,6 +152,7 @@ GEM
       heroku-api
       rails
       rush
+    yard (0.8.3)
 
 PLATFORMS
   ruby
@@ -163,6 +165,7 @@ DEPENDENCIES
   pry-debugger
   rack-test
   rake
+  redcarpet
   rspec
   ruby-trello
   sinatra
@@ -171,3 +174,4 @@ DEPENDENCIES
   thin
   watchr
   workless (~> 1.1.1)
+  yard

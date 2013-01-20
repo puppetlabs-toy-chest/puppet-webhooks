@@ -15,6 +15,8 @@ group :development do
   gem 'watchr'
   gem 'pry'
   gem 'pry-debugger'
+  gem 'yard'
+  gem 'redcarpet'
 end
 
 group :test do
