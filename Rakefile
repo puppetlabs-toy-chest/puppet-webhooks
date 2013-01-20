@@ -103,3 +103,8 @@ desc "Use watchr to auto test"
 task :watchr do
   sh 'bundle exec watchr spec/watchr.rb'
 end
+
+desc "Run a web server with documentation"
+task :apidoc do
+  sh 'bundle exec yard server --reload'
+end
