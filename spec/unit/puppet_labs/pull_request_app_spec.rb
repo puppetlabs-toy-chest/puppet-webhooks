@@ -113,3 +113,46 @@ describe 'PuppetLabs::PullRequestApp' do
     end
   end
 end
+
+describe PuppetLabs::PullRequestApp::AppHelpers do
+  before :all do
+    @req_yaml = read_fixture("request_struct.yml")
+  end
+  class TestHelpers
+    include PuppetLabs::PullRequestApp::AppHelpers
+  end
+  subject do
+    TestHelpers.new
+  end
+  def request
+    @request ||= YAML.load(@req_yaml)
+  end
+
+  describe '.save_event' do
+    [20, 30, 40].each do |event_limit|
+      it "limits the number of events to #{event_limit}" do
+        subject.should_receive(:limit_events_to).with(event_limit)
+        subject.save_event(:request => request, :limit => event_limit)
+      end
+    end
+  end
+
+  describe '.limit_events_to', :focus => true do
+    after :each do
+      PuppetLabs::Event.delete_all
+    end
+    event_limit = 20
+    event_count = 30
+    it "keeps the most recent #{event_limit} events when there are #{event_count}" do
+      event_count.times do
+        PuppetLabs::Event.new.save
+      end
+      expected = PuppetLabs::Event.order("id desc").limit(event_limit).collect do |ev|
+        ev.id
+      end
+      subject.limit_events_to(event_limit)
+      actual = PuppetLabs::Event.order("id desc").collect {|ev| ev.id }
+      actual.should == expected
+    end
+  end
+end

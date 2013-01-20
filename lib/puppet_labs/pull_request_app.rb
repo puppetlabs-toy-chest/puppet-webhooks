@@ -103,9 +103,22 @@ module PuppetLabs
       end
 
       ##
+      # limit_events_to prunes the database, limiting to the [limit] most
+      # recent events.
+      def limit_events_to(limit)
+        Event.order("id desc").offset(limit).each do |event|
+          event.delete
+        end
+      end
+
+      ##
       # save_event saves the payload and the request for later processing.
       # @return [Event] instance of the created event
-      def save_event
+      def save_event(options={})
+        request = options[:request]
+        payload = options[:payload]
+        limit = options[:limit] || 100
+
         req = OpenStruct.new(
             :method => request.request_method,
             :url => request.url,
@@ -116,6 +129,7 @@ module PuppetLabs
                           :payload => payload,
                           :request => req.to_yaml)
         event.save
+        limit_events_to limit
         logger.info "Created event_id=#{event.id}"
         event
       end
@@ -158,7 +172,7 @@ module PuppetLabs
     before '/event/*' do
       authenticate!
       request.body.rewind
-      save_event
+      save_event(:request => request, :payload => payload)
     end
 
     ##
