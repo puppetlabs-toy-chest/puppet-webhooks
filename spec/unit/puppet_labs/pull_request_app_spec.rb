@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'ostruct'
 require 'puppet_labs/pull_request_app'
 
 describe 'PuppetLabs::PullRequestApp' do
@@ -22,10 +23,14 @@ describe 'PuppetLabs::PullRequestApp' do
     @env = { 'HTTP_X_GITHUB_EVENT' => 'pull_request' }
   end
 
+  before :each do
+    PuppetLabs::PullRequestApp.any_instance.stub(:authenticate!)
+  end
+
   it 'says hello' do
     get '/'
     last_response.should be_ok
-    last_response.body.should == "Hello World!"
+    last_response.body.should == "Hello World!\n"
   end
 
   context 'posting a pull request' do
@@ -33,15 +38,13 @@ describe 'PuppetLabs::PullRequestApp' do
     let (:job) { PuppetLabs::PullRequestJob.new }
 
     describe '/event/github' do
-      let (:pr_model) { PuppetLabs::PullRequest.new(:json => payload) }
-
       before :each do
         PuppetLabs::PullRequestJob.any_instance.stub(:initialize_dj)
       end
 
       it "responds to /event/github" do
         post route, params, env
-        last_response.status.should == 202
+        last_response.should have_status 202
       end
 
       it "sets the content-type to application/json" do
@@ -49,12 +52,24 @@ describe 'PuppetLabs::PullRequestApp' do
         last_response.headers['Content-Type'].should == 'application/json'
       end
 
+      it "creates a PullRequest model using PullRequest.from_json" do
+        pr_model = PuppetLabs::PullRequest.new(:json => payload)
+        PuppetLabs::PullRequest.should_receive(:from_json).with(payload).and_return(pr_model)
+        post route, params, env
+      end
+
+      it "creates a PullRequestJob" do
+        fake_job = job
+        PuppetLabs::PullRequestJob.should_receive(:new).and_return(fake_job)
+        post route, params, env
+      end
+
       describe 'the return json' do
         subject do
           post route, params, env
           JSON.load(last_response.body)
         end
-        it "returns a json hash" do
+        it "returns a hash" do
           subject.should be_a Hash
         end
 
@@ -75,37 +90,69 @@ describe 'PuppetLabs::PullRequestApp' do
         end
       end
 
-      it "creates a PullRequest model using PullRequest.from_json" do
-        PuppetLabs::PullRequest.should_receive(:from_json).with(payload).and_return(pr_model)
-        post route, params, env
-      end
+      context 'posting a closed pull request' do
+        let (:params) { { 'payload' => payload_closed } }
 
-      it "creates a PullRequestJob" do
-        fake_job = job
-        PuppetLabs::PullRequestJob.should_receive(:new).and_return(fake_job)
-        post route, params, env
+        before :each do
+          fake_job = job
+          pr_model = PuppetLabs::PullRequest.new(:json => payload_closed)
+          PuppetLabs::PullRequest.stub(:from_json).with(payload_closed).and_return(pr_model)
+          PuppetLabs::PullRequestJob.stub(:new).and_return(fake_job)
+        end
+
+        it "responds with 200" do
+          post route, params, env
+          last_response.should have_status 200
+        end
+
+        it "Says 'Action has been ignored.' in the response body." do
+          post route, params, env
+          JSON.load(last_response.body)['message'].should == 'Action has been ignored.'
+        end
       end
     end
+  end
+end
 
-    context 'posting a closed pull request' do
-      let (:params) { { 'payload' => payload_closed } }
-      let (:pr_model) { PuppetLabs::PullRequest.new(:json => payload_closed) }
+describe PuppetLabs::PullRequestApp::AppHelpers do
+  before :all do
+    @req_yaml = read_fixture("request_struct.yml")
+  end
+  class TestHelpers
+    include PuppetLabs::PullRequestApp::AppHelpers
+  end
+  subject do
+    TestHelpers.new
+  end
+  def request
+    @request ||= YAML.load(@req_yaml)
+  end
 
-      before :each do
-        fake_job = job
-        PuppetLabs::PullRequest.stub(:from_json).with(payload_closed).and_return(pr_model)
-        PuppetLabs::PullRequestJob.stub(:new).and_return(fake_job)
+  describe '.save_event' do
+    [20, 30, 40].each do |event_limit|
+      it "limits the number of events to #{event_limit}" do
+        subject.should_receive(:limit_events_to).with(event_limit)
+        subject.save_event(:request => request, :limit => event_limit)
       end
+    end
+  end
 
-      it "responds with 200 to /event/pull_request" do
-        post route, params, env
-        last_response.status.should == 200
+  describe '.limit_events_to', :focus => true do
+    after :each do
+      PuppetLabs::Event.delete_all
+    end
+    event_limit = 20
+    event_count = 30
+    it "keeps the most recent #{event_limit} events when there are #{event_count}" do
+      event_count.times do
+        PuppetLabs::Event.new.save
       end
-
-      it "Says 'Action has been ignored.' in the response body." do
-        post route, params, env
-        JSON.load(last_response.body)['message'].should == 'Action has been ignored.'
+      expected = PuppetLabs::Event.order("id desc").limit(event_limit).collect do |ev|
+        ev.id
       end
+      subject.limit_events_to(event_limit)
+      actual = PuppetLabs::Event.order("id desc").collect {|ev| ev.id }
+      actual.should == expected
     end
   end
 end

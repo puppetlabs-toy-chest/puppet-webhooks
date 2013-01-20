@@ -6,6 +6,7 @@
 # --------------------------------------------------
 watch('^spec.rb') {|m| rspec(tests) }
 watch('^web.rb') {|m| rspec(tests) }
+watch('spec/*_spec.rb') {|m| rspec(tests) }
 watch('lib/*.rb') {|m| rspec(tests) }
 
 # --------------------------------------------------
@@ -22,7 +23,7 @@ def rspec(*paths)
 end
 
 def tests
-  "spec.rb"
+  "spec/"
 end
 
 def run( cmd )

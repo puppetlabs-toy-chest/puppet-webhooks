@@ -4,3 +4,4 @@ log/
 setup.env
 .bundle/
 vendor/
+.rspec

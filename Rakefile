@@ -1,5 +1,8 @@
+$LOAD_PATH.unshift(File.expand_path('../lib', __FILE__))
 require 'rake'
 require 'erb'
+require 'sinatra/activerecord/rake'
+require 'puppet_labs/pull_request_app'
 require 'delayed/tasks'
 
 ENV['RACK_ENV'] ||= 'development'
@@ -14,12 +17,11 @@ end
 
 desc 'Run example behaviors (specs)'
 task :spec do
-  sh 'rspec spec'
+  sh 'bundle exec rspec spec'
 end
 
 # Setup the environment for the application
 task :environment do
-  $LOAD_PATH.unshift(File.expand_path('../lib', __FILE__))
   # Note, the order of these libraries appears to be important.  In order to
   # get the worker jobs to reliably spin down, I think these need to be before
   # the job libraries.
@@ -93,6 +95,11 @@ namespace :api do
 
   desc "Submit a fake pull request"
   task(:pull_request) do
-    sh 'curl -i --data "payload=$(cat spec/unit/fixtures/example_pull_request.json)" http://localhost:5000/event/pull_request'
+    sh 'curl -i -H "Content-Type: application/json" --data "$(cat spec/unit/fixtures/example_pull_request.json)" http://localhost:5000/event/github/'
   end
+end
+
+desc "Use watchr to auto test"
+task :watchr do
+  sh 'bundle exec watchr spec/watchr.rb'
 end
