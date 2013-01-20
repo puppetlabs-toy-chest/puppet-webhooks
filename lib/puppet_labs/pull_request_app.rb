@@ -180,15 +180,27 @@ module PuppetLabs
     get '/events/?' do
       body = Event.last(20).collect do |event|
         # See: http://www.sinatrarb.com/intro#Accessing%20the%20Request%20Object
-        request = YAML.load(event.request)
-        { 'request' => {
-            'method' => request.request_method,
-            'url' => request.url,
-            'env' => request.env,
-            'params' => request.params,
-          },
-          'payload' => JSON.pretty_generate(JSON.load(event.payload))
-        }
+        begin
+          request = YAML.load(event.request)
+        rescue TypeError => exc
+          logger.info "Could not load request from event id #{event.id}"
+        end
+
+        entry = Hash.new
+
+        if request
+          # Covert the OpenStruct instance into a hash suitable for JSON
+          entry['request'] = request.marshal_dump.inject({}) do |memo, (k,v)|
+            memo[k.to_s] = v
+            memo
+          end
+        end
+
+        entry['id'] = event.id
+        entry['payload'] = JSON.load(event.payload)
+
+        # Return the entry to the collection
+        entry
       end
       [200, response_headers, JSON.pretty_generate(body) << "\n"]
     end
