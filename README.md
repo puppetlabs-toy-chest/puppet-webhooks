@@ -309,3 +309,4 @@ Jeff McCune <jeff@puppetlabs.com>
 [dashboard]: https://dashboard.heroku.com/apps
 [quickstart]: https://devcenter.heroku.com/articles/quickstart
 
+EOF
