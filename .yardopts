@@ -2,4 +2,4 @@
 --private
 --verbose
 --markup markdown
-web.rb
+lib/**/*.rb
