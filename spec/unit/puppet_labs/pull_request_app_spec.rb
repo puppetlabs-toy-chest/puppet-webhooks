@@ -137,7 +137,7 @@ describe PuppetLabs::PullRequestApp::AppHelpers do
     end
   end
 
-  describe '.limit_events_to', :focus => true do
+  describe '.limit_events_to' do
     after :each do
       PuppetLabs::Event.delete_all
     end
