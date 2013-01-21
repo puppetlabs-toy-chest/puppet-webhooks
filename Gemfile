@@ -13,6 +13,8 @@ gem 'workless', '~> 1.1.1'
 
 group :development do
   gem 'watchr'
+  gem 'wirb'
+  gem 'irbtools'
   gem 'pry'
   gem 'pry-debugger'
   gem 'yard'
