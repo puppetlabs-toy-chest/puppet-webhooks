@@ -30,7 +30,10 @@ GEM
       multi_json (~> 1.0)
     addressable (2.3.2)
     arel (3.0.2)
+    awesome_print (1.0.2)
+    boson (1.2.4)
     builder (3.0.4)
+    clipboard (1.0.1)
     coderay (1.0.8)
     columnize (0.3.6)
     daemons (1.1.9)
@@ -49,22 +52,51 @@ GEM
     diff-lcs (1.1.3)
     erubis (2.7.0)
     eventmachine (1.0.0)
+    every_day_irb (1.4.0)
     excon (0.16.10)
+    fancy_irb (0.7.3)
+      paint (>= 0.8.1)
+      unicode-display_width (>= 0.1.1)
     fattr (2.2.1)
+    g (1.7.1)
     heroku-api (0.3.7)
       excon (~> 0.16.10)
     hike (1.2.1)
+    hirb (0.7.0)
     i18n (0.6.1)
+    interactive_editor (0.0.10)
+      spoon (>= 0.0.1)
+    irbtools (1.4.0)
+      awesome_print (~> 1.0.2)
+      boson (~> 1.2.4)
+      clipboard (~> 1.0.1)
+      coderay (~> 1.0.8)
+      every_day_irb (>= 1.4.0)
+      fancy_irb (>= 0.7.3)
+      g (>= 1.7.1)
+      hirb (~> 0.7.0)
+      interactive_editor (>= 0.0.10)
+      method_locator (>= 0.0.4)
+      method_source (>= 0.8.1)
+      methodfinder (>= 1.2.5)
+      ori (~> 0.1.0)
+      paint (>= 0.8.5)
+      wirb (>= 0.4.3)
+      zucker (>= 12.1)
     journey (1.0.4)
     json (1.7.6)
     mail (2.4.4)
       i18n (>= 0.4.0)
       mime-types (~> 1.16)
       treetop (~> 1.4.8)
+    method_locator (0.0.4)
     method_source (0.8.1)
+    methodfinder (1.2.5)
     mime-types (1.19)
     multi_json (1.5.0)
     oauth (0.4.7)
+    ori (0.1.0)
+    paint (0.8.5)
     pg (0.14.1)
     polyglot (0.3.3)
     pry (0.9.11.4)
@@ -130,6 +162,7 @@ GEM
       activerecord (~> 3.0)
       sinatra (~> 1.0)
     slop (3.4.3)
+    spoon (0.0.1)
     sprockets (2.2.2)
       hike (~> 1.2)
       multi_json (~> 1.0)
@@ -146,19 +179,24 @@ GEM
       polyglot
       polyglot (>= 0.3.1)
     tzinfo (0.3.35)
+    unicode-display_width (0.1.1)
     watchr (0.7)
+    wirb (1.0.1)
+      paint
     workless (1.1.1)
       delayed_job (>= 2.0.7)
       heroku-api
       rails
       rush
     yard (0.8.3)
+    zucker (12.1)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
   delayed_job_active_record
+  irbtools
   json
   pg
   pry
@@ -173,5 +211,6 @@ DEPENDENCIES
   sqlite3
   thin
   watchr
+  wirb
   workless (~> 1.1.1)
   yard
