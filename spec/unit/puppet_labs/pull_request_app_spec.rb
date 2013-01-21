@@ -47,6 +47,29 @@ describe 'PuppetLabs::PullRequestApp' do
         last_response.should have_status 202
       end
 
+      it "saves the event" do
+        PuppetLabs::PullRequestApp.any_instance.should_receive(:save_event)
+        post route, params, env
+        last_response.should have_status 202
+      end
+
+      it "saves the event based on STORED_EVENT_LIMIT ENV variable" do
+        PuppetLabs::PullRequestApp.any_instance.should_receive(:save_event).with() do |hsh|
+          hsh[:limit] == 100
+        end
+        post route, params, env
+      end
+
+      it "saves the event based on STORED_EVENT_LIMIT ENV variable" do
+        PuppetLabs::PullRequestApp.any_instance.should_receive(:save_event).with() do |hsh|
+          hsh[:limit] == 200
+        end
+        env_saved = ENV['STORED_EVENT_LIMIT']
+        ENV['STORED_EVENT_LIMIT'] = '200'
+        post route, params, env
+        ENV['STORED_EVENT_LIMIT'] = env_saved
+      end
+
       it "sets the content-type to application/json" do
         post route, params, env
         last_response.headers['Content-Type'].should == 'application/json'
@@ -137,7 +160,7 @@ describe PuppetLabs::PullRequestApp::AppHelpers do
     end
   end
 
-  describe '.limit_events_to', :focus => true do
+  describe '.limit_events_to' do
     after :each do
       PuppetLabs::Event.delete_all
     end
