@@ -113,6 +113,15 @@ module PuppetLabs
 
       ##
       # save_event saves the payload and the request for later processing.
+      # @option options :request The request instance
+      #
+      # @option options [Hash] :payload The event payload from the request.
+      # This will usually be a Hash.
+      #
+      # @option options [Fixnum] :limit The upper limit on the number of events
+      # to persist in the database.  Events older than the Nth limit event will
+      # be deleted.  A limit of 100 will be used if not specified.
+      #
       # @return [Event] instance of the created event
       def save_event(options={})
         request = options[:request]
@@ -172,7 +181,8 @@ module PuppetLabs
     before '/event/*' do
       authenticate!
       request.body.rewind
-      save_event(:request => request, :payload => payload)
+      event_limit = ENV['STORED_EVENT_LIMIT'] ? ENV['STORED_EVENT_LIMIT'].to_i : 100
+      save_event(:request => request, :payload => payload, :limit => event_limit)
     end
 
     ##
