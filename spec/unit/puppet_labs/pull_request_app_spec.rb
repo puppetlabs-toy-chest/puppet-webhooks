@@ -47,6 +47,12 @@ describe 'PuppetLabs::PullRequestApp' do
         last_response.should have_status 202
       end
 
+      it "saves the event" do
+        PuppetLabs::PullRequestApp.any_instance.should_receive(:save_event)
+        post route, params, env
+        last_response.should have_status 202
+      end
+
       it "sets the content-type to application/json" do
         post route, params, env
         last_response.headers['Content-Type'].should == 'application/json'
