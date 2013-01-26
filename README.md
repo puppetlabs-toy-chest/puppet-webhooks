@@ -22,10 +22,15 @@ This project performs a job or jobs when a pull request event occurs on
 Quick Start
 ====
 
-First, review the [Heroku Quickstart][quickstart] guide.  Next, we simply need
-to create a copy of this application.  run `heroku create` which will add a git
-remote named `heroku` to the git repository.  Deployments will happen with a
-simple `git push heroku`.
+First, review the [Heroku Quickstart][quickstart] guide. Create an account and
+install the Toolbelt. To use this code you'll need to verify your account by
+adding a valid credit card, even if you use the free facilities. Without this
+verification you will receive an error within Heroku when receiving
+notifications.
+
+Next, we simply need to create a copy of this application.  run `heroku create`
+which will add a git remote named `heroku` to the git repository.  Deployments
+will happen with a simple `git push heroku`.
 
 Here's what the first step, `heroku create` looks like.  An application name
 and URL will automatically be chosen for you.  The application name may be
