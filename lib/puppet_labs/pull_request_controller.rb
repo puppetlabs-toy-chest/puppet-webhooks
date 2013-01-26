@@ -3,10 +3,6 @@ require 'puppet_labs/controller'
 
 module PuppetLabs
 class PullRequestController < Controller
-  NO_CONTENT = 204
-  ACCEPTED = 202
-  OK = 200
-
   attr_reader :pull_request,
     :request,
     :logger
