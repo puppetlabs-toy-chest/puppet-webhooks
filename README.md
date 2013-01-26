@@ -22,10 +22,15 @@ This project performs a job or jobs when a pull request event occurs on
 Quick Start
 ====
 
-First, review the [Heroku Quickstart][quickstart] guide.  Next, we simply need
-to create a copy of this application.  run `heroku create` which will add a git
-remote named `heroku` to the git repository.  Deployments will happen with a
-simple `git push heroku`.
+First, review the [Heroku Quickstart][quickstart] guide. Create an account and
+install the Toolbelt. To use this code you'll need to verify your account by
+adding a valid credit card, even if you use the free facilities. Without this
+verification you will receive an error within Heroku when receiving
+notifications.
+
+Next, we simply need to create a copy of this application.  run `heroku create`
+which will add a git remote named `heroku` to the git repository.  Deployments
+will happen with a simple `git push heroku`.
 
 Here's what the first step, `heroku create` looks like.  An application name
 and URL will automatically be chosen for you.  The application name may be
@@ -112,7 +117,7 @@ the secret, make sure the `secret` key in the `config` hash posted to
 
 To set these from the shell:
 
-    url="https://fierce-meadow-9708.herokuapp.com/event/pull_request"
+    url="https://fierce-meadow-9708.herokuapp.com/event/github"
     secret="$(dd if=/dev/random bs=1k count=1 | openssl sha256 | awk '{print $2}')"
 
 Then configure this hook URL and shared secret on Github:
@@ -161,10 +166,14 @@ permissions via instructions at
 
 The Trello list ID where the cards should be created.  To find this value,
 navigate to the Trello board that you are interested in in your browser and
-copy the board id from the URL.  Then run the
-[show_lists_for_board.rb](https://github.com/cprice-puppet/redmine-trello/blob/master/bin/show_lists_for_board.rb)
-command line tool against that board id, and you'll see a list of available
-List Ids for that board.
+copy the board id from the URL.
+
+Then run:
+
+    $ curl https://api.trello.com/1/board/<board_id>/lists?key=<app_key>&token=<user_token>
+    [{"id":"xxxxxxxxxxxxxxxxx","name":"Pull Requests","closed":false,"idBoard":"xxxxxxxxxxxxxxxxxx","pos":8192,"subscribed":false}]
+
+And copy the id for the list where you want new cards to be created.
 
 Delayed Job
 ----
