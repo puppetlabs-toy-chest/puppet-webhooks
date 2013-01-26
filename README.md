@@ -121,7 +121,7 @@ Then configure this hook URL and shared secret on Github:
     {
       "name": "web",
       "active": true,
-      "events": ["pull_request"],
+      "events": ["pull_request", "issues"],
       "config": {
         "url": "'"${url}"'",
         "secret": "'"${secret}"'",
