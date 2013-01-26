@@ -30,19 +30,26 @@ task :environment do
   # The rest of the libraries come after workless
   require 'puppet_labs/pull_request_job'
   require 'active_record'
+  require 'active_support/core_ext'
   require 'pg'
   require 'logger'
   require 'erb'
 
-  Delayed::Worker.destroy_failed_jobs = false
-  Delayed::Worker.max_attempts = 3
-  Delayed::Backend::ActiveRecord::Job.send(:include, Delayed::Workless::Scaler)
-  Delayed::Job.scaler = :heroku_cedar
+  logger = Logger.new(STDERR)
 
-  logger = ActiveSupport::BufferedLogger.new(
-    File.join(File.dirname(__FILE__), '/log', "#{ENV['RACK_ENV']}_delayed_jobs.log"), Logger::INFO
-  )
-  Delayed::Worker.logger = logger
+  ActiveRecord::Base.logger = logger.clone
+  ActiveRecord::Base.logger.level = Logger::ERROR
+
+  Delayed::Worker.destroy_failed_jobs = false
+  Delayed::Backend::ActiveRecord::Job.send(:include, Delayed::Workless::Scaler)
+  # This is a reasonable limit to keep the worker process from running minutes
+  # on end when using workless.  Failures will be logged and visible in `heroku
+  # logs` and watching for PERMANENTLY removing.
+  Delayed::Worker.max_attempts = 3
+  Delayed::Worker.max_run_time = 10.minutes
+  Delayed::Worker.logger = logger.clone
+  Delayed::Worker.logger.level = Logger::INFO
+  Delayed::Job.scaler = :heroku_cedar
   dbconfig = YAML.load(ERB.new(File.read('config/database.yml')).result)
   ActiveRecord::Base.establish_connection(dbconfig[ENV['RACK_ENV']])
 end
@@ -107,4 +114,14 @@ end
 desc "Run a web server with documentation"
 task :apidoc do
   sh 'bundle exec yard server --reload'
+end
+
+namespace :jobs do
+  desc "Run a delayed job worker quietly"
+  task :worksilent => :environment do
+    Delayed::Worker.new(:min_priority => ENV['MIN_PRIORITY'],
+                        :max_priority => ENV['MAX_PRIORITY'],
+                        :queues => (ENV['QUEUES'] || ENV['QUEUE'] || '').split(','),
+                        :quiet => true).start
+  end
 end
