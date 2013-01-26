@@ -112,7 +112,7 @@ the secret, make sure the `secret` key in the `config` hash posted to
 
 To set these from the shell:
 
-    url="https://fierce-meadow-9708.herokuapp.com/event/pull_request"
+    url="https://fierce-meadow-9708.herokuapp.com/event/github"
     secret="$(dd if=/dev/random bs=1k count=1 | openssl sha256 | awk '{print $2}')"
 
 Then configure this hook URL and shared secret on Github:
