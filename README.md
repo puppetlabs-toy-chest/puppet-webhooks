@@ -161,10 +161,14 @@ permissions via instructions at
 
 The Trello list ID where the cards should be created.  To find this value,
 navigate to the Trello board that you are interested in in your browser and
-copy the board id from the URL.  Then run the
-[show_lists_for_board.rb](https://github.com/cprice-puppet/redmine-trello/blob/master/bin/show_lists_for_board.rb)
-command line tool against that board id, and you'll see a list of available
-List Ids for that board.
+copy the board id from the URL.
+
+Then run:
+
+    $ curl https://api.trello.com/1/board/<board_id>/lists?key=<app_key>&token=<user_token>
+    [{"id":"xxxxxxxxxxxxxxxxx","name":"Pull Requests","closed":false,"idBoard":"xxxxxxxxxxxxxxxxxx","pos":8192,"subscribed":false}]
+
+And copy the id for the list where you want new cards to be created.
 
 Delayed Job
 ----
