@@ -23,10 +23,13 @@ Quick Start
 ====
 
 First, review the [Heroku Quickstart][quickstart] guide. Create an account and
-install the Toolbelt. To use this code you'll need to verify your account by
-adding a valid credit card, even if you use the free facilities. Without this
-verification you will receive an error within Heroku when receiving
-notifications.
+install the Toolbelt. To use this code on Heroku you'll need to verify your
+account by adding a valid credit card, even if you use the free facilities.
+Without this verification you will receive an error within Heroku when
+receiving notifications.  The code may be run without a credit card using
+`RACK_ENV=development foreman start` with a local PostgreSQL server.
+
+The rest of this section is concerned with deploying the application to Heroku.
 
 Next, we simply need to create a copy of this application.  run `heroku create`
 which will add a git remote named `heroku` to the git repository.  Deployments
