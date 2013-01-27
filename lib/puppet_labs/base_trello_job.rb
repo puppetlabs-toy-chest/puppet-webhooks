@@ -3,25 +3,41 @@ require 'puppet_labs/sinatra_dj'
 require 'logger'
 
 module PuppetLabs
-  ##
-  # A Job is responsible for performing the action of updating a
-  # Trello card based on a bunch of incoming github data.  This data generally
-  # comes from a webhook event.
-  #
-  # Instances of this object are meant to be stored with Delayed Job
-class Job
+##
+# BaseTrelloJob is responsible for performing the action of updating a Trello
+# card based on a bunch of incoming github data.  This data generally comes
+# from a webhook event.  This class serves as the base class for subclasses
+# that implement behavior specific to certain resources, such as a pull
+# request, or an issue.
+#
+# Subclasses may also override the {#perform} instance method.
+#
+# Instances of this object are meant to be stored with Delayed Job
+class BaseTrelloJob
   include PuppetLabs::SinatraDJ
   attr_reader :list_id, :key, :secret, :token
   attr_writer :env
 
+  ##
+  # card_body must be overrided by subclasses.
+  #
+  # @api public
   def card_body
     raise 'card_body must be overwritten by the child class'
   end
 
+  ##
+  # card_body must be overrided by subclasses.
+  #
+  # @api public
   def card_title
     raise 'card_title must be overwritten by the child class'
   end
 
+  ##
+  # card_body must be overrided by subclasses.
+  #
+  # @api public
   def queue_name
     raise 'queue_name must be ovewritten by the child class'
   end
@@ -37,13 +53,20 @@ class Job
     @token = env['TRELLO_USER_TOKEN']
   end
 
+  ##
+  # env is an accessor into the {@env} instance variable.  The current
+  # environment is copied to a hash and stored in @env if it does not have a
+  # value.
+  #
+  # @return [Hash] modeling the environment
   def env
     @env ||= ENV.to_hash
   end
 
   ##
   # perform is the API interface to DelayedJob.  The DJ workers will call the
-  # `perform` method on the instance.
+  # {#perform} method on the instance.  The implementation in the base class
+  # creates a trello card using {#create_card}.
   def perform
     name = card_title
     display "Processing: #{name}"

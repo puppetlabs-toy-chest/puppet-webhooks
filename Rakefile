@@ -28,7 +28,7 @@ task :environment do
   require 'delayed_job_active_record'
   require 'workless'
   # The rest of the libraries come after workless
-  require 'puppet_labs/pull_request_job'
+  require 'puppet_labs/trello_pull_request_job'
   require 'active_record'
   require 'active_support/core_ext'
   require 'pg'

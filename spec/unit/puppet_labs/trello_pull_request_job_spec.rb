@@ -1,7 +1,7 @@
 require 'spec_helper'
-require 'puppet_labs/pull_request_job'
+require 'puppet_labs/trello_pull_request_job'
 
-describe PuppetLabs::PullRequestJob do
+describe PuppetLabs::TrelloPullRequestJob do
   class FakeError < StandardError; end
 
   let(:payload) { read_fixture("example_pull_request.json") }
@@ -26,7 +26,7 @@ describe PuppetLabs::PullRequestJob do
   end
 
   subject do
-    job = PuppetLabs::PullRequestJob.new
+    job = PuppetLabs::TrelloPullRequestJob.new
     job.pull_request = PuppetLabs::PullRequest.new(:json => payload)
     job
   end

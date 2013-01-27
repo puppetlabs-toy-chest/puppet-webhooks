@@ -1,7 +1,7 @@
 require 'spec_helper'
-require 'puppet_labs/issue_job'
+require 'puppet_labs/trello_issue_job'
 
-describe PuppetLabs::IssueJob do
+describe PuppetLabs::TrelloIssueJob do
   class FakeError < StandardError; end
 
   let(:payload) { read_fixture("example_issue.json") }
@@ -25,7 +25,7 @@ describe PuppetLabs::IssueJob do
   end
 
   subject do
-    job = PuppetLabs::IssueJob.new
+    job = PuppetLabs::TrelloIssueJob.new
     job.issue = PuppetLabs::Issue.new(:json => payload)
     job
   end

@@ -1,4 +1,4 @@
-require 'puppet_labs/issue_job'
+require 'puppet_labs/trello_issue_job'
 require 'puppet_labs/controller'
 
 module PuppetLabs
