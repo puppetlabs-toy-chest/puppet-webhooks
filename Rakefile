@@ -106,6 +106,11 @@ namespace :api do
   task(:pull_request) do
     sh 'curl -i -H "Content-Type: application/json" --data "$(cat spec/unit/fixtures/example_pull_request.json)" http://localhost:5000/event/github/'
   end
+
+  desc "Submit a fake issue"
+  task(:issue) do
+    sh 'curl -i -H "Content-Type: application/json" --data "$(cat spec/unit/fixtures/example_issue.json)" http://localhost:5000/event/github/'
+  end
 end
 
 desc "Use watchr to auto test"
