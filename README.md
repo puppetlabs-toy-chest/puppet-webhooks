@@ -147,7 +147,7 @@ Trello OAuth Tokens
 Four configuration settings determine how to authenticate against Trello and
 where to place cards.  These four settings are:
 
-    TRELLO_APP_KEY=b8315fbed85ee3c20c41b58b4ad7b73a
+    TRELLO_APP_KEY=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     TRELLO_SECRET=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     TRELLO_USER_TOKEN=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     TRELLO_TARGET_LIST_ID=50bd46a84c27cb74100036be
@@ -155,7 +155,7 @@ where to place cards.  These four settings are:
 These are settable using the heroku command line interface:
 
     heroku config:add  \
-      TRELLO_APP_KEY=b8315fbed85ee3c20c41b58b4ad7b73a \
+      TRELLO_APP_KEY=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx \
       TRELLO_SECRET=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx \
       TRELLO_USER_TOKEN=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx \
       TRELLO_TARGET_LIST_ID=50bd46a84c27cb74100036be
