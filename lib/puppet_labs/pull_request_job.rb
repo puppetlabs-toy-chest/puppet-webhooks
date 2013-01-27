@@ -102,6 +102,18 @@ class PullRequestJob
   private :display
 end
 
+class PullRequestClosedJob < PullRequestJob
+  def perform
+    display "FIXME cannot perform any actions when a pull request is closed"
+  end
+end
+
+class PullRequestReopenedJob < PullRequestJob
+  def perform
+    display "FIXME cannot perform any actions when a pull request is reopened"
+  end
+end
+
 ##
 # TrelloAPI implements behaviors specific to creating cards on the Puppet
 # Community board.  This code is based on the `RMT::Trello` class described at
