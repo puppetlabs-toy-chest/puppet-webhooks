@@ -6,7 +6,7 @@ module PuppetLabs
   ##
   # SinatraDJ provides helper methods meant to be mixed into a class to
   # initialize the system to a point where Delayed Jobs are able to be queued
-  # using: {Delayed::Job.enqueue} PuppetLabs::PullRequestJob.new(:payload => request['payload'])
+  # using: {Delayed::Job.enqueue} PuppetLabs::TrelloPullRequestJob.new(:payload => request['payload'])
 module SinatraDJ
   ##
   # initialize_dj initiailzes everything necessary to use {Delayed::Job}.

@@ -1,11 +1,11 @@
 require 'spec_helper'
-require 'puppet_labs/pull_request_job'
+require 'puppet_labs/trello_issue_job'
 
-describe PuppetLabs::PullRequestJob do
+describe PuppetLabs::TrelloIssueJob do
   class FakeError < StandardError; end
 
-  let(:payload) { read_fixture("example_pull_request.json") }
-  let (:pr) { PuppetLabs::PullRequest.new(:json => payload) }
+  let(:payload) { read_fixture("example_issue.json") }
+  let (:issue) { PuppetLabs::Issue.new(:json => payload) }
 
   let :fake_api do
     fake_api = double(PuppetLabs::TrelloAPI)
@@ -13,21 +13,20 @@ describe PuppetLabs::PullRequestJob do
     fake_api
   end
 
-  let :expected_pr_body do
-    [ "Links: [Pull Request #{pr.number} Discussion](#{pr.html_url}) and",
-      "[File Diff](#{pr.html_url}/files)",
+  let :expected_issue_body do
+    [ "Links: [Issue #{issue.number} Discussion](#{issue.html_url})",
       '',
-      pr.body,
+      issue.body,
     ].join("\n")
   end
 
   let :expected_card_title do
-    "(PR #{pr.repo_name}/#{pr.number}) #{pr.title}"
+    "(GH-ISSUE #{issue.repo_name}/#{issue.number}) #{issue.title}"
   end
 
   subject do
-    job = PuppetLabs::PullRequestJob.new
-    job.pull_request = PuppetLabs::PullRequest.new(:json => payload)
+    job = PuppetLabs::TrelloIssueJob.new
+    job.issue = PuppetLabs::Issue.new(:json => payload)
     job
   end
 
@@ -36,9 +35,9 @@ describe PuppetLabs::PullRequestJob do
     subject.stub(:trello_api).and_return(fake_api)
   end
 
-  it 'stores a pull request' do
-    subject.pull_request = pr
-    subject.pull_request.should be pr
+  it 'stores a issue' do
+    subject.issue = issue
+    subject.issue.should be issue
   end
 
   it 'produces a card body' do
@@ -46,7 +45,7 @@ describe PuppetLabs::PullRequestJob do
   end
 
   it 'produces a well formatted card body' do
-    subject.card_body.should == expected_pr_body
+    subject.card_body.should == expected_issue_body
   end
 
   it 'produces a well formatted card title' do
@@ -54,7 +53,7 @@ describe PuppetLabs::PullRequestJob do
   end
 
   it 'queues the job' do
-    subject.should_receive(:queue_job).with(subject, :queue => 'pull_request')
+    subject.should_receive(:queue_job).with(subject, :queue => 'issue')
     subject.queue
   end
 

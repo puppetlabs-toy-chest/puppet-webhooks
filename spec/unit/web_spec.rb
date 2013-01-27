@@ -100,16 +100,3 @@ describe 'The App' do
     end
   end
 end
-
-require 'puppet_labs/trello_utils'
-
-describe 'Trello Utils' do
-  subject do
-    PuppetLabs::TrelloUtils
-  end
-
-  it 'is a mixable module so it can be a Sinatra helper' do
-    subject.should be_a Module
-  end
-
-end

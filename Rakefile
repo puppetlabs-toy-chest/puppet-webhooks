@@ -28,7 +28,7 @@ task :environment do
   require 'delayed_job_active_record'
   require 'workless'
   # The rest of the libraries come after workless
-  require 'puppet_labs/pull_request_job'
+  require 'puppet_labs/trello_pull_request_job'
   require 'active_record'
   require 'active_support/core_ext'
   require 'pg'
@@ -105,6 +105,11 @@ namespace :api do
   desc "Submit a fake pull request"
   task(:pull_request) do
     sh 'curl -i -H "Content-Type: application/json" --data "$(cat spec/unit/fixtures/example_pull_request.json)" http://localhost:5000/event/github/'
+  end
+
+  desc "Submit a fake issue"
+  task(:issue) do
+    sh 'curl -i -H "Content-Type: application/json" --data "$(cat spec/unit/fixtures/example_issue.json)" http://localhost:5000/event/github/'
   end
 end
 

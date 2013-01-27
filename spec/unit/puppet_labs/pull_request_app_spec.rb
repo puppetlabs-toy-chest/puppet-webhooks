@@ -35,11 +35,11 @@ describe 'PuppetLabs::PullRequestApp' do
 
   context 'posting a pull request' do
     let (:route) { '/event/github' }
-    let (:job) { PuppetLabs::PullRequestJob.new }
+    let (:job) { PuppetLabs::TrelloPullRequestJob.new }
 
     describe '/event/github' do
       before :each do
-        PuppetLabs::PullRequestJob.any_instance.stub(:initialize_dj)
+        PuppetLabs::TrelloPullRequestJob.any_instance.stub(:initialize_dj)
       end
 
       it "responds to /event/github" do
@@ -81,9 +81,9 @@ describe 'PuppetLabs::PullRequestApp' do
         post route, params, env
       end
 
-      it "creates a PullRequestJob" do
+      it "creates a TrelloPullRequestJob" do
         fake_job = job
-        PuppetLabs::PullRequestJob.should_receive(:new).and_return(fake_job)
+        PuppetLabs::TrelloPullRequestJob.should_receive(:new).and_return(fake_job)
         post route, params, env
       end
 
@@ -120,7 +120,7 @@ describe 'PuppetLabs::PullRequestApp' do
           fake_job = job
           pr_model = PuppetLabs::PullRequest.new(:json => payload_closed)
           PuppetLabs::PullRequest.stub(:from_json).with(payload_closed).and_return(pr_model)
-          PuppetLabs::PullRequestJob.stub(:new).and_return(fake_job)
+          PuppetLabs::TrelloPullRequestJob.stub(:new).and_return(fake_job)
         end
 
         it "responds with 202" do

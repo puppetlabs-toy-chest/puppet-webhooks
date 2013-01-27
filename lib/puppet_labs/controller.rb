@@ -1,5 +1,9 @@
 module PuppetLabs
 class Controller
+  NO_CONTENT = 204
+  ACCEPTED = 202
+  OK = 200
+
   attr_reader :request,
     :route,
     :logger
