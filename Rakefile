@@ -35,6 +35,8 @@ task :environment do
   require 'logger'
   require 'erb'
 
+  STDOUT.sync = true
+  STDERR.sync = true
   logger = Logger.new(STDERR)
 
   ActiveRecord::Base.logger = logger.clone
