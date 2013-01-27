@@ -26,21 +26,26 @@ class PullRequestController < Controller
     case pull_request.action
     when "opened"
       job = PuppetLabs::PullRequestJob.new
-      job.pull_request = pull_request
-      delayed_job = job.queue
-      logger.info "Successfully queued up opened pull request #{pull_request.repo_name}/#{pull_request.number} as job #{delayed_job.id}"
-      body = {
-        'job_id' => delayed_job.id,
-        'queue' => delayed_job.queue,
-        'priority' => delayed_job.priority,
-        'created_at' => delayed_job.created_at,
-      }
-      return [ACCEPTED, {}, body]
+    when "reopened"
+      job = PuppetLabs::PullRequestReopenedJob.new
+    when "closed"
+      job = PuppetLabs::PullRequestClosedJob.new
     else
       logger.info "Ignoring pull request #{pull_request.repo_name}/#{pull_request.number} because the action is #{pull_request.action}."
       body = { 'message' => 'Action has been ignored.' }
       return [OK, {}, body]
     end
+
+    job.pull_request = pull_request
+    delayed_job = job.queue
+    logger.info "Successfully queued up #{job.class} (#{pull_request.repo_name}/#{pull_request.number}) as job #{delayed_job.id}"
+    body = {
+      'job_id' => delayed_job.id,
+      'queue' => delayed_job.queue,
+      'priority' => delayed_job.priority,
+      'created_at' => delayed_job.created_at,
+    }
+    return [ACCEPTED, {}, body]
   end
 end
 end

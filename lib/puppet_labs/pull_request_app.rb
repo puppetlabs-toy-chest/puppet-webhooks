@@ -1,6 +1,7 @@
 require 'json'
 require 'time'
 require 'sinatra/base'
+require 'active_support/core_ext'
 require 'sinatra/activerecord'
 require 'puppet_labs/pull_request'
 require 'puppet_labs/pull_request_job'
@@ -23,9 +24,13 @@ module PuppetLabs
 
     class UnauthenticatedError < StandardError; end
 
+    def self.logger
+      @logger ||= Logger.new(STDERR, Logger::WARN)
+    end
+
     module AppHelpers
       def logger
-        @logger ||= Logger.new(STDERR)
+        @logger ||= Logger.new(STDERR, Logger::WARN)
       end
 
       ##
@@ -167,7 +172,8 @@ module PuppetLabs
     helpers AppHelpers
 
     configure :production do
-      ActiveRecord::Base.logger.level = Logger::INFO
+      ActiveRecord::Base.logger = logger.clone
+      ActiveRecord::Base.logger.level = Logger::ERROR
       Delayed::Backend::ActiveRecord::Job.send(:include, Delayed::Workless::Scaler)
       Delayed::Job.scaler = :heroku_cedar
     end
@@ -175,7 +181,8 @@ module PuppetLabs
     configure do
       disable :show_exceptions
       enable :logging
-      Delayed::Worker.max_attempts = 3
+      Delayed::Worker.max_attempts = 5
+      Delayed::Worker.max_run_time = 10.minutes
     end
 
     before '/event/*' do
