@@ -15,14 +15,6 @@ describe 'PuppetLabs::PullRequestApp' do
     :payload_closed,
     :payload_synchronize
 
-  before :all do
-    @payload = read_fixture("example_pull_request.json")
-    @payload_closed = read_fixture("example_pull_request_closed.json")
-    @payload_synchronize = read_fixture("example_pull_request_synchronize.json")
-    @params = { 'payload' => @payload }
-    @env = { 'HTTP_X_GITHUB_EVENT' => 'pull_request' }
-  end
-
   before :each do
     PuppetLabs::PullRequestApp.any_instance.stub(:authenticate!)
   end
@@ -33,15 +25,38 @@ describe 'PuppetLabs::PullRequestApp' do
     last_response.body.should == "Hello World!\n"
   end
 
+  context 'posting an issue' do
+    before :all do
+      @payload = read_fixture("example_issue.json")
+      @payload_closed = read_fixture("example_issue_closed.json")
+      @params = { 'payload' => @payload }
+      @env = { 'HTTP_X_GITHUB_EVENT' => 'issues' }
+    end
+
+    let (:route) { '/event/github' }
+    let (:job) { PuppetLabs::TrelloIssueJob.new }
+
+    describe '/event/github' do
+      it "responds to /event/github", :focus => true do
+        post route, params, env
+        last_response.should have_status 202
+      end
+    end
+  end
+
   context 'posting a pull request' do
+    before :all do
+      @payload = read_fixture("example_pull_request.json")
+      @payload_closed = read_fixture("example_pull_request_closed.json")
+      @payload_synchronize = read_fixture("example_pull_request_synchronize.json")
+      @params = { 'payload' => @payload }
+      @env = { 'HTTP_X_GITHUB_EVENT' => 'pull_request' }
+    end
+
     let (:route) { '/event/github' }
     let (:job) { PuppetLabs::TrelloPullRequestJob.new }
 
     describe '/event/github' do
-      before :each do
-        PuppetLabs::TrelloPullRequestJob.any_instance.stub(:initialize_dj)
-      end
-
       it "responds to /event/github" do
         post route, params, env
         last_response.should have_status 202
