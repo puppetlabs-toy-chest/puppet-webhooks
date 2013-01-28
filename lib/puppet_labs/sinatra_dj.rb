@@ -20,7 +20,6 @@ module SinatraDJ
   #
   # @option options [String] :queue The DJ Queue
   def queue_job(obj, options={})
-    initialize_dj
     Delayed::Job.enqueue(obj, options)
   end
 

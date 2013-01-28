@@ -121,5 +121,4 @@ class BaseTrelloJob
   end
   private :display
 end
-
 end

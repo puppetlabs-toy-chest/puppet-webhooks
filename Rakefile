@@ -4,8 +4,11 @@ require 'erb'
 require 'sinatra/activerecord/rake'
 require 'puppet_labs/pull_request_app'
 require 'delayed/tasks'
+require 'puppet_labs/webhook'
+if not ENV['RACK_ENV']
+  ENV['RACK_ENV'] ||= 'development'
+end
 
-ENV['RACK_ENV'] ||= 'development'
 pwd = File.expand_path('..', __FILE__)
 
 task :default => :help
@@ -15,45 +18,9 @@ task :help do
   sh 'rake -T'
 end
 
-desc 'Run example behaviors (specs)'
-task :spec do
-  sh 'bundle exec rspec spec'
-end
-
 # Setup the environment for the application
 task :environment do
-  # Note, the order of these libraries appears to be important.  In order to
-  # get the worker jobs to reliably spin down, I think these need to be before
-  # the job libraries.
-  require 'delayed_job_active_record'
-  require 'workless'
-  # The rest of the libraries come after workless
-  require 'puppet_labs/trello_pull_request_job'
-  require 'active_record'
-  require 'active_support/core_ext'
-  require 'pg'
-  require 'logger'
-  require 'erb'
-
-  STDOUT.sync = true
-  STDERR.sync = true
-  logger = Logger.new(STDERR)
-
-  ActiveRecord::Base.logger = logger.clone
-  ActiveRecord::Base.logger.level = Logger::ERROR
-
-  Delayed::Worker.destroy_failed_jobs = false
-  Delayed::Backend::ActiveRecord::Job.send(:include, Delayed::Workless::Scaler)
-  # This is a reasonable limit to keep the worker process from running minutes
-  # on end when using workless.  Failures will be logged and visible in `heroku
-  # logs` and watching for PERMANENTLY removing.
-  Delayed::Worker.max_attempts = 3
-  Delayed::Worker.max_run_time = 10.minutes
-  Delayed::Worker.logger = logger.clone
-  Delayed::Worker.logger.level = Logger::INFO
-  Delayed::Job.scaler = :heroku_cedar
-  dbconfig = YAML.load(ERB.new(File.read('config/database.yml')).result)
-  ActiveRecord::Base.establish_connection(dbconfig[ENV['RACK_ENV']])
+  PuppetLabs::Webhook.setup_environment(ENV['RACK_ENV'])
 end
 
 desc "IRB REPL Shell"
@@ -131,4 +98,10 @@ namespace :jobs do
                         :queues => (ENV['QUEUES'] || ENV['QUEUE'] || '').split(','),
                         :quiet => true).start
   end
+end
+
+desc "Run the examples in spec/"
+task :spec do
+  require 'rspec/core/rake_task'
+  RSpec::Core::RakeTask.new(:spec)
 end

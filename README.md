@@ -312,6 +312,18 @@ With the specific hook URL:
       }
     }' https://api.github.com/repos/jeffmccune/puppet-webhooks/hooks/633908
 
+Examples
+====
+
+The spec tests are configured to use an in-memory sqlite3 database with
+ActiveRecord and DelayedJob.  The rake tasks, spec helper, and application
+itself should use the `PuppetLabs::Webhook.setup_environment` method to setup
+the database connection.
+
+To run the specs:
+
+    $ bundle exec rake spec RACK_ENV=test
+
 Maintainer
 ----
 

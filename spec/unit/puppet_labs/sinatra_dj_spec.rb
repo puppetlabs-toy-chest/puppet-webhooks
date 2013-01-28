@@ -46,13 +46,7 @@ describe PuppetLabs::SinatraDJ do
     describe '#queue_job' do
       let(:job) { FakeJob.new }
 
-      it 'initializes Delayed Job' do
-        subject.should_receive(:initialize_dj)
-        subject.queue_job(job)
-      end
-
       it 'returns a job with an id number' do
-        subject.should_receive(:initialize_dj)
         delayed_job = subject.queue_job(job)
         delayed_job.id.should be_a Fixnum
       end
