@@ -1,8 +1,16 @@
 development:
-  adapter: postgresql
-  host: localhost
-  encoding: unicode
-  database: puppet_webhooks_dev
+  adapter: sqlite3
+  host:
+  encoding:
+  database: ":memory:"
+  pool: 5
+  username:
+  password:
+test:
+  adapter: sqlite3
+  host:
+  encoding:
+  database: ":memory:"
   pool: 5
   username:
   password:

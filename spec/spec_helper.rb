@@ -29,6 +29,8 @@ require 'yaml'
 
 $LOAD_PATH.unshift(File.expand_path("../../lib", __FILE__))
 
+require 'puppet_labs/webhook'
+
 module WebHook
 module Test
 module Methods
@@ -42,19 +44,13 @@ end
 # FIXME much of this configuration is duplicated in the :environment task in
 # the Rakefile
 RSpec.configure do |config|
+  ENV['RACK_ENV'] ||= 'test'
   include WebHook::Test::Methods
 
   config.mock_with :rspec
 
   config.before :all do
-    config = {
-      :adapter => 'sqlite3',
-      :database => ':memory:',
-    }
-    ActiveRecord::Base.establish_connection(config)
-    # ActiveRecord::Base.logger = Logger.new(STDOUT)
-    ActiveRecord::Migration.verbose = false
-    ActiveRecord::Migrator.migrate("#{File.expand_path("../..", __FILE__)}/db/migrate")
+    PuppetLabs::Webhook.setup_environment(ENV['RACK_ENV'])
   end
 end
 
