@@ -1,6 +1,6 @@
 language: ruby
 bundler_args: --without development
-script: "bundle exec rake spec"
+script: "bundle exec rake spec RACK_ENV=test"
 rvm:
   - 1.9.3
   - ruby-head

@@ -21,7 +21,7 @@ class IssueController < Controller
   def run
     case issue.action
     when "opened"
-      job = PuppetLabs::IssueJob.new
+      job = PuppetLabs::TrelloIssueJob.new
       job.issue = issue
       delayed_job = job.queue
       logger.info "Successfully queued up opened issue #{issue.repo_name}/#{issue.number} as job #{delayed_job.id}"
