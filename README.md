@@ -333,4 +333,9 @@ Jeff McCune <jeff@puppetlabs.com>
 [dashboard]: https://dashboard.heroku.com/apps
 [quickstart]: https://devcenter.heroku.com/articles/quickstart
 
+License
+====
+
+Apache 2.0.  Please see the LICENSE file for more information.
+
 EOF
