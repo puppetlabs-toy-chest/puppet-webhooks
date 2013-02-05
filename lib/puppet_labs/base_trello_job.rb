@@ -166,6 +166,9 @@ class BaseTrelloJob
   # @return [Time] the due date of the card.
   def target_response_time
     now = Time.now
+    # FIXME TODO This needs to take into account time zones.  This results in a
+    # 6 AM due date the following day when it should result in a 2 PM due date
+    # when running in heroku.
     if Time.before_business_hours?(now)
       next_business_day = now.midnight
     else
