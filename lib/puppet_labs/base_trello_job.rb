@@ -128,6 +128,7 @@ class BaseTrelloJob
         end
       end
     end
+    nil
   end
 
   ##
