@@ -163,6 +163,9 @@ class BaseTrelloJob
   # the pull request.  This defaults to 5 business hours after the start of the
   # next business day (2 PM).
   #
+  # This method depends on the time zone being set to the correct region for
+  # the business.  e.g. TZ=America/Los_Angeles
+  #
   # @return [Time] the due date of the card.
   def target_response_time
     now = Time.now
