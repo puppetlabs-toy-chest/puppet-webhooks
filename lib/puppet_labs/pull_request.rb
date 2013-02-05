@@ -32,5 +32,9 @@ class PullRequest
     @repo_name = data['repository']['name']
     @action = data['action']
   end
+
+  def created_at
+    message['pull_request']['created_at']
+  end
 end
 end

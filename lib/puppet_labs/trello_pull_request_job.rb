@@ -50,6 +50,8 @@ end
 class TrelloPullRequestReopenedJob < TrelloPullRequestJob
   def perform
     display "FIXME cannot perform any actions when a pull request is reopened"
+    # Move the card to the target list
+    # Set a new due date for the card
   end
 end
 end
