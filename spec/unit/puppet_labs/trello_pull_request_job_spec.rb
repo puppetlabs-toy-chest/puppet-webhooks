@@ -124,6 +124,8 @@ describe PuppetLabs::TrelloPullRequestJob do
       before :each do
         fake_card = double(Trello::Card)
         fake_card.stub(:name).and_return(expected_card_title)
+        fake_card.stub(:short_id).and_return('1234')
+        fake_card.stub(:url).and_return('http://trello.com/foo/bar')
         subject.stub(:find_card).and_return(fake_card)
       end
       it 'does not create the card' do

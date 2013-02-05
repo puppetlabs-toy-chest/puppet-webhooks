@@ -70,7 +70,9 @@ class BaseTrelloJob
   def perform
     name = card_title
     display "Processing: #{name}"
-    unless card = find_card(name)
+    if card = find_card(name)
+      display "Card #{name} id=#{card.short_id} already exists at url=#{card.url}"
+    else
       create_card
     end
     display "Done Processing: #{name}"
