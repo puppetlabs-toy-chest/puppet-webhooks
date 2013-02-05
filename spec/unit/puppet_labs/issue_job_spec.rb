@@ -71,6 +71,11 @@ describe PuppetLabs::TrelloIssueJob do
       fake_api.should_receive(:all_cards_on_board_of).and_return([ fake_card ])
       subject.find_card(subject.card_title).should be fake_card
     end
+    it 'deals with renames by identifying the card using the parens' do
+      fake_api.should_receive(:all_cards_on_board_of).and_return([ fake_card ])
+      id = subject.card_title.match /\(.*?\/\d+\)/
+      subject.find_card("#{id} Renamed card title").should be fake_card
+    end
   end
 
   describe '#save_settings' do
