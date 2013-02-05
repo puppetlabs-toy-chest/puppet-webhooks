@@ -43,6 +43,10 @@ class TrelloAPI
     ::Trello::Board.find(board_id).lists
   end
 
+  ##
+  # create card creates a new card on the target list id.
+  #
+  # @return [Trello::Card] representing the new card
   def create_card(properties)
     card = ::Trello::Card.create(:name => properties[:name],
                                  :list_id => properties[:list],
@@ -50,6 +54,7 @@ class TrelloAPI
     if properties[:color]
       card.add_label(properties[:color])
     end
+    card
   end
 
   def archive_card(card)

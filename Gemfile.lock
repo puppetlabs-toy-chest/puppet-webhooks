@@ -20,6 +20,9 @@ GEM
     awesome_print (1.0.2)
     boson (1.2.4)
     builder (3.0.4)
+    business_time (0.6.1)
+      activesupport (>= 3.1.0)
+      tzinfo (~> 0.3.31)
     clipboard (1.0.1)
     coderay (1.0.8)
     columnize (0.3.6)
@@ -73,7 +76,7 @@ GEM
     method_locator (0.0.4)
     method_source (0.8.1)
     methodfinder (1.2.5)
-    mime-types (1.19)
+    mime-types (1.20.1)
     multi_json (1.5.0)
     oauth (0.4.7)
     ori (0.1.0)
@@ -144,13 +147,14 @@ GEM
       heroku-api
       rails
       rush
-    yard (0.8.3)
+    yard (0.8.4)
     zucker (12.1)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
+  business_time
   delayed_job_active_record
   hub
   irbtools
