@@ -70,7 +70,9 @@ class BaseTrelloJob
   def perform
     name = card_title
     display "Processing: #{name}"
-    unless card = find_card(name)
+    if card = find_card(name)
+      display "Card #{name} id=#{card.short_id} already exists at url=#{card.url}"
+    else
       create_card
     end
     display "Done Processing: #{name}"
@@ -80,14 +82,51 @@ class BaseTrelloJob
     queue_job(self, options)
   end
 
+
+  ##
+  # Methods we discovered:
+  # card.delete - deletes the card
+  # card.add_comment("Hello"); - adds a comment.
+  # card.closed = true; card.save; - Archive a card.
+  # card.closed = false; card.save; - Un-archives a card.
+  # card.move_to_list(card.board.lists.first); - moves the card to the first
+  #   list on the board
+
   ##
   # find_card takes a title and locates the card using the Trello API.  If no
   # card exists on the target lists, then nil is returned.
+  #
+  # This method will extract the repository name and pull request number from
+  # the name and use the substring as the identifier.  For example, `"(PR
+  # puppet-webhooks/18) Add Apache 2.0 License"` will have an identifier of
+  # `"(PR puppet-webhooks/18)"`.  This behavior is meant to accomidate renames
+  # of the pull request title.
+  #
+  # If the environment variable TRELLO_BOARDS is set, then the value will be
+  # parsed as a comma separated list of Trello board identifiers.  All cards on
+  # each board will be searched in addition to the board containing the
+  # {list_id}.
+  #
+  # @return [Trello::Card] or {nil} if no card found.
   def find_card(name)
     api = trello_api
+    regexp = %r{\(.*/\d+\)}
+    if md = name.match(regexp)
+      identifier = md[0]
+    else
+      identifier = name
+    end
     all_cards = api.all_cards_on_board_of(list_id)
-    if card = all_cards.find { |card| card.name == name }
-      card
+    if card = all_cards.find { |card| card.name.include? identifier }
+      return card
+    end
+    if env['TRELLO_BOARDS']
+      env['TRELLO_BOARDS'].split(',').each do |board_id|
+        cards = api.all_cards_on_board(board_id)
+        if card = cards.find { |card| card.name.include? identifier }
+          return card
+        end
+      end
     end
   end
 

@@ -20,6 +20,7 @@ group :development do
   gem 'pry-debugger'
   gem 'yard'
   gem 'redcarpet'
+  gem 'terminal-notifier'
 end
 
 group :test do
