@@ -1,6 +1,7 @@
 require 'puppet_labs/trello_api'
 require 'puppet_labs/sinatra_dj'
 require 'logger'
+require 'business_time'
 
 module PuppetLabs
 ##
@@ -73,7 +74,20 @@ class BaseTrelloJob
     if card = find_card(name)
       display "Card #{name} id=#{card.short_id} already exists at url=#{card.url}"
     else
-      create_card
+      if card = create_card
+        if env['TRELLO_SET_TARGET_RESPONSE_TIME'] == 'true'
+          due_date = target_response_time
+          card.due = due_date
+          display "Set due date of #{name} to #{card.due} url=#{card.url}"
+        else
+          display "TRELLO_SET_TARGET_RESPONSE_TIME is not 'true' "+
+            "not setting card due date for #{name}"
+        end
+        display "Created card #{name} url=#{card.url}"
+        card.save
+      else
+        display "Did not create card #{name}"
+      end
     end
     display "Done Processing: #{name}"
   end
@@ -128,18 +142,36 @@ class BaseTrelloJob
         end
       end
     end
+    nil
   end
 
   ##
   # create_card creates a card on the target Trello board
-  def create_card
+  def create_card(options = {})
     trello = trello_api
     card_options = {
       :name => card_title,
       :list => list_id,
       :description => card_body,
-    }
+    }.merge(options)
     trello.create_card(card_options)
+  end
+
+  ##
+  # target_response_time will return the target due date for a card.  This due
+  # date is meant be used as the time that tracks the target response time of
+  # the pull request.  This defaults to 5 business hours after the start of the
+  # next business day (2 PM).
+  #
+  # @return [Time] the due date of the card.
+  def target_response_time
+    now = Time.now
+    if Time.before_business_hours?(now)
+      next_business_day = now.midnight
+    else
+      next_business_day = 1.business_day.after(now).midnight
+    end
+    due_date = 5.business_hour.after(next_business_day)
   end
 
   def trello_api
