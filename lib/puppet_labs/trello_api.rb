@@ -73,6 +73,14 @@ class TrelloAPI
     @cards[board.id]
   end
 
+  def all_cards_on_board(board_id)
+    board = ::Trello::Board.find(board_id)
+    if not @cards[board.id]
+      @cards[board.id] = board.cards
+    end
+    @cards[board.id]
+  end
+
   def list(list_id)
     if not @lists[list_id]
       @lists[list_id] = ::Trello::List.find(list_id)

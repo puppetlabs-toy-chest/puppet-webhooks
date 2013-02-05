@@ -32,7 +32,18 @@ end
 
 class TrelloPullRequestClosedJob < TrelloPullRequestJob
   def perform
-    display "FIXME cannot perform any actions when a pull request is closed"
+    name = card_title
+    display "Processing: #{name}"
+    if card = find_card(name)
+      display "Found card #{name} id=#{card.short_id}"
+      # TODO Obtain the last comment on the pull request and act on it.
+      card.add_comment "Automatically archiving card, the pull request is closed."
+      card.closed = true
+      card.save
+    else
+      display "No card named #{name} found."
+    end
+    true
   end
 end
 

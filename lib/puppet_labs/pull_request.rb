@@ -9,7 +9,8 @@ class PullRequest
     :title,
     :html_url,
     :body,
-    :action
+    :action,
+    :message
 
   def self.from_json(json)
     new(:json => json)
@@ -23,6 +24,7 @@ class PullRequest
 
   def load_json(json)
     data = JSON.load(json)
+    @message = data
     @number = data['pull_request']['number']
     @title = data['pull_request']['title']
     @html_url = data['pull_request']['html_url']
