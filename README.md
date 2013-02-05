@@ -13,8 +13,11 @@ This project performs a job or jobs when a pull request event occurs on
  * [✓] Auto-scale the number of workers to zero when there are no jobs to perform.
  * [✓] Auto-scale the number of workers to one when there are jobs to perform.
  * [✓] Near real-time behavior, no polling intervals involved.
- * [ ] Archive a Trello Card when a Pull Request is closed.
- * [ ] Check multiple boards for the existence of a card.
+ * [✓] Near real-time behavior, no polling intervals involved.
+ * [✓] Archive a Trello Card when a Pull Request is closed.
+ * [✓] Check multiple boards for the existence of a card.
+ * [✓] Set the card due date to 2 PM next business day when a card is created
+   if `TRELLO_SET_TARGET_RESPONSE_TIME=true`.
  * [ ] Copy a comment to the card when a comment is added to the pull request.
 
 [web-service-hook]: https://github.com/github/github-services/blob/master/services/web.rb
@@ -73,6 +76,26 @@ Next, push the application to [Heroku][heroku] with `git push heroku HEAD:master
            http://fierce-meadow-9708.herokuapp.com deployed to Heroku
     To git@heroku.com:fierce-meadow-9708.git
      * [new branch]      HEAD -> master
+
+Configuration Options
+----
+
+The application is up and running at this point, but the following
+configuration options may be useful.  All of the configuration of this
+application is done using environment variables set through the `heroku
+config:add` action.
+
+Add a due date for newly created cards if you have a target response time for
+pull requests you'd like to track.  At Puppet Labs we use this as a clear way
+to stay on top of incoming pull requests.  If this variable is `"true"` then
+the application will set the due date of a newly created cards to 2 PM of the
+next business day.  Please note this behavior depends on the timezone.
+
+    $ heroku config:set TRELLO_SET_TARGET_RESPONSE_TIME=true
+    $ heroku config:set TZ=America/Los_Angeles
+
+A list of timezone strings may be found at [List of tz database time
+zones](http://en.wikipedia.org/wiki/List_of_tz_database_time_zones)
 
 Database Migration
 ----
