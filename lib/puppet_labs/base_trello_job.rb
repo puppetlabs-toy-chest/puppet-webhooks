@@ -44,6 +44,17 @@ class BaseTrelloJob
   end
 
   ##
+  # card_identifier should return the short substring that could be used to
+  # match up the github event to the card.  If the card name  matches the
+  # regular expression defined in find_card then the app will treate the
+  # matching card as a reflection of the github event.
+  #
+  # For example: `(PR puppet/1234)`
+  def card_identifier
+    raise 'card_identifier must be overwritten by the child class'
+  end
+
+  ##
   # store_settings copies the TRELLO API information out of the environment and
   # into the instance so it is stored along with the job.  This allows the job
   # to execute in a self contained manner.
@@ -69,27 +80,27 @@ class BaseTrelloJob
   # {#perform} method on the instance.  The implementation in the base class
   # creates a trello card using {#create_card}.
   def perform
-    name = card_title
-    display "Processing: #{name}"
-    if card = find_card(name)
-      display "Card #{name} id=#{card.short_id} already exists at url=#{card.url}"
+    id = card_identifier
+    display "Processing: #{id}"
+    if card = find_card(id)
+      display "Card #{card.name} short_id=#{card.short_id} already exists at url=#{card.url}"
     else
       if card = create_card
         if env['TRELLO_SET_TARGET_RESPONSE_TIME'] == 'true'
           due_date = target_response_time
           card.due = due_date
-          display "Set due date of #{name} to #{card.due} url=#{card.url}"
+          display "Set due date of #{card.name} to #{card.due} url=#{card.url}"
         else
           display "TRELLO_SET_TARGET_RESPONSE_TIME is not 'true' "+
-            "not setting card due date for #{name}"
+            "not setting card due date for #{card.name}"
         end
-        display "Created card #{name} url=#{card.url}"
+        display "Created card #{card.name} url=#{card.url}"
         card.save
       else
-        display "Did not create card #{name}"
+        display "Did not create card #{id}"
       end
     end
-    display "Done Processing: #{name}"
+    display "Done Processing: #{id}"
   end
 
   def queue(options={:queue => queue_name})

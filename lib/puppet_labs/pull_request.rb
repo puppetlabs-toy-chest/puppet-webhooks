@@ -1,10 +1,13 @@
 require 'json'
+require 'puppet_labs/github_mix'
 
 # This class provides a model of a pull rquest.
 module PuppetLabs
 class PullRequest
+  include GithubMix
   # Pull request data
   attr_reader :number,
+    :env,
     :repo_name,
     :title,
     :html_url,
@@ -19,6 +22,11 @@ class PullRequest
   def initialize(options = {})
     if json = options[:json]
       load_json(json)
+    end
+    if env = options[:env]
+      @env = env
+    else
+      @env = ENV.to_hash
     end
   end
 
@@ -35,6 +43,14 @@ class PullRequest
 
   def created_at
     message['pull_request']['created_at']
+  end
+
+  def author
+    message['sender']['login']
+  end
+
+  def author_avatar_url
+    message['sender']['avatar_url']
   end
 end
 end
