@@ -20,8 +20,12 @@ describe PuppetLabs::TrelloIssueJob do
     ].join("\n")
   end
 
+  let :expected_card_identifier do
+    "(GH-ISSUE #{issue.repo_name}/#{issue.number})"
+  end
+
   let :expected_card_title do
-    "(GH-ISSUE #{issue.repo_name}/#{issue.number}) #{issue.title}"
+    "#{expected_card_identifier} #{issue.title}"
   end
 
   subject do
@@ -120,7 +124,7 @@ describe PuppetLabs::TrelloIssueJob do
         expect { subject.perform }.to raise_error FakeError
       end
       it 'checks for the card already on the lists(s)' do
-        subject.should_receive(:find_card).with(expected_card_title).and_raise FakeError
+        subject.should_receive(:find_card).with(expected_card_identifier).and_raise FakeError
         expect { subject.perform }.to raise_error FakeError
       end
     end
