@@ -13,16 +13,31 @@ class TrelloPullRequestJob < BaseTrelloJob
 
   def card_body
     pr = pull_request
-    str = [ "Links: [Pull Request #{pr.number} Discussion](#{pr.html_url}) and",
-            "[File Diff](#{pr.html_url}/files)",
+    str = [ 'Contributor Information',
+            '----',
             '',
+            "![#{pr.author_name}](#{pr.author_avatar_url})",
+            '',
+            " * Author: **#{pr.author_name}** <#{pr.author_email}>",
+            " * Company: #{pr.author_company}",
+            " * Github ID: [#{pr.author}](#{pr.author_html_url})",
+            " * [Pull Request #{pr.number} Discussion](#{pr.html_url})",
+            " * [File Diff](#{pr.html_url}/files)",
+            '',
+            'Pull Request',
+            '====',
             pr.body,
     ].join("\n")
   end
 
+  def card_identifier
+    pr = pull_request
+    "(PR #{pr.repo_name}/#{pr.number})"
+  end
+
   def card_title
     pr = pull_request
-    "(PR #{pr.repo_name}/#{pr.number}) #{pr.title}"
+    "#{card_identifier} #{pr.title} [#{pr.author_name}]"
   end
 
   def queue_name

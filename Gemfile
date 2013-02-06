@@ -5,6 +5,7 @@ gem 'rake'
 # in the Gemfile. This populates the DATABASE_URL environment var.
 gem 'sinatra'
 gem 'ruby-trello'
+gem 'octokit' # github
 gem 'json'
 
 gem 'sinatra-activerecord'
