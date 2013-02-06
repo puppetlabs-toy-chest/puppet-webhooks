@@ -19,8 +19,12 @@ class TrelloIssueJob < BaseTrelloJob
     ].join("\n")
   end
 
+  def card_identifier
+    "(GH-ISSUE #{issue.repo_name}/#{issue.number})"
+  end
+
   def card_title
-    "(GH-ISSUE #{issue.repo_name}/#{issue.number}) #{issue.title}"
+    "#{card_identifier} #{issue.title}"
   end
 
   def queue_name
