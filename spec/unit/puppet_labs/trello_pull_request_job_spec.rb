@@ -13,14 +13,6 @@ describe PuppetLabs::TrelloPullRequestJob do
     fake_api
   end
 
-  # let :expected_pr_body do
-  #   [ "Links: [Pull Request #{pr.number} Discussion](#{pr.html_url}) and",
-  #     "[File Diff](#{pr.html_url}/files)",
-  #     '',
-  #     pr.body,
-  #   ].join("\n")
-  # end
-
   let :expected_card_identifier do
     "(PR #{pr.repo_name}/#{pr.number})"
   end
