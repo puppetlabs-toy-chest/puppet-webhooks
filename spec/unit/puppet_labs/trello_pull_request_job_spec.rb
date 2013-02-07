@@ -13,16 +13,20 @@ describe PuppetLabs::TrelloPullRequestJob do
     fake_api
   end
 
-  let :expected_pr_body do
-    [ "Links: [Pull Request #{pr.number} Discussion](#{pr.html_url}) and",
-      "[File Diff](#{pr.html_url}/files)",
-      '',
-      pr.body,
-    ].join("\n")
+  # let :expected_pr_body do
+  #   [ "Links: [Pull Request #{pr.number} Discussion](#{pr.html_url}) and",
+  #     "[File Diff](#{pr.html_url}/files)",
+  #     '',
+  #     pr.body,
+  #   ].join("\n")
+  # end
+
+  let :expected_card_identifier do
+    "(PR #{pr.repo_name}/#{pr.number})"
   end
 
   let :expected_card_title do
-    "(PR #{pr.repo_name}/#{pr.number}) #{pr.title}"
+    "#{expected_card_identifier} #{pr.title}"
   end
 
   subject do
@@ -31,9 +35,19 @@ describe PuppetLabs::TrelloPullRequestJob do
     job
   end
 
+  def github_account
+    @github_account ||= {
+      'name' => 'Jeff McCune',
+      'email' => 'jeff@puppetlabs.com',
+      'company' => 'Puppet Labs',
+      'html_url' => 'https://github.com/jeffmccune',
+    }
+  end
+
   before :each do
     subject.stub(:display_card)
     subject.stub(:trello_api).and_return(fake_api)
+    PuppetLabs::GithubAPI.any_instance.stub(:account).with('jeffmccune').and_return(github_account)
   end
 
   it 'stores a pull request' do
@@ -41,16 +55,36 @@ describe PuppetLabs::TrelloPullRequestJob do
     subject.pull_request.should be pr
   end
 
-  it 'produces a card body' do
+  it 'produces a card body string' do
     subject.card_body.should be_a String
   end
 
-  it 'produces a well formatted card body' do
-    subject.card_body.should == expected_pr_body
+  it 'uses the pull request info as the identifier' do
+    subject.card_identifier.should == expected_card_identifier
   end
 
-  it 'produces a well formatted card title' do
-    subject.card_title.should == expected_card_title
+  it 'includes the card identifier in the card title' do
+    subject.card_title.should match(/#{expected_card_identifier}/)
+  end
+
+  it 'includes the sender name in the title' do
+    subject.card_title.should match(/Jeff McCune/)
+  end
+
+  it 'includes the sender name in the body' do
+    subject.card_body.should match(/Jeff McCune/)
+  end
+
+  it 'includes the sender email in the body' do
+    subject.card_body.should match(/jeff@puppetlabs.com/)
+  end
+
+  it 'includes the sender company in the body' do
+    subject.card_body.should match(/Puppet Labs/)
+  end
+
+  it 'includes the sender avatar image in the body' do
+    subject.card_body.should match(/!\[Jeff McCune\]\(http.*?\)/)
   end
 
   it 'queues the job' do
@@ -121,7 +155,7 @@ describe PuppetLabs::TrelloPullRequestJob do
         expect { subject.perform }.to raise_error FakeError
       end
       it 'checks for the card already on the lists(s)' do
-        subject.should_receive(:find_card).with(expected_card_title).and_raise FakeError
+        subject.should_receive(:find_card).with(expected_card_identifier).and_raise FakeError
         expect { subject.perform }.to raise_error FakeError
       end
     end
