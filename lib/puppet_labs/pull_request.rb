@@ -13,15 +13,24 @@ class PullRequest
     :html_url,
     :body,
     :action,
-    :message
+    :message,
+    :created_at,
+    :author,
+    :author_avatar_url
 
   def self.from_json(json)
     new(:json => json)
   end
 
+  def self.from_data(data)
+    new(:data => data)
+  end
+
   def initialize(options = {})
     if json = options[:json]
       load_json(json)
+    elsif data = options[:data]
+      load_data(data)
     end
     if env = options[:env]
       @env = env
@@ -31,26 +40,24 @@ class PullRequest
   end
 
   def load_json(json)
-    data = JSON.load(json)
+    load_data(JSON.load(json))
+  end
+
+  def load_data(data)
     @message = data
-    @number = data['pull_request']['number']
-    @title = data['pull_request']['title']
-    @html_url = data['pull_request']['html_url']
-    @body = data['pull_request']['body']
-    @repo_name = data['repository']['name']
+    pr = data['pull_request'] || data
+    @number = pr['number']
+    @title = pr['title']
+    @html_url = pr['html_url']
+    @body = pr['body']
+    repo = data['repository'] || data['base']['repo']
+    @repo_name = repo['name']
     @action = data['action']
-  end
-
-  def created_at
-    message['pull_request']['created_at']
-  end
-
-  def author
-    message['sender']['login']
-  end
-
-  def author_avatar_url
-    message['sender']['avatar_url']
+    @action = 'opened' if action.nil? && data['state'] == 'open'
+    @created_at = pr['created_at']
+    sender = data['sender'] || data['user']
+    @author = sender['login']
+    @author_avatar_url = sender['avatar_url']
   end
 end
 end

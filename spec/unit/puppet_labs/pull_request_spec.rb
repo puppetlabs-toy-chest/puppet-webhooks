@@ -10,14 +10,30 @@ describe 'PuppetLabs::PullRequest' do
     pr = PuppetLabs::PullRequest.from_json(payload)
   end
 
+  it 'creates a new instance using the from_data class method' do
+    pr = PuppetLabs::PullRequest.from_data(data)
+  end
+
   it 'initializes with json' do
     pr = PuppetLabs::PullRequest.new(:json => payload)
+    pr.action.should == "opened"
+  end
+
+  it 'initializes with data hash' do
+    pr = PuppetLabs::PullRequest.new(:data => data)
     pr.action.should == "opened"
   end
 
   describe '#load_json' do
     it 'loads a json hash readable through the data method' do
       subject.load_json(payload)
+      subject.action.should == "opened"
+    end
+  end
+
+  describe '#load_data' do
+    it 'loads a ruby hash readable through the data method' do
+      subject.load_data(data)
       subject.action.should == "opened"
     end
   end
@@ -55,6 +71,57 @@ describe 'PuppetLabs::PullRequest' do
     end
     it 'has a body' do
       subject.body.should == data['pull_request']['body']
+    end
+    it 'has a action' do
+      subject.action.should == data['action']
+    end
+    it 'has a message' do
+      subject.message.should == data
+    end
+    it 'has a created_at' do
+      subject.created_at.should == data['pull_request']['created_at']
+    end
+    it 'has a author' do
+      subject.author.should == data['sender']['login']
+    end
+    it 'has a author_avatar_url' do
+      subject.author_avatar_url.should == data['sender']['avatar_url']
+    end
+  end
+
+  context 'existing pull request' do
+    let(:payload) { read_fixture("example_pull_request_by_id.json") }
+    subject { PuppetLabs::PullRequest.new(:json => payload) }
+
+    it 'has a number' do
+      subject.number.should == data['number']
+    end
+    it 'has a repo name' do
+      subject.repo_name.should == data['base']['repo']['name']
+    end
+    it 'has a title' do
+      subject.title.should == data['title']
+    end
+    it 'has a html_url' do
+      subject.html_url.should == data['html_url']
+    end
+    it 'has a body' do
+      subject.body.should == data['body']
+    end
+    it 'has a action' do
+      subject.action.should == "opened"
+    end
+    it 'has a message' do
+      subject.message.should == data
+    end
+    it 'has a created_at' do
+      subject.created_at.should == data['created_at']
+    end
+    it 'has a author' do
+      subject.author.should == data['user']['login']
+    end
+    it 'has a author_avatar_url' do
+      subject.author_avatar_url.should == data['user']['avatar_url']
     end
   end
 end

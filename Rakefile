@@ -5,6 +5,7 @@ require 'sinatra/activerecord/rake'
 require 'puppet_labs/pull_request_app'
 require 'delayed/tasks'
 require 'puppet_labs/webhook'
+require 'rest_client'
 if not ENV['RACK_ENV']
   ENV['RACK_ENV'] ||= 'development'
 end
@@ -97,6 +98,22 @@ namespace :jobs do
                         :max_priority => ENV['MAX_PRIORITY'],
                         :queues => (ENV['QUEUES'] || ENV['QUEUE'] || '').split(','),
                         :quiet => true).start
+  end
+end
+
+namespace :import do
+  desc "Import existing PRs from a GitHub repo (use REPO=puppetlabs/puppet, optionally PR=123)"
+  task :prs do
+    dbconfig = YAML.load(ERB.new(File.read('config/database.yml')).result)[ENV['RACK_ENV']]
+    ActiveRecord::Base.establish_connection dbconfig
+    url = "https://api.github.com/repos/#{ENV['REPO']}/pulls"
+    url << '/' << ENV['PR'] if ENV['PR']
+    response = JSON.parse(RestClient.get(url))
+    response = [response] if ENV['PR']
+    response.each do |pr|
+      queued = PuppetLabs::PullRequestController.new(:pull_request => PuppetLabs::PullRequest.from_data(pr)).run
+      raise StandardError, "Failed to queue PR##{pr.number}: #{queued.inspect}" unless queued[0].to_s[0] == '2'
+    end
   end
 end
 
