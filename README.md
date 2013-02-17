@@ -210,11 +210,9 @@ permissions via instructions at
 
 The Trello list ID where the cards should be created.  To find this value,
 navigate to the Trello board that you are interested in in your browser and
-copy the board id from the URL.
+copy the board id from the URL, then run:
 
-Then run:
-
-    $ curl https://api.trello.com/1/board/<board_id>/lists?key=<app_key>&token=<user_token>
+    $ curl "https://api.trello.com/1/board/<board_id>/lists?key=<app_key>&token=<user_token>"
     [{"id":"xxxxxxxxxxxxxxxxx","name":"Pull Requests","closed":false,"idBoard":"xxxxxxxxxxxxxxxxxx","pos":8192,"subscribed":false}]
 
 And copy the id for the list where you want new cards to be created.
@@ -229,8 +227,8 @@ and responsive, delayed job worker dynos are used to perform the heavy lifting.
 Delayed job requires an SQL database.  Most of the documentation assumes Rails,
 but we're taking the Sinatra only approach.  Heroku should automatically detect
 the 'pg' gem is in use and will should have provisioned a database
-automatically.  If not, please add the database using the following
-information.
+automatically.  This can be checked with `heroku pg:info`.  If not, please add
+the database using the following information.
 
 Workless
 ----
