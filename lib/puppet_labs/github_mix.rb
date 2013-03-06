@@ -7,7 +7,12 @@ module GithubMix
   end
 
   def author_name
-    github.account(author)['name']
+    account = author
+    if name = github.account(account)['name'] and not name.empty?
+      name
+    else
+      account
+    end
   end
 
   def author_email
