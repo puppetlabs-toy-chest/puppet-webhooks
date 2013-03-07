@@ -105,34 +105,6 @@ describe PuppetLabs::TrelloPullRequestJob do
     end
   end
 
-  describe '#save_settings' do
-    let(:env) do
-      {
-        'TRELLO_APP_KEY' => 'key',
-        'TRELLO_SECRET' => 'sekret',
-        'TRELLO_USER_TOKEN' => 'token',
-        'TRELLO_TARGET_LIST_ID' => 'list_id',
-      }
-    end
-
-    it "saves TRELLO_APP_KEY as key" do
-      subject.save_settings
-      subject.key == env['TRELLO_APP_KEY']
-    end
-    it "saves TRELLO_SECRET as secret" do
-      subject.save_settings
-      subject.secret == env['TRELLO_SECRET']
-    end
-    it "saves TRELLO_USER_TOKEN as token" do
-      subject.save_settings
-      subject.token == env['TRELLO_USER_TOKEN']
-    end
-    it "saves TRELLO_TARGET_LIST_ID as list_id" do
-      subject.save_settings
-      subject.list_id == env['TRELLO_TARGET_LIST_ID']
-    end
-  end
-
   context 'performing the task' do
     before :each do
       subject.stub(:find_card)
