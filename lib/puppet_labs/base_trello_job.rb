@@ -20,6 +20,20 @@ class BaseTrelloJob
   attr_writer :env
 
   ##
+  # archive_card? will return true if ARCHIVE_CARD=true in the environment.
+  # This provides a way for Trello jobs to figure out if they shoudl archive
+  # closed cards or not.
+  #
+  # @api public
+  def archive_card?
+    if ac = @archive_card and ac.match(/^(true|yes)$/i)
+      true
+    else
+      false
+    end
+  end
+
+  ##
   # card_body must be overrided by subclasses.
   #
   # @api public
@@ -63,6 +77,7 @@ class BaseTrelloJob
     @key = env['TRELLO_APP_KEY']
     @secret = env['TRELLO_SECRET']
     @token = env['TRELLO_USER_TOKEN']
+    @archive_card = env['ARCHIVE_CARD']
   end
 
   ##

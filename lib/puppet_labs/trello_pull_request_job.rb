@@ -52,8 +52,12 @@ class TrelloPullRequestClosedJob < TrelloPullRequestJob
     if card = find_card(name)
       display "Found card #{name} id=#{card.short_id}"
       # TODO Obtain the last comment on the pull request and act on it.
-      card.add_comment "Automatically archiving card, the pull request is closed."
-      card.closed = true
+      if archive_card?
+        card.add_comment "Automatically archiving card, the pull request is closed."
+        card.closed = true
+      else
+        card.add_comment "This pull request is closed."
+      end
       card.save
     else
       display "No card named #{name} found."
