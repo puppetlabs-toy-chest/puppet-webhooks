@@ -14,7 +14,8 @@ This project performs a job or jobs when a pull request event occurs on
  * [✓] Auto-scale the number of workers to one when there are jobs to perform.
  * [✓] Near real-time behavior, no polling intervals involved.
  * [✓] Near real-time behavior, no polling intervals involved.
- * [✓] Archive a Trello Card when a Pull Request is closed.
+ * [✓] Archive a Trello Card when a Pull Request is closed if `ARCHIVE_CARD` is
+   `true` or `yes`.
  * [✓] Check multiple boards for the existence of a card if `TRELLO_BOARDS`
    contains a comma separated list of board ID's.
  * [✓] Set the card due date to 2 PM next business day when a card is created
