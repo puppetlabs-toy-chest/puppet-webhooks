@@ -44,6 +44,14 @@ describe 'PuppetLabs::Comment' do
     end
   end
 
+  describe "#pull_request" do
+    subject { PuppetLabs::Comment.new(:json => payload) }
+
+    it 'is an instance of PuppetLabs::PullRequest' do
+      expect(subject.pull_request.instance_of?(PuppetLabs::PullRequest)).to be
+    end
+  end
+
   context 'newly created comment' do
     subject { PuppetLabs::Comment.new(:json => payload) }
 

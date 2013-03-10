@@ -7,6 +7,7 @@ class Comment
   # Comment data
   attr_reader :body,
     :issue,
+    :pull_request,
     :action
 
   def self.from_json(json)
@@ -22,6 +23,7 @@ class Comment
     @body = data['comment']['body']
     @action = data['action']
     @issue = ::PuppetLabs::Issue.from_json(json)
+    @pull_request = @issue.pull_request
   end
 end
 end
