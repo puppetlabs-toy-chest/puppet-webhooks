@@ -52,6 +52,14 @@ describe 'PuppetLabs::Comment' do
     end
   end
 
+  describe "#repo_name" do
+    subject { PuppetLabs::Comment.new(:json => payload) }
+
+    it 'delegates from the issue' do
+      expect(subject.repo_name).to eq subject.issue.repo_name
+    end
+  end
+
   context 'newly created comment' do
     subject { PuppetLabs::Comment.new(:json => payload) }
 
