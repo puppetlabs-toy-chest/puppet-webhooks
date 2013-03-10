@@ -208,7 +208,9 @@ The Trello app key and secret can be retrieved from
 
 The Trello user token can be generated with various expiration dates and
 permissions via instructions at
-[https://trello.com/docs/gettingstarted/index.html#getting-a-token-from-a-user](https://trello.com/docs/gettingstarted/index.html#getting-a-token-from-a-user)
+[https://trello.com/docs/gettingstarted/index.html#getting-a-token-from-a-user](https://trello.com/docs/gettingstarted/index.html#getting-a-token-from-a-user).
+For this application to create and update Trello cards, you must supply a token
+with read and write access.
 
 The Trello list ID where the cards should be created.  To find this value,
 navigate to the Trello board that you are interested in in your browser and
