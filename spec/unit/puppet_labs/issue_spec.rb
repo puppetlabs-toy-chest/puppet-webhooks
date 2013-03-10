@@ -38,6 +38,14 @@ describe 'PuppetLabs::Issue' do
     end
   end
 
+  describe '#pull_request' do
+    subject { PuppetLabs::Issue.new(:json => payload) }
+
+    it "is an instance of PuppetLabs::PullRequest" do
+      expect(subject.pull_request.instance_of?(PuppetLabs::PullRequest)).to be
+    end
+  end
+
   context 'newly created issue' do
     subject { PuppetLabs::Issue.new(:json => payload) }
 
