@@ -21,7 +21,7 @@ This project performs a job or jobs when a pull request event occurs on
    if `TRELLO_SET_TARGET_RESPONSE_TIME=true`.
  * [✓] Summarize finished cards on a periodic basis using `$ bundle exec rake
    jobs:summary`
- * [ ] Copy a comment to the card when a comment is added to the pull request.
+ * [✓] Copy a comment to the card when a comment is added to the pull request.
 
 [web-service-hook]: https://github.com/github/github-services/blob/master/services/web.rb
 
