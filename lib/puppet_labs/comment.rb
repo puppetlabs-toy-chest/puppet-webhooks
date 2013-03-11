@@ -31,5 +31,12 @@ class Comment
     @author_login = data['sender']['login']
     @author_avatar_url = data['sender']['avatar_url']
   end
+
+  # This determines whether the comment was on a Pull Request or Issue
+  #
+  # @returns [Boolean] true/false
+  def pull_request?
+    !!issue.pull_request.html_url
+  end
 end
 end
