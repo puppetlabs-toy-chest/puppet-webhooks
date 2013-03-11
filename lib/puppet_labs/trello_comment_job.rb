@@ -14,8 +14,6 @@ class TrelloCommentJob < BaseTrelloJob
 
   def card_body
     [
-      "![#{comment.author_login}](#{comment.author_avatar_url})",
-      '',
       "#{comment.author_login} wrote:",
       '',
       comment.body,
