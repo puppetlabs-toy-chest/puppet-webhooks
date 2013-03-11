@@ -8,6 +8,8 @@ class Comment
   attr_reader :body,
     :issue,
     :pull_request,
+    :author_login,
+    :author_avatar_url,
     :repo_name,
     :action
 
@@ -26,6 +28,8 @@ class Comment
     @issue = ::PuppetLabs::Issue.from_json(json)
     @pull_request = @issue.pull_request
     @repo_name = @issue.repo_name
+    @author_login = data['sender']['login']
+    @author_avatar_url = data['sender']['avatar_url']
   end
 end
 end
