@@ -66,5 +66,13 @@ describe 'PuppetLabs::Comment' do
     it 'has a body' do
       subject.body.should == data['comment']['body']
     end
+
+    it 'has an author login' do
+      subject.author_login.should == data['sender']['login']
+    end
+
+    it 'has an author avatar url' do
+      subject.author_avatar_url.should == data['sender']['avatar_url']
+    end
   end
 end
