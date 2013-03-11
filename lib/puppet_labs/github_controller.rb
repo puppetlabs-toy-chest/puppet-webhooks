@@ -1,6 +1,7 @@
 require 'puppet_labs/controller'
 require 'puppet_labs/pull_request_controller'
 require 'puppet_labs/issue_controller'
+require 'puppet_labs/comment_controller'
 
 module PuppetLabs
 class GithubController < Controller
@@ -30,6 +31,14 @@ class GithubController < Controller
         :issue => issue
       })
       controller = PuppetLabs::IssueController.new(options)
+      return controller
+    when 'issue_comment'
+      logger.info "Handling X-Github-Event (issues): #{gh_event}"
+      comment = PuppetLabs::Comment.from_json(route.payload)
+      options = @options.merge({
+        :comment => comment
+      })
+      controller = PuppetLabs::CommentController.new(options)
       return controller
     else
       logger.info "Ignoring X-Github-Event: #{gh_event}"
