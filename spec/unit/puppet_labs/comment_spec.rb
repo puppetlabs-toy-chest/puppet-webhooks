@@ -60,6 +60,26 @@ describe 'PuppetLabs::Comment' do
     end
   end
 
+  describe "#pull_request?" do
+    subject { PuppetLabs::Comment.new(:json => payload) }
+
+    context 'the comment was on a pull request' do
+      it 'returns true' do
+        expect(subject.pull_request?).to be
+      end
+    end
+
+    context 'the comment was on an issue' do
+      before :each do
+        subject.pull_request.stub(:html_url)
+      end
+
+      it 'returns false' do
+        expect(subject.pull_request?).to_not be
+      end
+    end
+  end
+
   context 'newly created comment' do
     subject { PuppetLabs::Comment.new(:json => payload) }
 
