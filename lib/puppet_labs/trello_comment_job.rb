@@ -14,7 +14,7 @@ class TrelloCommentJob < BaseTrelloJob
 
   def card_body
     [
-      "#{comment.author_login} wrote:",
+      "#{comment.author_login} commented:",
       '',
       comment.body,
     ].join("\n")
