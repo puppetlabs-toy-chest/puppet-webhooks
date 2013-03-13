@@ -1,4 +1,4 @@
-source :rubygems
+source 'https://rubygems.org'
 
 gem 'rake'
 # A dev database add-on is provisioned if the Ruby application has the pg gem
