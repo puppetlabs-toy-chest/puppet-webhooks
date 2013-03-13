@@ -352,6 +352,21 @@ With the specific hook URL:
       }
     }' https://api.github.com/repos/jeffmccune/puppet-webhooks/hooks/633908
 
+Importing
+----
+
+Existing PRs can be imported to the Trello board by exporting the necessary
+environment variables and then issuing:
+
+    $ rake import:prs REPO=puppetlabs/puppet
+    $ rake jobs:worksilent
+
+This will queue jobs for each PR currently open, then run a worker to process
+the queue.  This can be done on a standalone system, with a sqlite database
+configured in `config/database.yml`, after running `rake db:migrate`.
+
+Individual PRs can be imported by also specifying "PR=123".
+
 Examples
 ====
 
