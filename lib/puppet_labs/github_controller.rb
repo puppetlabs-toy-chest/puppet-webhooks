@@ -33,7 +33,7 @@ class GithubController < Controller
       controller = PuppetLabs::IssueController.new(options)
       return controller
     when 'issue_comment'
-      logger.info "Handling X-Github-Event (issues): #{gh_event}"
+      logger.info "Handling X-Github-Event (comments): #{gh_event}"
       comment = PuppetLabs::Comment.from_json(route.payload)
       options = @options.merge({
         :comment => comment
