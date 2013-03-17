@@ -1,12 +1,10 @@
 ## Puppet Dev Community Summary
 
------
-
  * Finished Card Total: **{{ cards.size }}**
 {% for section in sections %} * {{ section[0] }}: {{ section[1].size }}
 {% endfor %}
 
-{% for section in sections %}### {{ section[0] }}
+{% for section in sections %}## {{ section[0] }}
 
 {% for card in section[1] %}##### [{{card.title}}]({{card.url}})
 
