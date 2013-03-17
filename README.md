@@ -20,6 +20,8 @@ This project performs a job or jobs when a pull request event occurs on
    contains a comma separated list of board ID's.
  * [✓] Set the card due date to 2 PM next business day when a card is created
    if `TRELLO_SET_TARGET_RESPONSE_TIME=true`.
+ * [✓] Summarize finished cards on a periodic basis using `$ bundle exec rake
+   jobs:summary`
  * [ ] Copy a comment to the card when a comment is added to the pull request.
 
 [web-service-hook]: https://github.com/github/github-services/blob/master/services/web.rb
@@ -366,6 +368,58 @@ the queue.  This can be done on a standalone system, with a sqlite database
 configured in `config/database.yml`, after running `rake db:migrate`.
 
 Individual PRs can be imported by also specifying "PR=123".
+
+Finished Card Summary
+----
+
+A summary of finished cards may be produced using the `jobs:summary` rake task.
+This allows a summary document of work completed to be automatically generated.
+
+##### Configuration
+
+Use the github machine account to create a private gist and create a file named
+`SUMMARY.md`.  For example, https://gist.github.com/gepetto-bot/5166341.
+Configure the gist id using the `GITHUB_SUMMARY_GIST_ID` environment variable.
+
+    $ heroku config:set GITHUB_SUMMARY_GIST_ID=5166341 --app fast-reef-2454
+
+Configure the finished list id to scan finished cards from.  The app will scan
+card comments for a comment with a prefix of `summary:` and use this as the
+message for the card.  The app will scan the card labels for label names
+matching `status:` and group cards by these labels.  For example, `Status: Not
+Merged`, and `Status: Merged`.
+
+    $ heroku config:set TRELLO_FINISHED_LIST_ID=50bd46a84c27cb74100036c5 --app fast-reef-2454
+
+With these configuration variables set, test running the rake task works using
+`heroku run`.  If it does, then it should work using the heroku scheduler
+addon.
+
+    $ heroku run bundle exec rake jobs:summary --app fast-reef-2454
+    Running `bundle exec rake jobs:summary` attached to terminal... up, run.1334
+    Summarizing completed cards...
+    publish_summary_time_seconds=0.3944990634918213
+    summary_time_seconds=3.4219908714294434
+    gist_url=https://gist.github.com/5166341
+
+Finally, configure the scheduler to execute the job once per day.
+
+    $ heroku addons:add scheduler:standard --app fast-reef-2454
+    Adding scheduler:standard on fast-reef-2454... done
+    $ heroku addons:open scheduler --app fast-reef-2454
+    Opening scheduler:standard for fast-reef-2454... done
+
+Then add the following command to execute daily at 23:00 UTC:
+
+    bundle exec rake jobs:summary
+
+The template used to produce the summary may be configured using the
+`SUMMARY_TEMPLATE_URL` environment variable.  For example:
+
+    bundle exec rake jobs:summary SUMMARY_TEMPLATE_URL=https://raw.github.com/puppetlabs/puppet-webhooks/templates/templates/trello_template.md.liquid
+
+The default template is located at
+[trello_template.md.liquid](https://github.com/puppetlabs/puppet-webhooks/blob/templates/templates/trello_template.md.liquid).
 
 Examples
 ====

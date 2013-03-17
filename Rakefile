@@ -1,13 +1,16 @@
 $LOAD_PATH.unshift(File.expand_path('../lib', __FILE__))
 require 'rake'
+require 'gepetto_hooks'
+require 'benchmark'
 require 'erb'
 require 'sinatra/activerecord/rake'
 require 'puppet_labs/pull_request_app'
 require 'delayed/tasks'
 require 'puppet_labs/webhook'
 require 'rest_client'
+
 if not ENV['RACK_ENV']
-  ENV['RACK_ENV'] ||= 'development'
+  ENV['RACK_ENV'] ||= 'test'
 end
 
 pwd = File.expand_path('..', __FILE__)
@@ -98,6 +101,17 @@ namespace :jobs do
                         :max_priority => ENV['MAX_PRIORITY'],
                         :queues => (ENV['QUEUES'] || ENV['QUEUE'] || '').split(','),
                         :quiet => true).start
+  end
+
+  desc "Update the finished card summary (uses GITHUB_SUMMARY_GIST_ID,TRELLO_FINISHED_LIST_ID,SUMMARY_TEMPLATE_URL)"
+  task :summary => :environment do
+    puts "Summarizing completed cards..."
+    job = PuppetLabs::TrelloSummaryJob.new(:template_url => ENV['SUMMARY_TEMPLATE_URL'])
+    summary_time = Benchmark.measure do
+      job.perform
+    end
+    puts "summary_time_seconds=#{summary_time.real}"
+    puts "gist_url=#{job.gist_url}"
   end
 end
 
