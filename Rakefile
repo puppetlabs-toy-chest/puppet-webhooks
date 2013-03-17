@@ -10,7 +10,7 @@ require 'puppet_labs/webhook'
 require 'rest_client'
 
 if not ENV['RACK_ENV']
-  ENV['RACK_ENV'] ||= 'development'
+  ENV['RACK_ENV'] ||= 'test'
 end
 
 pwd = File.expand_path('..', __FILE__)
