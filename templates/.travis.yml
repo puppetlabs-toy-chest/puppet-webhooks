@@ -1,0 +1,17 @@
+language: ruby
+bundler_args: --without development
+script: "bundle exec rake spec RACK_ENV=test"
+rvm:
+  - 1.9.3
+  - ruby-head
+branches:
+  except:
+    - templates
+notifications:
+  email: false
+  webhooks:
+    urls:
+      - https://damp-gorge-6994.herokuapp.com/event/travis/
+    on_success: always
+    on_failure: always
+    on_start: true
