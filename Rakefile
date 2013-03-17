@@ -103,7 +103,7 @@ namespace :jobs do
                         :quiet => true).start
   end
 
-  desc "Update the finished card summary"
+  desc "Update the finished card summary (uses GITHUB_SUMMARY_GIST_ID,TRELLO_FINISHED_LIST_ID,SUMMARY_TEMPLATE_URL)"
   task :summary => :environment do
     puts "Summarizing completed cards..."
     job = PuppetLabs::TrelloSummaryJob.new(:template_url => ENV['SUMMARY_TEMPLATE_URL'])
