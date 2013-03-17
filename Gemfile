@@ -1,5 +1,7 @@
 source 'https://rubygems.org'
 
+gem 'gepetto_hooks', '>= 0', :path => File.expand_path('.'), :require => false
+
 gem 'rake'
 # A dev database add-on is provisioned if the Ruby application has the pg gem
 # in the Gemfile. This populates the DATABASE_URL environment var.
@@ -7,6 +9,7 @@ gem 'sinatra'
 gem 'ruby-trello'
 gem 'octokit' # github
 gem 'json'
+gem 'liquid'
 
 gem 'sinatra-activerecord'
 gem 'delayed_job_active_record'
