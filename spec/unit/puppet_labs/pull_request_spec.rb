@@ -36,6 +36,13 @@ describe 'PuppetLabs::PullRequest' do
       subject.load_data(data)
       subject.action.should == "opened"
     end
+
+    it "doesn't raise errors if the data has no key named `sender` or `user`" do
+      data['sender'] = nil
+      data['user'] = nil
+
+      expect { subject.load_data(data) }.to_not raise_error
+    end
   end
 
   describe "#action" do

@@ -56,8 +56,10 @@ class PullRequest
     @action = 'opened' if action.nil? && data['state'] == 'open'
     @created_at = pr['created_at']
     sender = data['sender'] || data['user']
-    @author = sender['login']
-    @author_avatar_url = sender['avatar_url']
+    if sender
+      @author = sender['login']
+      @author_avatar_url = sender['avatar_url']
+    end
   end
 end
 end
