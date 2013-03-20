@@ -89,8 +89,11 @@ module PuppetLabs
         return false unless json = json()
 
         if !(secret = ENV['TRAVIS_AUTH_TOKEN'].to_s).empty?
-          repo = "#{json['repository']['owner_name']}" +
-                 "/#{json['repository']['name']}"
+          if repodata = json['repository'] then
+            repo = "#{repodata['owner_name']}/#{repodata['name']}"
+          else
+            return false
+          end
           shared_secret = repo + secret
           auth_check = Digest::SHA2.hexdigest(shared_secret)
           if auth_check == request.env['HTTP_AUTHORIZATION']
@@ -186,10 +189,10 @@ module PuppetLabs
     end
 
     before '/event/*' do
-      authenticate!
-      request.body.rewind
       event_limit = ENV['STORED_EVENT_LIMIT'] ? ENV['STORED_EVENT_LIMIT'].to_i : 100
       save_event(:request => request, :payload => payload, :limit => event_limit)
+      authenticate!
+      request.body.rewind
     end
 
     ##
