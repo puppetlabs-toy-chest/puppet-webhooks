@@ -189,10 +189,10 @@ module PuppetLabs
     end
 
     before '/event/*' do
-      authenticate!
-      request.body.rewind
       event_limit = ENV['STORED_EVENT_LIMIT'] ? ENV['STORED_EVENT_LIMIT'].to_i : 100
       save_event(:request => request, :payload => payload, :limit => event_limit)
+      authenticate!
+      request.body.rewind
     end
 
     ##
