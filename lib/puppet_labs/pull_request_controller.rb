@@ -3,9 +3,7 @@ require 'puppet_labs/controller'
 
 module PuppetLabs
 class PullRequestController < Controller
-  attr_reader :pull_request,
-    :request,
-    :logger
+  attr_reader :pull_request
 
   def initialize(options = {})
     super(options)

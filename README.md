@@ -13,7 +13,6 @@ This project performs a job or jobs when a pull request event occurs on
  * [✓] Auto-scale the number of workers to zero when there are no jobs to perform.
  * [✓] Auto-scale the number of workers to one when there are jobs to perform.
  * [✓] Near real-time behavior, no polling intervals involved.
- * [✓] Near real-time behavior, no polling intervals involved.
  * [✓] Archive a Trello Card when a Pull Request is closed if `ARCHIVE_CARD` is
    `true` or `yes`.
  * [✓] Check multiple boards for the existence of a card if `TRELLO_BOARDS`
@@ -22,7 +21,7 @@ This project performs a job or jobs when a pull request event occurs on
    if `TRELLO_SET_TARGET_RESPONSE_TIME=true`.
  * [✓] Summarize finished cards on a periodic basis using `$ bundle exec rake
    jobs:summary`
- * [ ] Copy a comment to the card when a comment is added to the pull request.
+ * [✓] Copy a comment to the card when a comment is added to the pull request.
 
 [web-service-hook]: https://github.com/github/github-services/blob/master/services/web.rb
 
@@ -209,7 +208,9 @@ The Trello app key and secret can be retrieved from
 
 The Trello user token can be generated with various expiration dates and
 permissions via instructions at
-[https://trello.com/docs/gettingstarted/index.html#getting-a-token-from-a-user](https://trello.com/docs/gettingstarted/index.html#getting-a-token-from-a-user)
+[https://trello.com/docs/gettingstarted/index.html#getting-a-token-from-a-user](https://trello.com/docs/gettingstarted/index.html#getting-a-token-from-a-user).
+For this application to create and update Trello cards, you must supply a token
+with read and write access.
 
 The Trello list ID where the cards should be created.  To find this value,
 navigate to the Trello board that you are interested in in your browser and

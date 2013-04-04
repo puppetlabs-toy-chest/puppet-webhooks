@@ -3,9 +3,7 @@ require 'puppet_labs/controller'
 
 module PuppetLabs
 class IssueController < Controller
-  attr_reader :issue,
-    :request,
-    :logger
+  attr_reader :issue
 
   def initialize(options = {})
     super(options)
