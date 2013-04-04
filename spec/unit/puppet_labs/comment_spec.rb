@@ -40,7 +40,7 @@ describe 'PuppetLabs::Comment' do
     subject { PuppetLabs::Comment.new(:json => payload) }
 
     it 'is an instance of PuppetLabs::Issue' do
-      expect(subject.issue.instance_of?(PuppetLabs::Issue)).to be
+      subject.issue.should be_a_kind_of PuppetLabs::Issue
     end
   end
 
