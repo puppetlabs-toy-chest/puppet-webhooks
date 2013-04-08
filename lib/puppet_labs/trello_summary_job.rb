@@ -173,9 +173,16 @@ class TrelloSummaryJob < BaseTrelloJob
     completed_cards = summarize(finished_cards)
     card_sections = completed_cards.group_by {|c| c['section'] }
 
+    # Take advantage of Hash insertion order in 1.9 to produce a consistent
+    # ordering each time.
+    card_sections_ordered = {}
+    card_sections.keys.sort.each do |key|
+      card_sections_ordered[key] = card_sections[key]
+    end
+
     data = {
       'cards' => completed_cards,
-      'sections' => card_sections,
+      'sections' => card_sections_ordered,
       'time'  => { 'now' => Time.now },
       'template' => { 'url' => template_url, 'basename' => File.basename(template_url) },
     }
