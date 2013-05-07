@@ -4,6 +4,10 @@
 {% for section in sections %} * {{ section[0] }}: {{ section[1].size }}
 {% endfor %}
 
+Please see the team's current work in progress, outstanding pull requests, and
+backlog on the [Puppet Dev Community
+board](https://trello.com/board/puppet-dev-community/50bd46a84c27cb74100035f5).
+
 {% for section in sections %}## {{ section[0] }}
 
 {% for card in section[1] %}#### [{{card.title}}]({{card.url}})
