@@ -79,6 +79,47 @@ describe PuppetLabs::TrelloPullRequestJob do
     subject.card_body.should match(/!\[Jeff McCune\]\(http.*?\)/)
   end
 
+  describe 'cla status' do
+    let :time do
+      Time.parse("2010-08-17T04:00:00Z")
+    end
+    before :each do
+      subject.pull_request.stub(:signed_time).and_return(time)
+    end
+
+    context 'CLA_STATUS_CHECK=true' do
+      let :cla_api do
+        env = ENV.to_hash
+        env.merge!({'CLA_STATUS_CHECK' => 'true'})
+        PuppetLabs::ClaAPI.new(:env => env)
+      end
+      before :each do
+        subject.pull_request.stub(:cla_api).and_return(cla_api)
+      end
+      it 'includes the cla status in the body' do
+        subject.card_body.should match(/CLA Status \(PR Author\)/)
+      end
+      it 'indicates **NOT SIGNED** when signed time is not available' do
+        subject.pull_request.stub(:signed_time).and_return(nil)
+        subject.card_body.should match(/\*\*NOT SIGNED\*\*/)
+      end
+    end
+    context 'CLA_STATUS_CHECK is unset' do
+      let :cla_api do
+        env = ENV.to_hash
+        env.delete('CLA_STATUS_CHECK')
+        PuppetLabs::ClaAPI.new(:env => env)
+      end
+      before :each do
+        subject.pull_request.stub(:cla_api).and_return(cla_api)
+      end
+      it 'does not include the cla status' do
+        subject.card_body.should_not match(/CLA Status \(PR Author\)/)
+      end
+    end
+  end
+
+
   it 'queues the job' do
     subject.should_receive(:queue_job).with(subject, :queue => 'pull_request')
     subject.queue

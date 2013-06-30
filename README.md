@@ -22,6 +22,7 @@ This project performs a job or jobs when a pull request event occurs on
  * [✓] Summarize finished cards on a periodic basis using `$ bundle exec rake
    jobs:summary`
  * [✓] Copy a comment to the card when a comment is added to the pull request.
+ * [✓] Check the CLA status when `CLA_STATUS_CHECK=true`.
 
 [web-service-hook]: https://github.com/github/github-services/blob/master/services/web.rb
 
@@ -421,6 +422,18 @@ The template used to produce the summary may be configured using the
 
 The default template is located at
 [trello_template.md.liquid](https://github.com/puppetlabs/puppet-webhooks/blob/templates/templates/trello_template.md.liquid).
+
+CLA Status Check
+====
+
+The CLA status API at `https://cla.puppetlabs.com/api/v1/` may be used to check
+the Puppet Labs CLA status using the Github user id.  To enable this set the
+following three configuration variables.
+
+    heroku config:set \
+      CLA_STATUS_CHECK=true \
+      CLA_API_USERNAME=puppetlabs \
+      CLA_API_PASSWORD='changeme'
 
 Examples
 ====

@@ -10,6 +10,8 @@ gem 'ruby-trello'
 gem 'octokit' # github
 gem 'json'
 gem 'liquid'
+gem 'httparty'
+gem 'chronic_duration'
 
 gem 'sinatra-activerecord'
 gem 'delayed_job_active_record'

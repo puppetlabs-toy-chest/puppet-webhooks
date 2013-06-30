@@ -1,5 +1,6 @@
 require 'puppet_labs/base_trello_job'
 require 'puppet_labs/pull_request'
+require 'chronic_duration'
 
 module PuppetLabs
   ##
@@ -11,23 +12,43 @@ module PuppetLabs
 class TrelloPullRequestJob < BaseTrelloJob
   attr_accessor :pull_request
 
+  def cla_status(pr)
+    # The CLA status of the PR author
+    if cla_signed_time = pr.signed_time(pr.author)
+      age_num = Time.now - cla_signed_time
+      age = ChronicDuration.output(age_num, :units => 2)
+      "CLA Status (PR Author): **SIGNED** #{age} ago"
+    else
+      "CLA Status (PR Author): **NOT SIGNED**"
+    end
+  rescue PuppetLabs::ClaAPI::ApiError => detail
+    "CLA Status (PR Author): **[UNKNOWN](https://cla.puppetlabs.com/admin/users?q=#{pr.author}&commit=Search)**"
+  end
+
   def card_body
     pr = pull_request
+
     str = [ 'Contributor Information',
             '----',
             '',
             "![#{pr.author_name}](#{pr.author_avatar_url})",
             '',
-            " * Author: **#{pr.author_name}** <#{pr.author_email}>",
-            " * Company: #{pr.author_company}",
-            " * Github ID: [#{pr.author}](#{pr.author_html_url})",
-            " * [Pull Request #{pr.number} Discussion](#{pr.html_url})",
-            " * [File Diff](#{pr.html_url}/files)",
-            '',
-            'Pull Request',
-            '====',
-            pr.body,
-    ].join("\n")
+            " * Author: **#{pr.author_name}** <#{pr.author_email}>"
+    ].join("\n") << "\n"
+
+    if pr.cla_enabled?
+      str << " * #{cla_status(pr)}\n"
+    end
+
+    str << [ " * Company: #{pr.author_company}",
+             " * Github ID: [#{pr.author}](#{pr.author_html_url})",
+             " * [Pull Request #{pr.number} Discussion](#{pr.html_url})",
+             " * [File Diff](#{pr.html_url}/files)",
+             '',
+             'Pull Request',
+             '====',
+             pr.body,
+    ].join("\n") << "\n"
   end
 
   def card_identifier

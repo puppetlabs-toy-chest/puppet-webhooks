@@ -1,10 +1,13 @@
 require 'json'
 require 'puppet_labs/github_mix'
+require 'puppet_labs/cla_mix'
 
 # This class provides a model of a pull rquest.
 module PuppetLabs
 class PullRequest
   include GithubMix
+  include ClaMix
+
   # Pull request data
   attr_reader :number,
     :env,
