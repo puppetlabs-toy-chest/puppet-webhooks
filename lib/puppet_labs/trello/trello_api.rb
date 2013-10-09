@@ -1,6 +1,7 @@
 require 'trello'
 
 module PuppetLabs
+module Trello
 ##
 # TrelloAPI implements behaviors specific to creating cards on the Puppet
 # Community board.  This code is based on the `RMT::Trello` class described at
@@ -104,5 +105,6 @@ class TrelloAPI
   def sanitize_utf8(str)
     str.each_char.map { |c| c.valid_encoding? ? c : "\ufffd"}.join
   end
+end
 end
 end

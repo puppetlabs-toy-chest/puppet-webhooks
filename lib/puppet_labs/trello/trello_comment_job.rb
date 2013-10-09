@@ -1,7 +1,8 @@
-require 'puppet_labs/base_trello_job'
+require 'puppet_labs/trello/base_trello_job'
 require 'puppet_labs/comment'
 
 module PuppetLabs
+module Trello
 ##
 # TrelloCommentJob is responsible for performing the action of updating a
 # Trello card based on a bunch of Comment data.  This data generally comes from
@@ -48,5 +49,6 @@ class TrelloCommentJob < BaseTrelloJob
     end
     true
   end
+end
 end
 end
