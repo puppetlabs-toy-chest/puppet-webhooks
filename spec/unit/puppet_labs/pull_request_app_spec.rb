@@ -34,7 +34,7 @@ describe 'PuppetLabs::PullRequestApp' do
     end
 
     let (:route) { '/event/github' }
-    let (:job) { PuppetLabs::TrelloIssueJob.new }
+    let (:job) { PuppetLabs::Trello::TrelloIssueJob.new }
 
     describe '/event/github' do
       it "responds to /event/github", :focus => true do
@@ -54,7 +54,7 @@ describe 'PuppetLabs::PullRequestApp' do
     end
 
     let (:route) { '/event/github' }
-    let (:job) { PuppetLabs::TrelloPullRequestJob.new }
+    let (:job) { PuppetLabs::Trello::TrelloPullRequestJob.new }
 
     describe '/event/github' do
       it "responds to /event/github" do
@@ -98,7 +98,7 @@ describe 'PuppetLabs::PullRequestApp' do
 
       it "creates a TrelloPullRequestJob" do
         fake_job = job
-        PuppetLabs::TrelloPullRequestJob.should_receive(:new).and_return(fake_job)
+        PuppetLabs::Trello::TrelloPullRequestJob.should_receive(:new).and_return(fake_job)
         post route, params, env
       end
 
@@ -135,7 +135,7 @@ describe 'PuppetLabs::PullRequestApp' do
           fake_job = job
           pr_model = PuppetLabs::PullRequest.new(:json => payload_closed)
           PuppetLabs::PullRequest.stub(:from_json).with(payload_closed).and_return(pr_model)
-          PuppetLabs::TrelloPullRequestJob.stub(:new).and_return(fake_job)
+          PuppetLabs::Trello::TrelloPullRequestJob.stub(:new).and_return(fake_job)
         end
 
         it "responds with 202" do

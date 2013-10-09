@@ -1,11 +1,8 @@
 require 'spec_helper'
-require 'puppet_labs/trello_pull_request_job'
+require 'puppet_labs/trello/trello_pull_request_job'
 
-describe PuppetLabs::BaseTrelloJob do
-  subject do
-    job = PuppetLabs::BaseTrelloJob.new
-    job
-  end
+describe PuppetLabs::Trello::BaseTrelloJob do
+  subject { described_class.new }
 
   describe '#save_settings' do
     let(:env) do

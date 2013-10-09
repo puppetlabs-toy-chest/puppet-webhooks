@@ -1,14 +1,14 @@
 require 'spec_helper'
-require 'puppet_labs/trello_comment_job'
+require 'puppet_labs/trello/trello_comment_job'
 
-describe PuppetLabs::TrelloCommentJob do
+describe PuppetLabs::Trello::TrelloCommentJob do
   class FakeError < StandardError; end
 
   let(:payload) { read_fixture("example_comment.json") }
   let (:comment) { PuppetLabs::Comment.new(:json => payload) }
 
   let :fake_api do
-    fake_api = double(PuppetLabs::TrelloAPI)
+    fake_api = double(PuppetLabs::Trello::TrelloAPI)
     fake_api.stub(:create_card)
     fake_api
   end
@@ -18,7 +18,7 @@ describe PuppetLabs::TrelloCommentJob do
   end
 
   subject do
-    job = PuppetLabs::TrelloCommentJob.new
+    job = PuppetLabs::Trello::TrelloCommentJob.new
     job.comment = comment
     job
   end

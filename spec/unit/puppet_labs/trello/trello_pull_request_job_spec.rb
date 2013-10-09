@@ -1,14 +1,14 @@
 require 'spec_helper'
-require 'puppet_labs/trello_pull_request_job'
+require 'puppet_labs/trello/trello_pull_request_job'
 
-describe PuppetLabs::TrelloPullRequestJob do
+describe PuppetLabs::Trello::TrelloPullRequestJob do
   class FakeError < StandardError; end
 
   let(:payload) { read_fixture("example_pull_request.json") }
   let (:pr) { PuppetLabs::PullRequest.new(:json => payload) }
 
   let :fake_api do
-    fake_api = double(PuppetLabs::TrelloAPI)
+    fake_api = double(PuppetLabs::Trello::TrelloAPI)
     fake_api.stub(:create_card)
     fake_api
   end
@@ -22,7 +22,7 @@ describe PuppetLabs::TrelloPullRequestJob do
   end
 
   subject do
-    job = PuppetLabs::TrelloPullRequestJob.new
+    job = PuppetLabs::Trello::TrelloPullRequestJob.new
     job.pull_request = PuppetLabs::PullRequest.new(:json => payload)
     job
   end
@@ -139,14 +139,14 @@ describe PuppetLabs::TrelloPullRequestJob do
   end
 end
 
-describe PuppetLabs::TrelloPullRequestClosedJob do
+describe PuppetLabs::Trello::TrelloPullRequestClosedJob do
   class FakeError < StandardError; end
 
   let(:payload) { read_fixture("example_pull_request_closed.json") }
   let (:pr) { PuppetLabs::PullRequest.new(:json => payload) }
 
   let :fake_api do
-    fake_api = double(PuppetLabs::TrelloAPI)
+    fake_api = double(PuppetLabs::Trello::TrelloAPI)
     fake_api.stub(:create_card)
     fake_api.stub(:all_cards_on_board_of).and_return([])
     fake_api
@@ -161,7 +161,7 @@ describe PuppetLabs::TrelloPullRequestClosedJob do
   end
 
   subject do
-    job = PuppetLabs::TrelloPullRequestClosedJob.new
+    job = PuppetLabs::Trello::TrelloPullRequestClosedJob.new
     job.pull_request = PuppetLabs::PullRequest.new(:json => payload)
     job
   end
