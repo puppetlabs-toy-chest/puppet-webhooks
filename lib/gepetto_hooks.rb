@@ -13,7 +13,7 @@ require 'puppet_labs/github/pull_request_controller'
 require 'puppet_labs/sinatra_dj'
 require 'puppet_labs/webhook'
 
-require 'puppet_labs/trello/trello/card'
+require 'puppet_labs/trello/card'
 require 'puppet_labs/trello/trello_api'
 require 'puppet_labs/trello/trello_issue_job'
 require 'puppet_labs/trello/trello_pull_request_job'
