@@ -1,4 +1,4 @@
-require 'puppet_labs/trello_comment_job'
+require 'puppet_labs/trello/trello_comment_job'
 require 'puppet_labs/controller'
 
 module PuppetLabs
