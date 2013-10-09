@@ -1,5 +1,5 @@
 require 'spec_helper'
-require 'puppet_labs/issue'
+require 'puppet_labs/github/issue'
 
 describe 'PuppetLabs::Issue' do
   subject { PuppetLabs::Issue.new }

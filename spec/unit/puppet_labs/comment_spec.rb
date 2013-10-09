@@ -1,5 +1,5 @@
 require 'spec_helper'
-require 'puppet_labs/comment'
+require 'puppet_labs/github/comment'
 
 describe 'PuppetLabs::Comment' do
   subject { PuppetLabs::Comment.new }

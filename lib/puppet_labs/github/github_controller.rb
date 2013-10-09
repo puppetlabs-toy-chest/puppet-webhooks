@@ -1,7 +1,7 @@
-require 'puppet_labs/controller'
-require 'puppet_labs/pull_request_controller'
-require 'puppet_labs/issue_controller'
-require 'puppet_labs/comment_controller'
+require 'puppet_labs/github/controller'
+require 'puppet_labs/github/pull_request_controller'
+require 'puppet_labs/github/issue_controller'
+require 'puppet_labs/github/comment_controller'
 
 module PuppetLabs
 class GithubController < Controller

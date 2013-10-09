@@ -1,5 +1,5 @@
 require 'puppet_labs/trello/base_trello_job'
-require 'puppet_labs/pull_request'
+require 'puppet_labs/github/pull_request'
 
 module PuppetLabs
 module Trello

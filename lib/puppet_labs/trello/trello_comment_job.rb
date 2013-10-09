@@ -1,5 +1,5 @@
 require 'puppet_labs/trello/base_trello_job'
-require 'puppet_labs/comment'
+require 'puppet_labs/github/comment'
 
 module PuppetLabs
 module Trello

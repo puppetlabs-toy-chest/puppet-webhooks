@@ -1,5 +1,5 @@
 require 'spec_helper'
-require 'puppet_labs/pull_request'
+require 'puppet_labs/github/pull_request'
 
 describe 'PuppetLabs::PullRequest' do
   subject { PuppetLabs::PullRequest.new }

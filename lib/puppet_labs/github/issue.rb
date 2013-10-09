@@ -1,5 +1,5 @@
 require 'json'
-require 'puppet_labs/pull_request'
+require 'puppet_labs/github/pull_request'
 
 # This class provides a model of a github issue.
 module PuppetLabs

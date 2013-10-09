@@ -1,5 +1,5 @@
 require 'spec_helper'
-require 'puppet_labs/github_mix'
+require 'puppet_labs/github/github_mix'
 
 describe "PuppetLabs::GithubMix mixin" do
   class FakeJob

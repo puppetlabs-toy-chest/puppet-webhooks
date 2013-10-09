@@ -1,4 +1,4 @@
-require 'puppet_labs/github_api'
+require 'puppet_labs/github/github_api'
 
 module PuppetLabs
 module GithubMix

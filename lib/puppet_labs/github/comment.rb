@@ -1,5 +1,5 @@
 require 'json'
-require 'puppet_labs/issue'
+require 'puppet_labs/github/issue'
 
 # This class provides a model of a GitHub comment.
 module PuppetLabs
