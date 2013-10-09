@@ -3,6 +3,7 @@ require 'puppet_labs/github/pull_request'
 
 # This class provides a model of a github issue.
 module PuppetLabs
+module Github
 class Issue
   # Issue data
   attr_reader :number,
@@ -31,10 +32,11 @@ class Issue
     @body = data['issue']['body']
     @repo_name = data['repository']['name']
     @action = data['action']
-    @pull_request = ::PuppetLabs::PullRequest.from_json(JSON.dump({
+    @pull_request = ::PuppetLabs::Github::PullRequest.from_json(JSON.dump({
       'pull_request' => data['issue']['pull_request'],
       'repository' => data['repository']
     }))
   end
+end
 end
 end

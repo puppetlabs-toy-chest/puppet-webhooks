@@ -1,6 +1,7 @@
 require 'octokit'
 
 module PuppetLabs
+module Github
 class GithubAPI
   attr_reader :env
 
@@ -19,5 +20,6 @@ class GithubAPI
   def account(login)
     @accounts[login] ||= github_api.user(login)
   end
+end
 end
 end

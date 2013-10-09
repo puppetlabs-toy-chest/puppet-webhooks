@@ -1,9 +1,9 @@
 require 'spec_helper'
 require 'puppet_labs/github/github_mix'
 
-describe "PuppetLabs::GithubMix mixin" do
+describe "PuppetLabs::Github::GithubMix mixin" do
   class FakeJob
-    include PuppetLabs::GithubMix
+    include PuppetLabs::Github::GithubMix
     def author
       @author ||= 'jeffmccune'
     end

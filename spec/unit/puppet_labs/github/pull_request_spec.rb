@@ -1,26 +1,26 @@
 require 'spec_helper'
 require 'puppet_labs/github/pull_request'
 
-describe 'PuppetLabs::PullRequest' do
-  subject { PuppetLabs::PullRequest.new }
+describe 'PuppetLabs::Github::PullRequest' do
+  subject { PuppetLabs::Github::PullRequest.new }
   let(:payload) { read_fixture("example_pull_request.json") }
   let(:data)    { JSON.load(payload) }
 
   it 'creates a new instance using the from_json class method' do
-    pr = PuppetLabs::PullRequest.from_json(payload)
+    pr = PuppetLabs::Github::PullRequest.from_json(payload)
   end
 
   it 'creates a new instance using the from_data class method' do
-    pr = PuppetLabs::PullRequest.from_data(data)
+    pr = PuppetLabs::Github::PullRequest.from_data(data)
   end
 
   it 'initializes with json' do
-    pr = PuppetLabs::PullRequest.new(:json => payload)
+    pr = PuppetLabs::Github::PullRequest.new(:json => payload)
     pr.action.should == "opened"
   end
 
   it 'initializes with data hash' do
-    pr = PuppetLabs::PullRequest.new(:data => data)
+    pr = PuppetLabs::Github::PullRequest.new(:data => data)
     pr.action.should == "opened"
   end
 
@@ -62,7 +62,7 @@ describe 'PuppetLabs::PullRequest' do
   end
 
   context 'newly created pull request' do
-    subject { PuppetLabs::PullRequest.new(:json => payload) }
+    subject { PuppetLabs::Github::PullRequest.new(:json => payload) }
 
     it 'has a number' do
       subject.number.should == data['pull_request']['number']
@@ -98,7 +98,7 @@ describe 'PuppetLabs::PullRequest' do
 
   context 'existing pull request' do
     let(:payload) { read_fixture("example_pull_request_by_id.json") }
-    subject { PuppetLabs::PullRequest.new(:json => payload) }
+    subject { PuppetLabs::Github::PullRequest.new(:json => payload) }
 
     it 'has a number' do
       subject.number.should == data['number']

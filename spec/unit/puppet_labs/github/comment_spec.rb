@@ -1,17 +1,17 @@
 require 'spec_helper'
 require 'puppet_labs/github/comment'
 
-describe 'PuppetLabs::Comment' do
-  subject { PuppetLabs::Comment.new }
+describe 'PuppetLabs::Github::Comment' do
+  subject { PuppetLabs::Github::Comment.new }
   let(:payload) { read_fixture("example_comment.json") }
   let(:data)    { JSON.load(payload) }
 
   it 'creates a new instance using the from_json class method' do
-    PuppetLabs::Comment.from_json(payload)
+    PuppetLabs::Github::Comment.from_json(payload)
   end
 
   it 'initializes with json' do
-    comment = PuppetLabs::Comment.new(:json => payload)
+    comment = PuppetLabs::Github::Comment.new(:json => payload)
     comment.action.should == "created"
   end
 
@@ -37,23 +37,23 @@ describe 'PuppetLabs::Comment' do
   end
 
   describe "#issue" do
-    subject { PuppetLabs::Comment.new(:json => payload) }
+    subject { PuppetLabs::Github::Comment.new(:json => payload) }
 
-    it 'is an instance of PuppetLabs::Issue' do
-      subject.issue.should be_a_kind_of PuppetLabs::Issue
+    it 'is an instance of PuppetLabs::Github::Issue' do
+      subject.issue.should be_a_kind_of PuppetLabs::Github::Issue
     end
   end
 
   describe "#pull_request" do
-    subject { PuppetLabs::Comment.new(:json => payload) }
+    subject { PuppetLabs::Github::Comment.new(:json => payload) }
 
-    it 'is an instance of PuppetLabs::PullRequest' do
-      expect(subject.pull_request.instance_of?(PuppetLabs::PullRequest)).to be
+    it 'is an instance of PuppetLabs::Github::PullRequest' do
+      expect(subject.pull_request.instance_of?(PuppetLabs::Github::PullRequest)).to be
     end
   end
 
   describe "#repo_name" do
-    subject { PuppetLabs::Comment.new(:json => payload) }
+    subject { PuppetLabs::Github::Comment.new(:json => payload) }
 
     it 'delegates from the issue' do
       expect(subject.repo_name).to eq subject.issue.repo_name
@@ -61,7 +61,7 @@ describe 'PuppetLabs::Comment' do
   end
 
   describe "#pull_request?" do
-    subject { PuppetLabs::Comment.new(:json => payload) }
+    subject { PuppetLabs::Github::Comment.new(:json => payload) }
 
     context 'the comment was on a pull request' do
       it 'returns true' do
@@ -81,7 +81,7 @@ describe 'PuppetLabs::Comment' do
   end
 
   context 'newly created comment' do
-    subject { PuppetLabs::Comment.new(:json => payload) }
+    subject { PuppetLabs::Github::Comment.new(:json => payload) }
 
     it 'has a body' do
       subject.body.should == data['comment']['body']

@@ -3,6 +3,7 @@ require 'puppet_labs/github/github_mix'
 
 # This class provides a model of a pull rquest.
 module PuppetLabs
+module Github
 class PullRequest
   include GithubMix
   # Pull request data
@@ -61,5 +62,6 @@ class PullRequest
       @author_avatar_url = sender['avatar_url']
     end
   end
+end
 end
 end

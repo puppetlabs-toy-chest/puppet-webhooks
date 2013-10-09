@@ -5,7 +5,7 @@ describe PuppetLabs::Trello::TrelloIssueJob do
   class FakeError < StandardError; end
 
   let(:payload) { read_fixture("example_issue.json") }
-  let (:issue) { PuppetLabs::Issue.new(:json => payload) }
+  let (:issue) { PuppetLabs::Github::Issue.new(:json => payload) }
 
   let :fake_api do
     fake_api = double(PuppetLabs::Trello::TrelloAPI)
@@ -30,7 +30,7 @@ describe PuppetLabs::Trello::TrelloIssueJob do
 
   subject do
     job = PuppetLabs::Trello::TrelloIssueJob.new
-    job.issue = PuppetLabs::Issue.new(:json => payload)
+    job.issue = PuppetLabs::Github::Issue.new(:json => payload)
     job
   end
 

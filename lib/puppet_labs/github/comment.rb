@@ -3,6 +3,7 @@ require 'puppet_labs/github/issue'
 
 # This class provides a model of a GitHub comment.
 module PuppetLabs
+module Github
 class Comment
   # Comment data
   attr_reader :body,
@@ -25,7 +26,7 @@ class Comment
     data = JSON.load(json)
     @body = data['comment']['body']
     @action = data['action']
-    @issue = ::PuppetLabs::Issue.from_json(json)
+    @issue = ::PuppetLabs::Github::Issue.from_json(json)
     @pull_request = @issue.pull_request
     @repo_name = @issue.repo_name
     @author_login = data['sender']['login']
@@ -38,5 +39,6 @@ class Comment
   def pull_request?
     !!issue.pull_request.html_url
   end
+end
 end
 end

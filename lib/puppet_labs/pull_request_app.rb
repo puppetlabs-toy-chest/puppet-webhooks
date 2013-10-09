@@ -249,7 +249,7 @@ module PuppetLabs
       payload = payload()
 
       controller_options = { :route => self, :request => request }
-      gh_controller = GithubController.new(controller_options)
+      gh_controller = Github::GithubController.new(controller_options)
 
       if event_controller = gh_controller.event_controller
         (status_code, headers_hsh, response_body) = event_controller.run

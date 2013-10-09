@@ -2,6 +2,7 @@ require 'puppet_labs/trello/trello_issue_job'
 require 'puppet_labs/github/controller'
 
 module PuppetLabs
+module Github
 class IssueController < Controller
   attr_reader :issue
 
@@ -36,5 +37,6 @@ class IssueController < Controller
       return [OK, {}, body]
     end
   end
+end
 end
 end

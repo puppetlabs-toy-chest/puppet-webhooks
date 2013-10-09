@@ -1,9 +1,10 @@
 require 'puppet_labs/github/github_api'
 
 module PuppetLabs
+module Github
 module GithubMix
   def github
-    @github ||= PuppetLabs::GithubAPI.new(:env => env)
+    @github ||= PuppetLabs::Github::GithubAPI.new(:env => env)
   end
 
   def author_name
@@ -26,5 +27,6 @@ module GithubMix
   def author_html_url
     github.account(author)['html_url']
   end
+end
 end
 end

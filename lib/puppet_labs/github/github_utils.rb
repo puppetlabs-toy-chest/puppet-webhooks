@@ -1,4 +1,5 @@
 module PuppetLabs
+module Github
 module GithubUtils
   ##
   # github_data parses and returns the full object presented in the payload.
@@ -11,5 +12,6 @@ module GithubUtils
   def github_payload(request)
     JSON.load(request['payload'])
   end
+end
 end
 end

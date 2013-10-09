@@ -2,6 +2,7 @@ require 'puppet_labs/trello/trello_comment_job'
 require 'puppet_labs/github/controller'
 
 module PuppetLabs
+module Github
 class CommentController < Controller
   attr_reader :comment
 
@@ -35,5 +36,6 @@ class CommentController < Controller
     }
     return [ACCEPTED, {}, body]
   end
+end
 end
 end

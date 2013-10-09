@@ -2,6 +2,7 @@ require 'puppet_labs/trello/trello_pull_request_job'
 require 'puppet_labs/github/controller'
 
 module PuppetLabs
+module Github
 class PullRequestController < Controller
   attr_reader :pull_request
 
@@ -41,5 +42,6 @@ class PullRequestController < Controller
     }
     return [ACCEPTED, {}, body]
   end
+end
 end
 end

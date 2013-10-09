@@ -1,4 +1,5 @@
 module PuppetLabs
+module Github
 class Controller
   NO_CONTENT = 204
   ACCEPTED = 202
@@ -22,5 +23,6 @@ class Controller
       @logger = Logger.new(STDOUT)
     end
   end
+end
 end
 end

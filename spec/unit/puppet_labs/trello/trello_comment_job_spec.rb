@@ -5,7 +5,7 @@ describe PuppetLabs::Trello::TrelloCommentJob do
   class FakeError < StandardError; end
 
   let(:payload) { read_fixture("example_comment.json") }
-  let (:comment) { PuppetLabs::Comment.new(:json => payload) }
+  let (:comment) { PuppetLabs::Github::Comment.new(:json => payload) }
 
   let :fake_api do
     fake_api = double(PuppetLabs::Trello::TrelloAPI)
@@ -35,7 +35,7 @@ describe PuppetLabs::Trello::TrelloCommentJob do
   before :each do
     subject.stub(:display_card)
     subject.stub(:trello_api).and_return(fake_api)
-    PuppetLabs::GithubAPI.any_instance.stub(:account).with('jeffmccune').and_return(github_account)
+    PuppetLabs::Github::GithubAPI.any_instance.stub(:account).with('jeffmccune').and_return(github_account)
   end
 
   it 'stores a comment' do
