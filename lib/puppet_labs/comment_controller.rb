@@ -17,7 +17,7 @@ class CommentController < Controller
   def run
     case comment.action
     when "created"
-      job = PuppetLabs::TrelloCommentJob.new
+      job = PuppetLabs::Trello::TrelloCommentJob.new
     else
       logger.info "Ignoring comment on #{comment.repo_name}/#{comment.issue.number} because the action is #{comment.action}."
       body = { 'message' => 'Action has been ignored.' }
