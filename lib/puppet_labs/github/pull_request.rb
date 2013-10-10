@@ -81,6 +81,10 @@ class PullRequest
 
     desc
   end
+
+  def summary
+    "Pull Request #{number}: #{title} [#{author_name}]"
+  end
 end
 end
 end

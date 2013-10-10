@@ -132,33 +132,69 @@ describe 'PuppetLabs::Github::PullRequest' do
     end
   end
 
+  shared_context 'stub Github API' do
+    let(:github_account) do
+      {
+        'name' => 'Github user',
+        'email' => 'user@fqdn.blackhole',
+        'company' => 'Company Inc.',
+        'html_url' => 'fqdn.blackhole',
+      }
+    end
+
+    before :each do
+      github_api = double('github api', :account => github_account)
+      pull_request.stub(:github).and_return github_api
+    end
+  end
+
   context '#description' do
     let(:pull_request) { PuppetLabs::Github::PullRequest.new(:json => payload) }
 
-    subject(:description) { pull_request.description }
+    subject { pull_request.description }
+    include_context 'stub Github API'
 
     it "contains the author name" do
-      description.should match pull_request.author_name
+      subject.should match pull_request.author_name
     end
 
     it "contains the author Github ID" do
-      description.should match pull_request.author
+      subject.should match pull_request.author
     end
 
     it "contains the pull request number" do
-      description.should match pull_request.number.to_s
+      subject.should match pull_request.number.to_s
     end
 
     it "contains a link to the discussion" do
-      description.should match pull_request.html_url
+      subject.should match pull_request.html_url
     end
 
     it "contains a link to the file diff" do
-      description.should match "#{pull_request.html_url}/files"
+      subject.should match "#{pull_request.html_url}/files"
     end
 
     it "contains the body of the pull request message" do
-      description.should match pull_request.body
+      subject.should match pull_request.body
+    end
+  end
+
+  context '#summary' do
+    let(:pull_request) { PuppetLabs::Github::PullRequest.new(:json => payload) }
+
+    subject { pull_request.summary }
+    include_context 'stub Github API'
+
+    it "contains the pull request number" do
+      subject.should match pull_request.number.to_s
+    end
+
+    it "contains the pull request title" do
+      subject.should match pull_request.title
+    end
+
+    it "contains the pull request author name" do
+      subject.should match pull_request.author_name
     end
   end
 end

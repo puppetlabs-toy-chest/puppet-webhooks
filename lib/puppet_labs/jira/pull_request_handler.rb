@@ -43,14 +43,6 @@ module PuppetLabs
           }
         })
       end
-
-      ## - this all should be extracted
-
-      def summary
-        pr = @pull_request
-        "Pull Request #{pr.number}: #{pr.title} [#{pr.author_name}]"
-      end
-
     end
   end
 end
