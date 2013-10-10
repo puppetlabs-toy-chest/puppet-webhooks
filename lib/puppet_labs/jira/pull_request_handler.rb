@@ -51,23 +51,6 @@ module PuppetLabs
         "Pull Request #{pr.number}: #{pr.title} [#{pr.author_name}]"
       end
 
-      def description
-        pr = @pull_request
-        msg <<-DESC.gsub(/^ {10}/, '')
-          ----
-
-           * Author: **#{pr.author_name}** <#{pr.author_email}>",
-           * Company: #{pr.author_company}",
-           * Github ID: [#{pr.author}](#{pr.author_html_url})",
-           * [Pull Request #{pr.number} Discussion](#{pr.html_url})",
-           * [File Diff](#{pr.html_url}/files)",
-
-          Pull Request Description
-          ====
-
-          #{pr.body}
-        DESC
-      end
     end
   end
 end

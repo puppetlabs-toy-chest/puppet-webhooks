@@ -131,4 +131,34 @@ describe 'PuppetLabs::Github::PullRequest' do
       subject.author_avatar_url.should == data['user']['avatar_url']
     end
   end
+
+  context '#description' do
+    let(:pull_request) { PuppetLabs::Github::PullRequest.new(:json => payload) }
+
+    subject(:description) { pull_request.description }
+
+    it "contains the author name" do
+      description.should match pull_request.author_name
+    end
+
+    it "contains the author Github ID" do
+      description.should match pull_request.author
+    end
+
+    it "contains the pull request number" do
+      description.should match pull_request.number.to_s
+    end
+
+    it "contains a link to the discussion" do
+      description.should match pull_request.html_url
+    end
+
+    it "contains a link to the file diff" do
+      description.should match "#{pull_request.html_url}/files"
+    end
+
+    it "contains the body of the pull request message" do
+      description.should match pull_request.body
+    end
+  end
 end
