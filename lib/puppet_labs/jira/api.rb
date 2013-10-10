@@ -12,7 +12,7 @@ module PuppetLabs
           :password     => env['JIRA_PASSWORD'],
           :site         => env['JIRA_SITE'],
           :context_path => env['JIRA_CONTEXT_PATH'],
-          :use_ssl      => (env['JIRA_USE_SSL'] || true),
+          :use_ssl      => (env['JIRA_USE_SSL'] == "true"),
           :auth_type    => :basic,
         }
 
