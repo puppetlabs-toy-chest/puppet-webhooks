@@ -6,16 +6,14 @@ module PuppetLabs
 
       include PuppetLabs::SinatraDJ
 
+      include PuppetLabs::Jira::API
+
       def queue(options={:queue => queue_name})
         queue_job(self, options)
       end
 
       def queue_name
         'jira'
-      end
-
-      def api
-        API.api
       end
     end
   end
