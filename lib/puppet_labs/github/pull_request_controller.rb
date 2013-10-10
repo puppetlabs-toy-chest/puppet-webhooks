@@ -33,15 +33,31 @@ class PullRequestController < Controller
       return [OK, {}, body]
     end
 
+    jira_job = PuppetLabs::Jira::PullRequestHandler.new
+    jira_job.pull_request = pull_request
+    jira_delayed = jira_job.queue
+
     job.pull_request = pull_request
     delayed_job = job.queue
     logger.info "Successfully queued up #{job.class} (#{pull_request.repo_name}/#{pull_request.number}) as job #{delayed_job.id}"
+
     body = {
-      'job_id' => delayed_job.id,
-      'queue' => delayed_job.queue,
-      'priority' => delayed_job.priority,
-      'created_at' => delayed_job.created_at,
+      'trello' => {
+        'job_id' => delayed_job.id,
+        'queue' => delayed_job.queue,
+        'priority' => delayed_job.priority,
+        'created_at' => delayed_job.created_at,
+      },
+      'jira' => {
+        'job_id' => jira_delayed.id,
+        'queue' => jira_delayed.queue,
+        'priority' => jira_delayed.priority,
+        'created_at' => jira_delayed.created_at,
+      }
     }
+
+    logger.info body.inspect
+
     return [ACCEPTED, {}, body]
   end
 end
