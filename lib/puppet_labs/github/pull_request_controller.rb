@@ -1,6 +1,8 @@
 require 'puppet_labs/trello/trello_pull_request_job'
 require 'puppet_labs/github/controller'
 
+require 'puppet_labs/jira'
+
 module PuppetLabs
 module Github
 class PullRequestController < Controller
