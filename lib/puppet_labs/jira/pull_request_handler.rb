@@ -9,7 +9,7 @@ module PuppetLabs
       attr_accessor :pull_request
 
       def perform
-        logger.info "Running Jira Pull Request handler with action #{pull_request.action}: (#{summary})"
+        logger.info "Running Jira Pull Request handler with action #{pull_request.action}: (#{pull_request.title})"
 
         case pull_request.action
         when 'opened'
@@ -32,14 +32,14 @@ module PuppetLabs
       end
 
       def create
-        logger.info "Creating new issue: #{summary}"
+        logger.info "Creating new issue: #{pull_request.title}"
 
         issue = api.Issue.build
 
         issue.save!({
           'fields' => {
-            'summary'     => summary,
-            'description' => description,
+            'summary'     => pull_request.summary,
+            'description' => pull_request.description,
           }
         })
       end
