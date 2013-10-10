@@ -17,7 +17,7 @@ module PuppetLabs
 
 
       def self.from_options(options)
-        client = ::Jira::Client.new(options)
+        client = ::JIRA::Client.new(options)
         new(client)
       end
 
