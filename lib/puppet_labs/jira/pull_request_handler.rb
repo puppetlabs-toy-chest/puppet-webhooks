@@ -36,12 +36,22 @@ module PuppetLabs
 
         issue = api.Issue.build
 
-        issue.save!({
+        saved = issue.save({
           'fields' => {
-            'summary'     => pull_request.summary,
+            'summary' => pull_request.summary,
             'description' => pull_request.description,
+            'project' => {
+              'key' => self.project,
+            },
+            'issuetype' => {
+              'name' => 'Task',
+            }
           }
         })
+
+        if not saved
+          logger.error "Failed to save #{pull_request.title}: #{issue.attrs['errors']}"
+        end
       end
     end
   end

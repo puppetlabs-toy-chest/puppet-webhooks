@@ -15,6 +15,10 @@ module PuppetLabs
       def queue_name
         'jira'
       end
+
+      def project
+        ENV['JIRA_PROJECT']
+      end
     end
   end
 end
