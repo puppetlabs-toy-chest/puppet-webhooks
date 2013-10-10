@@ -39,4 +39,7 @@ group :production do
   gem 'pg'
 end
 
+group :jira do
+  gem 'jira-ruby', :require => 'jira'
+end
 # vim:ft=ruby
