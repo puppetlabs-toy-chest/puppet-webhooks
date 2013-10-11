@@ -31,7 +31,30 @@ module PuppetLabs
         create
       end
 
-      def create
+      def add_issue_link(issue)
+        logger.info "Adding pull request link to existing issue #{issue.key}"
+
+        remotelink_body = {
+          'application' => {
+            'name' => 'Github'
+          },
+          'relationship' => 'relates to',
+          'object' => {
+            'url'   => pull_request.html_url,
+            'title' => "Github Pull Request: #{pull_request.title}",
+            'icon'  => {
+              'url16x16' => 'http://github.com/favicon.ico',
+              'title'    => 'Github'
+            }
+          }
+        }
+
+        remotelink_endpoint = issue.url + '/remotelink'
+
+        api.post(remotelink_endpoint, remotelink_body.to_json)
+      end
+
+      def create_issue
         logger.info "Creating new issue: #{pull_request.title}"
 
         issue = api.Issue.build
