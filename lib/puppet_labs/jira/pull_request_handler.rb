@@ -63,7 +63,7 @@ module PuppetLabs
 
         issue = api.Issue.build
 
-        saved = issue.save({
+        issue.save!({
           'fields' => {
             'summary' => pull_request.summary,
             'description' => pull_request.description,
@@ -76,9 +76,9 @@ module PuppetLabs
           }
         })
 
-        if not saved
-          logger.error "Failed to save #{pull_request.title}: #{issue.attrs['errors']}"
-        end
+        add_issue_link(issue)
+      rescue JIRA::HTTPError => e
+        logger.error "Failed to save #{pull_request.title}: #{e.response['errors']}"
       end
 
       def pull_request_issue
