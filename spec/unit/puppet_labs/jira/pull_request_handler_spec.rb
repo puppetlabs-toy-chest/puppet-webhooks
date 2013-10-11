@@ -8,11 +8,24 @@ describe PuppetLabs::Jira::PullRequestHandler do
   let(:api) { double 'jira api' }
 
   before :each do
+    # Stub logging
     subject.stub(:logger).and_return(double.as_null_object)
 
+    # And the JIRA API
     subject.api = api
     subject.pull_request = pr
     subject.stub(:project).and_return 'testing'
+
+    # And the Github API
+    github_account = {
+      'name' => 'Github user',
+      'email' => 'user@fqdn.blackhole',
+      'company' => 'Company Inc.',
+      'html_url' => 'fqdn.blackhole',
+    }
+
+    github_api = double('github api', :account => github_account)
+    pr.stub(:github).and_return github_api
   end
 
   describe "when a pull request is opened" do
