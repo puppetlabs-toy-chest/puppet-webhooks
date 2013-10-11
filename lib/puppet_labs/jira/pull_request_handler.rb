@@ -1,3 +1,4 @@
+require 'puppet_labs/jira'
 require 'puppet_labs/jira/handler'
 
 require 'logger'
@@ -29,57 +30,46 @@ module PuppetLabs
 
       def create_or_link
         if (issue = pull_request_issue)
-          logger.info "Adding pull request link to existing issue #{issue.key}"
-          add_issue_link(issue)
+          link_issue(PuppetLabs::Jira::Issue.new(issue))
         else
-          logger.info "Creating new issue in project #{self.project}: #{pull_request.title}"
           create_issue
         end
       end
 
-      def add_issue_link(issue)
+      def link_issue(jira_issue)
+        logger.info "Adding pull request link to issue #{jira_issue.key}"
 
-        remotelink_body = {
-          'application' => {
-            'name' => 'Github'
-          },
-          'relationship' => 'relates to',
-          'object' => {
-            'url'   => pull_request.html_url,
-            'title' => "Github Pull Request: #{pull_request.title}",
-            'icon'  => {
-              'url16x16' => 'http://github.com/favicon.ico',
-              'title'    => 'Github'
-            }
-          }
+        link_title = "Pull Request: #{pull_request.title}"
+        link_icon  = {
+          'url16x16' => 'http://github.com/favicon.ico',
+          'title'    => 'Pull Request',
         }
 
-        remotelink_endpoint = issue.url + '/remotelink'
-
-        logger.info "Linking Jira issue to Github pull request"
-        api.post(remotelink_endpoint, remotelink_body.to_json)
+        jira_issue.remotelink(
+          pull_request.html_url,
+          link_title,
+          'Github',
+          link_icon
+        )
       end
 
       def create_issue
+        logger.info "Creating new issue in project #{self.project}: #{pull_request.title}"
 
-        issue = api.Issue.build
+        jira_issue = PuppetLabs::Jira::Issue.new(api.Issue.build)
 
-        issue.save!({
-          'fields' => {
-            'summary' => pull_request.summary,
-            'description' => pull_request.description,
-            'project' => {
-              'key' => self.project,
-            },
-            'issuetype' => {
-              'name' => 'Task',
-            }
-          }
-        })
+        jira_issue.create(
+          self.project,
+          pull_request.summary,
+          pull_request.description,
+          'Task'
+        )
 
-        add_issue_link(issue)
+        link_issue(jira_issue)
+
+
       rescue JIRA::HTTPError => e
-        logger.error "Failed to save #{pull_request.title}: #{e.response['errors']}"
+        logger.error "Failed to save #{pull_request.title}: #{e.response.body}"
       end
 
       def pull_request_issue

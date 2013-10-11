@@ -5,16 +5,16 @@ describe PuppetLabs::Jira::PullRequestHandler do
   let(:payload) { read_fixture("example_pull_request.json") }
   let (:pr) { PuppetLabs::Github::PullRequest.new(:json => payload) }
 
-  let(:api) { double 'jira api' }
+  let(:jira_api) { double('JIRA::Client') }
 
   before :each do
     # Stub logging
     subject.stub(:logger).and_return(double.as_null_object)
 
     # And the JIRA API
-    subject.api = api
+    subject.api = jira_api
     subject.pull_request = pr
-    subject.stub(:project).and_return 'testing'
+    subject.stub(:project).and_return 'TEST'
 
     # And the Github API
     github_account = {
@@ -24,30 +24,61 @@ describe PuppetLabs::Jira::PullRequestHandler do
       'html_url' => 'fqdn.blackhole',
     }
 
-    github_api = double('github api', :account => github_account)
+    github_api = double('PuppetLabs::Github::GithubAPI', :account => github_account)
     pr.stub(:github).and_return github_api
   end
 
   describe "when a pull request is opened" do
     describe "and there is no existing Jira issue" do
+      let(:jira_issue) { double('PuppetLabs::Jira::Issue') }
+
+      before do
+        jira_api.stub_chain(:Issue, :build)
+        allow(PuppetLabs::Jira::Issue).to receive(:new).and_return jira_issue
+      end
 
       it "creates a new jira issue" do
-        issue = double('jira issue')
-        api.stub_chain(:Issue, :build).and_return issue
+        allow(jira_issue).to receive(:remotelink)
+        expect(jira_issue).to receive(:create).with('TEST', pr.summary, pr.description, 'Task')
 
-        expect(issue).to receive(:save!) do |message|
-          expect(message['fields']['summary']).to eq pr.summary
-          expect(message['fields']['description']).to eq pr.description
-          expect(message['fields']['project']).to eq({'key' => 'testing'})
-          expect(message['fields']['issuetype']).to eq({'name' => 'Task'})
-        end
+        subject.perform
+      end
+
+      it "adds a link to the new issue referencing the pull request" do
+        allow(jira_issue).to receive(:create)
+        expect(jira_issue).to receive(:remotelink).with(pr.html_url, "Github Pull Request: #{pr.title}", anything)
 
         subject.perform
       end
     end
 
     describe "and there is an existing Jira issue" do
-      it "adds the pull request as a new remote link"
+      let(:jira_issue) { double('PuppetLabs::Jira::Issue') }
+
+      before :each do
+        allow(pr).to receive(:title).and_return '[TEST-123] Pull request titles should reference a jira key'
+        allow(PuppetLabs::Jira::Issue).to receive(:new).and_return jira_issue
+      end
+
+      let(:found_issue) { double('JIRA::Resource::Issue', :key => 'TEST-123') }
+
+      it "doesn't create a new pull request" do
+        expect(JIRA::Resource::Issue).to receive(:find).with(jira_api, 'TEST-123').and_return found_issue
+
+        expect(jira_issue).to receive(:create).never
+        allow(jira_issue).to receive(:remotelink)
+
+        subject.perform
+      end
+
+      it "adds the pull request as a new remote link" do
+        expect(JIRA::Resource::Issue).to receive(:find).with(jira_api, 'TEST-123').and_return found_issue
+
+        expect(jira_issue).to receive(:remotelink).once
+
+        subject.perform
+      end
+
       it "adds a comment on the issue referencing the pull request"
     end
   end
