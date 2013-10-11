@@ -35,7 +35,7 @@ describe PuppetLabs::Jira::PullRequestHandler do
         issue = double('jira issue')
         api.stub_chain(:Issue, :build).and_return issue
 
-        expect(issue).to receive(:save) do |message|
+        expect(issue).to receive(:save!) do |message|
           expect(message['fields']['summary']).to eq pr.summary
           expect(message['fields']['description']).to eq pr.description
           expect(message['fields']['project']).to eq({'key' => 'testing'})
