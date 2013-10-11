@@ -56,6 +56,7 @@ module PuppetLabs
 
         remotelink_endpoint = issue.url + '/remotelink'
 
+        logger.info "Linking Jira issue to Github pull request"
         api.post(remotelink_endpoint, remotelink_body.to_json)
       end
 
