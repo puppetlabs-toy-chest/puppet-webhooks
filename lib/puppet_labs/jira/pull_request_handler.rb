@@ -28,11 +28,16 @@ module PuppetLabs
       end
 
       def create_or_link
-        create
+        if (issue = pull_request_issue)
+          logger.info "Adding pull request link to existing issue #{issue.key}"
+          add_issue_link(issue)
+        else
+          logger.info "Creating new issue in project #{self.project}: #{pull_request.title}"
+          create_issue
+        end
       end
 
       def add_issue_link(issue)
-        logger.info "Adding pull request link to existing issue #{issue.key}"
 
         remotelink_body = {
           'application' => {
@@ -55,7 +60,6 @@ module PuppetLabs
       end
 
       def create_issue
-        logger.info "Creating new issue: #{pull_request.title}"
 
         issue = api.Issue.build
 
@@ -74,6 +78,17 @@ module PuppetLabs
 
         if not saved
           logger.error "Failed to save #{pull_request.title}: #{issue.attrs['errors']}"
+        end
+      end
+
+      def pull_request_issue
+        pattern = %r[\b#{self.project}-(?:\d+)\b]
+
+        keys = pull_request.title.scan(pattern)
+
+        if (key = keys.first)
+          logger.info "Extracted JIRA key #{key} from #{pull_request.title}"
+          ::JIRA::Resource::Issue.find(api, key)
         end
       end
     end
