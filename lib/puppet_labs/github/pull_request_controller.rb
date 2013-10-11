@@ -42,21 +42,11 @@ class PullRequestController < Controller
     logger.info "Successfully queued up #{job.class} (#{pull_request.repo_name}/#{pull_request.number}) as job #{delayed_job.id}"
 
     body = {
-      'trello' => {
-        'job_id' => delayed_job.id,
-        'queue' => delayed_job.queue,
-        'priority' => delayed_job.priority,
-        'created_at' => delayed_job.created_at,
-      },
-      'jira' => {
-        'job_id' => jira_delayed.id,
-        'queue' => jira_delayed.queue,
-        'priority' => jira_delayed.priority,
-        'created_at' => jira_delayed.created_at,
-      }
+      'job_id' => delayed_job.id,
+      'queue' => delayed_job.queue,
+      'priority' => delayed_job.priority,
+      'created_at' => delayed_job.created_at,
     }
-
-    logger.info body.inspect
 
     return [ACCEPTED, {}, body]
   end
