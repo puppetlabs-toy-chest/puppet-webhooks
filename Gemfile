@@ -12,9 +12,14 @@ gem 'json'
 gem 'liquid'
 
 gem 'sinatra-activerecord'
+
 gem 'delayed_job_active_record'
-gem 'workless', '~> 1.1.1'
+gem 'delayed_job'
+gem 'workless', '1.1.3'
+
 gem 'business_time'
+
+gem 'rails', '~> 3.2'
 
 group :development do
   gem 'watchr'
