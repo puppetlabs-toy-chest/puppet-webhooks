@@ -30,7 +30,7 @@ describe PuppetLabs::Jira::PullRequestHandler do
 
   describe "when a pull request is opened" do
     describe "and there is no existing Jira issue" do
-      let(:jira_issue) { double('PuppetLabs::Jira::Issue') }
+      let(:jira_issue) { double('PuppetLabs::Jira::Issue', :key => 'TEST-314') }
 
       before do
         jira_api.stub_chain(:Issue, :build)
@@ -46,14 +46,14 @@ describe PuppetLabs::Jira::PullRequestHandler do
 
       it "adds a link to the new issue referencing the pull request" do
         allow(jira_issue).to receive(:create)
-        expect(jira_issue).to receive(:remotelink).with(pr.html_url, "Github Pull Request: #{pr.title}", anything)
+        expect(jira_issue).to receive(:remotelink).with(pr.html_url, "Pull Request: #{pr.title}", 'Github', anything)
 
         subject.perform
       end
     end
 
     describe "and there is an existing Jira issue" do
-      let(:jira_issue) { double('PuppetLabs::Jira::Issue') }
+      let(:jira_issue) { double('PuppetLabs::Jira::Issue', :key => 'TEST-123') }
 
       before :each do
         allow(pr).to receive(:title).and_return '[TEST-123] Pull request titles should reference a jira key'
