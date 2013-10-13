@@ -34,6 +34,11 @@ task :shell => :environment do
   IRB.start
 end
 
+task :pry => :environment do
+  require 'pry'
+  binding.pry
+end
+
 
 # Delayed Job database
 namespace :db do
