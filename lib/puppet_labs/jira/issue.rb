@@ -64,6 +64,15 @@ module PuppetLabs
       def comment
 
       end
+
+      # Retrieve all issues matching a given summary
+      #
+      # @param client [JIRA::Client]
+      # @param summary [String] The string to be used for the JQL query
+      def self.matching_summary(client, summary)
+        query = %{summary ~ "#{summary}"}
+        JIRA::Resource::Issue.jql(client, query)
+      end
     end
   end
 end
