@@ -62,29 +62,6 @@ class PullRequest
       @author_avatar_url = sender['avatar_url']
     end
   end
-
-  def description
-    desc = <<-DESC.gsub(/^ {4}/, '')
-      ----
-
-       * Author: **#{author_name}** <#{author_email}>",
-       * Company: #{author_company}",
-       * Github ID: [#{author}](#{author_html_url})",
-       * [Pull Request #{number} Discussion](#{html_url})",
-       * [File Diff](#{html_url}/files)",
-
-      Pull Request Description
-      ====
-
-      #{body}
-    DESC
-
-    desc
-  end
-
-  def summary
-    "Pull Request #{number}: #{title} [#{author_name}]"
-  end
 end
 end
 end
