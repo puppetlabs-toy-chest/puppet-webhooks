@@ -39,7 +39,12 @@ describe PuppetLabs::Jira::PullRequestHandler do
 
       it "creates a new jira issue" do
         allow(jira_issue).to receive(:remotelink)
-        expect(jira_issue).to receive(:create).with('TEST', pr.summary, pr.description, 'Task')
+        expect(jira_issue).to receive(:create) do |*args|
+          expect(args[0]).to eq 'TEST'
+          expect(args[1]).to be_a_kind_of String
+          expect(args[2]).to be_a_kind_of String
+          expect(args[3]).to eq 'Task'
+        end
 
         subject.perform
       end

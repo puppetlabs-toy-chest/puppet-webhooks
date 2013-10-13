@@ -1,5 +1,4 @@
 require 'puppet_labs/jira'
-require 'puppet_labs/jira/handler'
 
 require 'logger'
 
@@ -58,10 +57,12 @@ module PuppetLabs
 
         jira_issue = PuppetLabs::Jira::Issue.new(api.Issue.build)
 
+        formatted = PuppetLabs::Jira::Formatter.format_pull_request(pull_request)
+
         jira_issue.create(
           self.project,
-          pull_request.summary,
-          pull_request.description,
+          formatted[:summary],
+          formatted[:description],
           'Task'
         )
 
