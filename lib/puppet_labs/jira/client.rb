@@ -2,11 +2,11 @@ require 'jira'
 
 module PuppetLabs
   module Jira
-    module API
+    module Client
 
       class EmptyVariableError < StandardError; end
 
-      def self.env_api_options(env = ENV.to_hash)
+      def self.client_env_options(env = ENV.to_hash)
         options = {
           :username     => env['JIRA_USERNAME'],
           :password     => env['JIRA_PASSWORD'],
@@ -30,14 +30,14 @@ module PuppetLabs
         missing << 'JIRA_CONTEXT_PATH' unless options[:context_path]
 
         if !missing.empty?
-          raise EmptyVariableError, "Cannot use JIRA API: missing required environment variables #{missing.join(', ')}"
+          raise EmptyVariableError, "Cannot use JIRA: missing required environment variables #{missing.join(', ')}"
         end
       end
 
-      attr_writer :api
+      attr_writer :client
 
-      def api
-        @api ||= ::JIRA::Client.new(PuppetLabs::Jira::API.env_api_options)
+      def client
+        @client ||= ::JIRA::Client.new(PuppetLabs::Jira::API.client_env_options)
       end
     end
   end
