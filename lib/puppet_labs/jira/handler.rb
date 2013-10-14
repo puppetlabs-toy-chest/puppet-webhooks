@@ -1,16 +1,12 @@
 require 'puppet_labs/jira/client'
+require 'puppet_labs/delayable'
 
 module PuppetLabs
   module Jira
     class Handler
-
-      include PuppetLabs::SinatraDJ
-
       include PuppetLabs::Jira::Client
 
-      def queue(options={:queue => queue_name})
-        queue_job(self, options)
-      end
+      include PuppetLabs::Delayable
 
       def queue_name
         'jira'
