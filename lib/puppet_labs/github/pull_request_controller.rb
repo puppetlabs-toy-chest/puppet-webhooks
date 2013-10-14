@@ -1,7 +1,8 @@
-require 'puppet_labs/trello_pull_request_job'
-require 'puppet_labs/controller'
+require 'puppet_labs/trello/trello_pull_request_job'
+require 'puppet_labs/github/controller'
 
 module PuppetLabs
+module Github
 class PullRequestController < Controller
   attr_reader :pull_request
 
@@ -19,11 +20,11 @@ class PullRequestController < Controller
   def run
     case pull_request.action
     when "opened"
-      job = PuppetLabs::TrelloPullRequestJob.new
+      job = PuppetLabs::Trello::TrelloPullRequestJob.new
     when "reopened"
-      job = PuppetLabs::TrelloPullRequestReopenedJob.new
+      job = PuppetLabs::Trello::TrelloPullRequestReopenedJob.new
     when "closed"
-      job = PuppetLabs::TrelloPullRequestClosedJob.new
+      job = PuppetLabs::Trello::TrelloPullRequestClosedJob.new
     else
       logger.info "Ignoring pull request #{pull_request.repo_name}/#{pull_request.number} because the action is #{pull_request.action}."
       body = { 'message' => 'Action has been ignored.' }
@@ -41,5 +42,6 @@ class PullRequestController < Controller
     }
     return [ACCEPTED, {}, body]
   end
+end
 end
 end

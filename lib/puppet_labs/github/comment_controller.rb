@@ -1,7 +1,8 @@
-require 'puppet_labs/trello_comment_job'
-require 'puppet_labs/controller'
+require 'puppet_labs/trello/trello_comment_job'
+require 'puppet_labs/github/controller'
 
 module PuppetLabs
+module Github
 class CommentController < Controller
   attr_reader :comment
 
@@ -17,7 +18,7 @@ class CommentController < Controller
   def run
     case comment.action
     when "created"
-      job = PuppetLabs::TrelloCommentJob.new
+      job = PuppetLabs::Trello::TrelloCommentJob.new
     else
       logger.info "Ignoring comment on #{comment.repo_name}/#{comment.issue.number} because the action is #{comment.action}."
       body = { 'message' => 'Action has been ignored.' }
@@ -35,5 +36,6 @@ class CommentController < Controller
     }
     return [ACCEPTED, {}, body]
   end
+end
 end
 end

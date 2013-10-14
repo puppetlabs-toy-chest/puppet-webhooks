@@ -23,7 +23,7 @@ This project performs a job or jobs when a pull request event occurs on
    jobs:summary`
  * [✓] Copy a comment to the card when a comment is added to the pull request.
 
-[web-service-hook]: https://github.com/github/github-services/blob/master/services/web.rb
+[web-service-hook]: https://github.com/github/github-services/blob/master/lib/services/web.rb
 
 Quick Start
 ====

@@ -1,7 +1,8 @@
-require 'puppet_labs/trello_issue_job'
-require 'puppet_labs/controller'
+require 'puppet_labs/trello/trello_issue_job'
+require 'puppet_labs/github/controller'
 
 module PuppetLabs
+module Github
 class IssueController < Controller
   attr_reader :issue
 
@@ -19,7 +20,7 @@ class IssueController < Controller
   def run
     case issue.action
     when "opened"
-      job = PuppetLabs::TrelloIssueJob.new
+      job = PuppetLabs::Trello::TrelloIssueJob.new
       job.issue = issue
       delayed_job = job.queue
       logger.info "Successfully queued up opened issue #{issue.repo_name}/#{issue.number} as job #{delayed_job.id}"
@@ -36,5 +37,6 @@ class IssueController < Controller
       return [OK, {}, body]
     end
   end
+end
 end
 end

@@ -1,17 +1,17 @@
 require 'spec_helper'
-require 'puppet_labs/issue'
+require 'puppet_labs/github/issue'
 
-describe 'PuppetLabs::Issue' do
-  subject { PuppetLabs::Issue.new }
+describe 'PuppetLabs::Github::Issue' do
+  subject { PuppetLabs::Github::Issue.new }
   let(:payload) { read_fixture("example_issue.json") }
   let(:data)    { JSON.load(payload) }
 
   it 'creates a new instance using the from_json class method' do
-    pr = PuppetLabs::Issue.from_json(payload)
+    pr = PuppetLabs::Github::Issue.from_json(payload)
   end
 
   it 'initializes with json' do
-    pr = PuppetLabs::Issue.new(:json => payload)
+    pr = PuppetLabs::Github::Issue.new(:json => payload)
     pr.action.should == "opened"
   end
 
@@ -39,15 +39,15 @@ describe 'PuppetLabs::Issue' do
   end
 
   describe '#pull_request' do
-    subject { PuppetLabs::Issue.new(:json => payload) }
+    subject { PuppetLabs::Github::Issue.new(:json => payload) }
 
-    it "is an instance of PuppetLabs::PullRequest" do
-      expect(subject.pull_request.instance_of?(PuppetLabs::PullRequest)).to be
+    it "is an instance of PuppetLabs::Github::PullRequest" do
+      expect(subject.pull_request.instance_of?(PuppetLabs::Github::PullRequest)).to be
     end
   end
 
   context 'newly created issue' do
-    subject { PuppetLabs::Issue.new(:json => payload) }
+    subject { PuppetLabs::Github::Issue.new(:json => payload) }
 
     it 'has a number' do
       subject.number.should == data['issue']['number']

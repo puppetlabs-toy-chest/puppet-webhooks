@@ -1,7 +1,8 @@
-require 'puppet_labs/base_trello_job'
-require 'puppet_labs/issue'
+require 'puppet_labs/trello/base_trello_job'
+require 'puppet_labs/github/issue'
 
 module PuppetLabs
+module Trello
 ##
 # TrelloIssueJob is responsible for performing the action of updating a
 # Trello card based on a bunch of Issue data.  This data generally comes from
@@ -30,5 +31,6 @@ class TrelloIssueJob < BaseTrelloJob
   def queue_name
     'issue'
   end
+end
 end
 end

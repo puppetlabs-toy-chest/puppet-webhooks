@@ -34,7 +34,7 @@ describe 'PuppetLabs::PullRequestApp' do
     end
 
     let (:route) { '/event/github' }
-    let (:job) { PuppetLabs::TrelloIssueJob.new }
+    let (:job) { PuppetLabs::Trello::TrelloIssueJob.new }
 
     describe '/event/github' do
       it "responds to /event/github", :focus => true do
@@ -54,7 +54,7 @@ describe 'PuppetLabs::PullRequestApp' do
     end
 
     let (:route) { '/event/github' }
-    let (:job) { PuppetLabs::TrelloPullRequestJob.new }
+    let (:job) { PuppetLabs::Trello::TrelloPullRequestJob.new }
 
     describe '/event/github' do
       it "responds to /event/github" do
@@ -91,14 +91,14 @@ describe 'PuppetLabs::PullRequestApp' do
       end
 
       it "creates a PullRequest model using PullRequest.from_json" do
-        pr_model = PuppetLabs::PullRequest.new(:json => payload)
-        PuppetLabs::PullRequest.should_receive(:from_json).with(payload).and_return(pr_model)
+        pr_model = PuppetLabs::Github::PullRequest.new(:json => payload)
+        PuppetLabs::Github::PullRequest.should_receive(:from_json).with(payload).and_return(pr_model)
         post route, params, env
       end
 
       it "creates a TrelloPullRequestJob" do
         fake_job = job
-        PuppetLabs::TrelloPullRequestJob.should_receive(:new).and_return(fake_job)
+        PuppetLabs::Trello::TrelloPullRequestJob.should_receive(:new).and_return(fake_job)
         post route, params, env
       end
 
@@ -133,9 +133,9 @@ describe 'PuppetLabs::PullRequestApp' do
 
         before :each do
           fake_job = job
-          pr_model = PuppetLabs::PullRequest.new(:json => payload_closed)
-          PuppetLabs::PullRequest.stub(:from_json).with(payload_closed).and_return(pr_model)
-          PuppetLabs::TrelloPullRequestJob.stub(:new).and_return(fake_job)
+          pr_model = PuppetLabs::Github::PullRequest.new(:json => payload_closed)
+          PuppetLabs::Github::PullRequest.stub(:from_json).with(payload_closed).and_return(pr_model)
+          PuppetLabs::Trello::TrelloPullRequestJob.stub(:new).and_return(fake_job)
         end
 
         it "responds with 202" do

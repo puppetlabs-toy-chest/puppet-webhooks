@@ -1,9 +1,11 @@
-require 'puppet_labs/trello_api'
+require 'puppet_labs/trello/trello_api'
 require 'puppet_labs/sinatra_dj'
 require 'logger'
 require 'business_time'
 
 module PuppetLabs
+module Trello
+
 ##
 # BaseTrelloJob is responsible for performing the action of updating a Trello
 # card based on a bunch of incoming github data.  This data generally comes
@@ -220,5 +222,6 @@ class BaseTrelloJob
     @log.info text
   end
   private :display
+end
 end
 end

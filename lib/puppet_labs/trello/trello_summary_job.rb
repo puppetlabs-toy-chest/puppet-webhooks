@@ -1,5 +1,5 @@
-require 'puppet_labs/base_trello_job'
-require 'puppet_labs/pull_request'
+require 'puppet_labs/trello/base_trello_job'
+require 'puppet_labs/github/pull_request'
 require 'benchmark'
 require 'open-uri'
 require 'octokit'
@@ -7,6 +7,7 @@ require 'ostruct'
 require 'liquid'
 
 module PuppetLabs
+module Trello
   ##
   # TrelloSummaryJob is responsible for performing the task of scanning each
   # card in the `TRELLO_FINISHED_LIST_ID` Trello list and extracting a summary
@@ -193,5 +194,6 @@ class TrelloSummaryJob < BaseTrelloJob
     end
     display "publish_summary_time_seconds=#{publish_time.real}"
   end
+end
 end
 end

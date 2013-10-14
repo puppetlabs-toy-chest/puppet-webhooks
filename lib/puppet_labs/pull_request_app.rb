@@ -3,9 +3,9 @@ require 'time'
 require 'sinatra/base'
 require 'active_support/core_ext'
 require 'sinatra/activerecord'
-require 'puppet_labs/pull_request'
-require 'puppet_labs/trello_pull_request_job'
-require 'puppet_labs/github_controller'
+require 'puppet_labs/github/pull_request'
+require 'puppet_labs/github/github_controller'
+require 'puppet_labs/trello/trello_pull_request_job'
 require 'puppet_labs/event'
 require 'delayed_job_active_record'
 require 'openssl'
@@ -249,7 +249,7 @@ module PuppetLabs
       payload = payload()
 
       controller_options = { :route => self, :request => request }
-      gh_controller = GithubController.new(controller_options)
+      gh_controller = Github::GithubController.new(controller_options)
 
       if event_controller = gh_controller.event_controller
         (status_code, headers_hsh, response_body) = event_controller.run

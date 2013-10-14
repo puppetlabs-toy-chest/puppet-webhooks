@@ -1,7 +1,8 @@
-require 'puppet_labs/base_trello_job'
-require 'puppet_labs/pull_request'
+require 'puppet_labs/trello/base_trello_job'
+require 'puppet_labs/github/pull_request'
 
 module PuppetLabs
+module Trello
   ##
   # TrelloPullRequestJob is responsible for performing the action of updating a
   # Trello card based on a bunch of Pull Request data.  This data generally
@@ -72,5 +73,6 @@ class TrelloPullRequestReopenedJob < TrelloPullRequestJob
     # Move the card to the target list
     # Set a new due date for the card
   end
+end
 end
 end

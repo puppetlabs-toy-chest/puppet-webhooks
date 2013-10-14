@@ -1,14 +1,14 @@
 require 'spec_helper'
-require 'puppet_labs/trello_issue_job'
+require 'puppet_labs/trello/trello_issue_job'
 
-describe PuppetLabs::TrelloIssueJob do
+describe PuppetLabs::Trello::TrelloIssueJob do
   class FakeError < StandardError; end
 
   let(:payload) { read_fixture("example_issue.json") }
-  let (:issue) { PuppetLabs::Issue.new(:json => payload) }
+  let (:issue) { PuppetLabs::Github::Issue.new(:json => payload) }
 
   let :fake_api do
-    fake_api = double(PuppetLabs::TrelloAPI)
+    fake_api = double(PuppetLabs::Trello::TrelloAPI)
     fake_api.stub(:create_card)
     fake_api
   end
@@ -29,8 +29,8 @@ describe PuppetLabs::TrelloIssueJob do
   end
 
   subject do
-    job = PuppetLabs::TrelloIssueJob.new
-    job.issue = PuppetLabs::Issue.new(:json => payload)
+    job = PuppetLabs::Trello::TrelloIssueJob.new
+    job.issue = PuppetLabs::Github::Issue.new(:json => payload)
     job
   end
 
