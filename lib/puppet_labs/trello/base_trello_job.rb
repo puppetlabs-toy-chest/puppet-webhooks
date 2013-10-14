@@ -1,5 +1,5 @@
 require 'puppet_labs/trello/trello_api'
-require 'puppet_labs/sinatra_dj'
+require 'puppet_labs/delayable'
 require 'logger'
 require 'business_time'
 
@@ -17,7 +17,9 @@ module Trello
 #
 # Instances of this object are meant to be stored with Delayed Job
 class BaseTrelloJob
-  include PuppetLabs::SinatraDJ
+
+  include PuppetLabs::Delayable
+
   attr_reader :list_id, :key, :secret, :token
   attr_writer :env
 
@@ -119,11 +121,6 @@ class BaseTrelloJob
     end
     display "Done Processing: #{id}"
   end
-
-  def queue(options={:queue => queue_name})
-    queue_job(self, options)
-  end
-
 
   ##
   # Methods we discovered:
