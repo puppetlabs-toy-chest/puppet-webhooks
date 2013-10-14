@@ -1,6 +1,8 @@
 require 'puppet_labs/trello/trello_pull_request_job'
 require 'puppet_labs/github/controller'
 
+require 'puppet_labs/jira'
+
 module PuppetLabs
 module Github
 class PullRequestController < Controller
@@ -31,15 +33,21 @@ class PullRequestController < Controller
       return [OK, {}, body]
     end
 
+    jira_job = PuppetLabs::Jira::PullRequestHandler.new
+    jira_job.pull_request = pull_request
+    jira_delayed = jira_job.queue
+
     job.pull_request = pull_request
     delayed_job = job.queue
     logger.info "Successfully queued up #{job.class} (#{pull_request.repo_name}/#{pull_request.number}) as job #{delayed_job.id}"
+
     body = {
       'job_id' => delayed_job.id,
       'queue' => delayed_job.queue,
       'priority' => delayed_job.priority,
       'created_at' => delayed_job.created_at,
     }
+
     return [ACCEPTED, {}, body]
   end
 end
