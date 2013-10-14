@@ -1,4 +1,4 @@
-require 'puppet_labs/jira/api'
+require 'puppet_labs/jira/client'
 
 module PuppetLabs
   module Jira
@@ -6,7 +6,7 @@ module PuppetLabs
 
       include PuppetLabs::SinatraDJ
 
-      include PuppetLabs::Jira::API
+      include PuppetLabs::Jira::Client
 
       def queue(options={:queue => queue_name})
         queue_job(self, options)

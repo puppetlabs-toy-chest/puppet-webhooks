@@ -55,7 +55,7 @@ module PuppetLabs
       def create_issue
         logger.info "Creating new issue in project #{self.project}: #{pull_request.title}"
 
-        jira_issue = PuppetLabs::Jira::Issue.new(api.Issue.build)
+        jira_issue = PuppetLabs::Jira::Issue.new(client.Issue.build)
 
         formatted = PuppetLabs::Jira::Formatter.format_pull_request(pull_request)
 
@@ -80,7 +80,7 @@ module PuppetLabs
 
         if (key = keys.first)
           logger.info "Extracted JIRA key #{key} from #{pull_request.title}"
-          ::JIRA::Resource::Issue.find(api, key)
+          ::JIRA::Resource::Issue.find(client, key)
         end
       end
     end
