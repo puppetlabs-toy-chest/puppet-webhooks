@@ -1,7 +1,7 @@
 require 'spec_helper'
-require 'puppet_labs/jira/api'
+require 'puppet_labs/jira/client'
 
-describe PuppetLabs::Jira::API do
+describe PuppetLabs::Jira::Client do
 
   let(:stub_env) do
     {
@@ -24,13 +24,13 @@ describe PuppetLabs::Jira::API do
         stub_env.delete var
 
         expect {
-          described_class.env_api_options(stub_env)
-        }.to raise_error PuppetLabs::Jira::API::EmptyVariableError, /missing.*#{var}/
+          described_class.client_env_options(stub_env)
+        }.to raise_error PuppetLabs::Jira::Client::EmptyVariableError, /missing.*#{var}/
       end
     end
 
     it "returns a hash if all required variables are set" do
-      expect(described_class.env_api_options(stub_env)).to be_a_kind_of Hash
+      expect(described_class.client_env_options(stub_env)).to be_a_kind_of Hash
     end
   end
 end

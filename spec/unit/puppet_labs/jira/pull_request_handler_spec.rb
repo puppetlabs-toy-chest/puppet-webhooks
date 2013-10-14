@@ -5,14 +5,14 @@ describe PuppetLabs::Jira::PullRequestHandler do
   let(:payload) { read_fixture("example_pull_request.json") }
   let (:pr) { PuppetLabs::Github::PullRequest.new(:json => payload) }
 
-  let(:jira_api) { double('JIRA::Client') }
+  let(:jira_client) { double('JIRA::Client') }
 
   before :each do
     # Stub logging
     subject.stub(:logger).and_return(double.as_null_object)
 
     # And the JIRA API
-    subject.api = jira_api
+    subject.client = jira_client
     subject.pull_request = pr
     subject.stub(:project).and_return 'TEST'
 
@@ -24,8 +24,8 @@ describe PuppetLabs::Jira::PullRequestHandler do
       'html_url' => 'fqdn.blackhole',
     }
 
-    github_api = double('PuppetLabs::Github::GithubAPI', :account => github_account)
-    pr.stub(:github).and_return github_api
+    github_client = double('PuppetLabs::Github::GithubAPI', :account => github_account)
+    pr.stub(:github).and_return github_client
   end
 
   describe "when a pull request is opened" do
@@ -33,7 +33,7 @@ describe PuppetLabs::Jira::PullRequestHandler do
       let(:jira_issue) { double('PuppetLabs::Jira::Issue', :key => 'TEST-314') }
 
       before do
-        jira_api.stub_chain(:Issue, :build)
+        jira_client.stub_chain(:Issue, :build)
         allow(PuppetLabs::Jira::Issue).to receive(:new).and_return jira_issue
       end
 
@@ -68,7 +68,7 @@ describe PuppetLabs::Jira::PullRequestHandler do
       let(:found_issue) { double('JIRA::Resource::Issue', :key => 'TEST-123') }
 
       it "doesn't create a new pull request" do
-        expect(JIRA::Resource::Issue).to receive(:find).with(jira_api, 'TEST-123').and_return found_issue
+        expect(JIRA::Resource::Issue).to receive(:find).with(jira_client, 'TEST-123').and_return found_issue
 
         expect(jira_issue).to receive(:create).never
         allow(jira_issue).to receive(:remotelink)
@@ -77,7 +77,7 @@ describe PuppetLabs::Jira::PullRequestHandler do
       end
 
       it "adds the pull request as a new remote link" do
-        expect(JIRA::Resource::Issue).to receive(:find).with(jira_api, 'TEST-123').and_return found_issue
+        expect(JIRA::Resource::Issue).to receive(:find).with(jira_client, 'TEST-123').and_return found_issue
 
         expect(jira_issue).to receive(:remotelink).once
 
