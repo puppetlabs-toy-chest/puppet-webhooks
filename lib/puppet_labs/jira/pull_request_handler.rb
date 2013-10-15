@@ -68,6 +68,8 @@ module PuppetLabs
         )
       end
 
+      # Generate a new Jira issue based on the given pull request, and attach
+      # a link to the pull request
       def create_issue
         logger.info "Creating new issue in project #{self.project}: #{pull_request.title}"
 
@@ -86,6 +88,11 @@ module PuppetLabs
         logger.error "Failed to save #{pull_request.title}: #{e.response.body}"
       end
 
+      # Fetch a Jira issue that's associated with a pull request.
+      #
+      # This searches the title of a pull request for a Jira issue in the
+      # related project. If the key is found, a lookup is performed on that
+      # key and the issue is returned if found.
       def issue_for_pull_request
         pattern = %r[\b#{self.project}-(?:\d+)\b]
 
