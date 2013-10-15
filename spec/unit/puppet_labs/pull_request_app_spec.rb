@@ -90,44 +90,6 @@ describe 'PuppetLabs::PullRequestApp' do
         last_response.headers['Content-Type'].should == 'application/json'
       end
 
-      it "creates a PullRequest model using PullRequest.from_json" do
-        pr_model = PuppetLabs::Github::PullRequest.new(:json => payload)
-        PuppetLabs::Github::PullRequest.should_receive(:from_json).with(payload).and_return(pr_model)
-        post route, params, env
-      end
-
-      it "creates a TrelloPullRequestJob" do
-        fake_job = job
-        PuppetLabs::Trello::TrelloPullRequestJob.should_receive(:new).and_return(fake_job)
-        post route, params, env
-      end
-
-      describe 'the return json' do
-        subject do
-          post route, params, env
-          JSON.load(last_response.body)
-        end
-        it "returns a hash" do
-          subject.should be_a Hash
-        end
-
-        it 'contains a job_id key with a Fixnum value' do
-          subject['job_id'].should be_a Fixnum
-        end
-
-        it 'contains a queue key with a String value' do
-          subject['queue'].should be_a String
-        end
-
-        it 'contains a priority key with a Fixnum value' do
-          subject['priority'].should be_a Fixnum
-        end
-
-        it 'contains a created_at key that works with Time.parse' do
-          expect { Time.parse(subject['created_at']) }.not_to raise_error
-        end
-      end
-
       context 'posting a closed pull request' do
         let (:params) { { 'payload' => payload_closed } }
 
@@ -141,11 +103,6 @@ describe 'PuppetLabs::PullRequestApp' do
         it "responds with 202" do
           post route, params, env
           last_response.should have_status 202
-        end
-
-        it "Returns a job_id key in a JSON hash" do
-          post route, params, env
-          JSON.load(last_response.body).should have_key "job_id"
         end
       end
     end
