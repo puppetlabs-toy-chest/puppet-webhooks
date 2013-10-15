@@ -1,17 +1,17 @@
+# Web application libraries
 require 'json'
-require 'time'
 require 'sinatra/base'
+require 'puppet_labs/event'
+
+# Delayed job libraries
 require 'active_support/core_ext'
 require 'sinatra/activerecord'
-require 'puppet_labs/github/pull_request'
-require 'puppet_labs/github/github_controller'
-require 'puppet_labs/trello/trello_pull_request_job'
-require 'puppet_labs/event'
 require 'delayed_job_active_record'
-require 'openssl'
-require 'digest/sha1'
-require 'digest/sha2'
 require 'workless'
+
+# App controllers
+require 'puppet_labs/github/github_controller'
+
 require 'logger'
 require 'ostruct'
 
@@ -20,7 +20,6 @@ module PuppetLabs
     # config/database.yml is automatically picked up and may contain ERB.
     register Sinatra::ActiveRecordExtension
     # Authorizing Github hook events uses the HMAC_DIGEST constant.
-    HMAC_DIGEST = OpenSSL::Digest::Digest.new('sha1')
 
     class UnauthenticatedError < StandardError; end
 
@@ -58,57 +57,6 @@ module PuppetLabs
         !!(authenticate_github(request) or authenticate_travis(request))
       end
 
-      # Authenticate via X-Hub-Signature
-      # TODO: This could be a Sinatra filter.  See:
-      # http://sinatra.restafari.org/book.html#authentication
-      def authenticate_github(request)
-        request.body.rewind
-        request_body = request.body.read
-        if !(secret = ENV['GITHUB_X_HUB_SIGNATURE_SECRET'].to_s).empty?
-          # The computed SHA1 signature.  This should match the header value.
-          sig_c = "sha1=#{OpenSSL::HMAC.hexdigest(HMAC_DIGEST, secret, request_body)}".downcase
-          # The sent SHA1 sinagure.  Expected in the X-Hub-Signature request header.
-          sig_s = request.env['HTTP_X_HUB_SIGNATURE'].to_s.downcase
-          if sig_c == sig_s
-            logger.info "[#{request.path_info}] Github Authentication: SUCCESS - X-Hub-Signature header contains a valid signature."
-            return true
-          else
-            logger.info "[#{request.path_info}] Github Authentication: FAILURE - X-Hub-Signature header contains an invalid signature."
-            return false
-          end
-        else
-          logger.info "[#{request.path_info}] Github Authentication: DISABLED - Please configure the GITHUB_X_HUB_SIGNATURE_SECRET environment variable to match the Github hook configuration."
-          return false
-        end
-      end
-
-      ##
-      # authenticate_travis returns true if the request is authenticated as a
-      # travis request.
-      def authenticate_travis(request)
-        return false unless json = json()
-
-        if !(secret = ENV['TRAVIS_AUTH_TOKEN'].to_s).empty?
-          if repodata = json['repository'] then
-            repo = "#{repodata['owner_name']}/#{repodata['name']}"
-          else
-            return false
-          end
-          shared_secret = repo + secret
-          auth_check = Digest::SHA2.hexdigest(shared_secret)
-          if auth_check == request.env['HTTP_AUTHORIZATION']
-            logger.info "[#{request.path_info}] Travis Authentication: SUCCESS - Digest::SHA2.hexdigest(#{repo.inspect} + TRAVIS_AUTH_TOKEN) -= #{env['HTTP_AUTHORIZATION']}"
-            true
-          else
-            logger.info "[#{request.path_info}] Travis Authentication: FAILURE - Digest::SHA2.hexdigest(#{repo.inspect} + TRAVIS_AUTH_TOKEN) != #{env['HTTP_AUTHORIZATION']}"
-            logger.info "[#{request.path_info}] Travis Authentication failure does not prevent access. (FIXME)"
-            false
-          end
-        else
-          logger.info "[#{request.path_info}] Travis Authentication: DISABLED - Please configure the TRAVIS_AUTH_TOKEN environment variable to be the string shown on your travis profile page."
-          false
-        end
-      end
 
       ##
       # limit_events_to prunes the database, limiting to the [limit] most
@@ -173,6 +121,13 @@ module PuppetLabs
     end
 
     helpers AppHelpers
+
+
+    require 'puppet_labs/pull_request_app/github_auth'
+    helpers PuppetLabs::PullRequestApp::GithubAuth
+
+    require 'puppet_labs/pull_request_app/travis_auth'
+    helpers PuppetLabs::PullRequestApp::TravisAuth
 
     configure :production do
       ActiveRecord::Base.logger = logger.clone
