@@ -15,9 +15,11 @@ module PuppetLabs
         when 'opened'
           create_or_link
         when 'closed'
+          add_closed_comment
         when 'reopened'
+          add_reopened_comment
         else
-          # unhandled event, panic
+          logger.warn "#{self.class} unable to handle unknown pull request action #{pull_request.action}"
         end
       end
 
@@ -33,6 +35,20 @@ module PuppetLabs
         else
           create_issue
         end
+      end
+
+      def add_closed_comment
+        summary = PuppetLabs::Jira::Formatter.format_pull_request(pull_request)[:summary]
+        comment = "Pull request #{pull_request.title}(#{pull_request.action}) closed by #{pull_request.author}"
+
+        add_comment(summary, comment)
+      end
+
+      def add_reopened_comment
+        summary = PuppetLabs::Jira::Formatter.format_pull_request(pull_request)[:summary]
+        comment = "Pull request #{pull_request.title}(#{pull_request.action}) reopened by #{pull_request.author}"
+
+        add_comment(summary, comment)
       end
 
       def link_issue(jira_issue)
@@ -79,6 +95,28 @@ module PuppetLabs
           logger.info "Extracted JIRA key #{key} from #{pull_request.title}"
           ::JIRA::Resource::Issue.find(client, key)
         end
+      end
+
+      def add_comment(summary, comment)
+        logger.info "Looking up issue with summary #{summary}"
+
+        issue_list = PuppetLabs::Jira::Issue.matching_summary(client, summary)
+        if issue_list.size == 0
+          logger.error "Could not find issue with summary #{summary}: cannot add comment"
+        elsif issue_list.size == 1
+          issue = issue_list.first
+          logger.info "Adding comment to issue with key #{issue.key}"
+          issue.comment(comment)
+        else
+          logger.warn "Retrieved multiple issues with summary #{summary}. Only commenting on the first one"
+
+          issue = issue_list.first
+          logger.info "Adding comment to issue with key #{issue.key}"
+          issue.comment(comment)
+        end
+
+      rescue JIRA::HTTPError => e
+        logger.error "Failed to add comment: #{e.response.body}"
       end
     end
   end

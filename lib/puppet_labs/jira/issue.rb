@@ -14,6 +14,10 @@ module PuppetLabs
         @issue = issue
       end
 
+      def wrapped
+        @issue
+      end
+
       extend Forwardable
       def_delegator :@issue, :key
 
@@ -60,10 +64,20 @@ module PuppetLabs
       end
 
       # Add a comment to an existing issue
+      #
       # @todo make this idempotent
-      def comment
-
+      #
+      # @param comment_body [String]
+      # @return [void]
+      def comment(comment_body)
+        comment = @issue.comments.build
+        comment.save!({'body' => comment_body})
       end
+
+      # @api private
+      #
+      # @see https://confluence.atlassian.com/display/JIRA/Advanced+Searching+Functions#AdvancedSearchingFunctions-characters
+      JQL_RESERVED_CHARACTERS = ':()'
 
       # Retrieve all issues matching a given summary
       #
@@ -71,6 +85,14 @@ module PuppetLabs
       # @param summary [String] The string to be used for the JQL query
       def self.matching_summary(client, summary)
         query = %{summary ~ "#{summary}"}
+
+        escape_regex = Regexp.new("[#{JQL_RESERVED_CHARACTERS}]")
+        # Each JQL reserved character must be escaped, but they have to be
+        # escaped with two backslashes, and that has to be double escaped in
+        # the ruby string. Furthermore, ruby explodes when you try to juxtapose
+        # '\\' and '\1'.
+        query.gsub!(escape_regex) { |escapee| '\\\\' + escapee }
+
         JIRA::Resource::Issue.jql(client, query).map { |issue| new(issue) }
       end
     end
