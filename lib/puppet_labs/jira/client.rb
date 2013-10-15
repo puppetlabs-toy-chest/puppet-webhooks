@@ -37,7 +37,7 @@ module PuppetLabs
       attr_writer :client
 
       def client
-        @client ||= ::JIRA::Client.new(PuppetLabs::Jira::API.client_env_options)
+        @client ||= ::JIRA::Client.new(PuppetLabs::Jira::Client.client_env_options)
       end
     end
   end
