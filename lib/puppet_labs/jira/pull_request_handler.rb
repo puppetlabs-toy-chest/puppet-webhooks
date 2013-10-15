@@ -28,7 +28,7 @@ module PuppetLabs
       end
 
       def create_or_link
-        if (issue = pull_request_issue)
+        if (issue = issue_for_pull_request)
           link_issue(PuppetLabs::Jira::Issue.new(issue))
         else
           create_issue
@@ -70,7 +70,7 @@ module PuppetLabs
         logger.error "Failed to save #{pull_request.title}: #{e.response.body}"
       end
 
-      def pull_request_issue
+      def issue_for_pull_request
         pattern = %r[\b#{self.project}-(?:\d+)\b]
 
         keys = pull_request.title.scan(pattern)
