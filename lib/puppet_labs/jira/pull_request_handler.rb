@@ -56,7 +56,6 @@ module PuppetLabs
         logger.info "Creating new issue in project #{self.project}: #{pull_request.title}"
 
         jira_issue = PuppetLabs::Jira::Issue.new(client.Issue.build)
-
         formatted = PuppetLabs::Jira::Formatter.format_pull_request(pull_request)
 
         jira_issue.create(
@@ -67,8 +66,6 @@ module PuppetLabs
         )
 
         link_issue(jira_issue)
-
-
       rescue JIRA::HTTPError => e
         logger.error "Failed to save #{pull_request.title}: #{e.response.body}"
       end
