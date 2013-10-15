@@ -1,14 +1,17 @@
+# Web application libraries
 require 'json'
-require 'time'
 require 'sinatra/base'
+require 'puppet_labs/event'
+
+# Delayed job libraries
 require 'active_support/core_ext'
 require 'sinatra/activerecord'
-require 'puppet_labs/github/pull_request'
-require 'puppet_labs/github/github_controller'
-require 'puppet_labs/trello/trello_pull_request_job'
-require 'puppet_labs/event'
 require 'delayed_job_active_record'
 require 'workless'
+
+# App controllers
+require 'puppet_labs/github/github_controller'
+
 require 'logger'
 require 'ostruct'
 
