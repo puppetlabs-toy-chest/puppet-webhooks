@@ -71,7 +71,7 @@ module PuppetLabs
       # @param summary [String] The string to be used for the JQL query
       def self.matching_summary(client, summary)
         query = %{summary ~ "#{summary}"}
-        JIRA::Resource::Issue.jql(client, query)
+        JIRA::Resource::Issue.jql(client, query).map { |issue| new(issue) }
       end
     end
   end
