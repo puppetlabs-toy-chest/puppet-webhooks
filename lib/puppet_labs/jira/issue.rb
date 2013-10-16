@@ -78,11 +78,6 @@ module PuppetLabs
         comment.save!({'body' => comment_body})
       end
 
-      # @api private
-      #
-      # @see https://confluence.atlassian.com/display/JIRA/Advanced+Searching+Functions#AdvancedSearchingFunctions-characters
-      JQL_RESERVED_CHARACTERS = ':()'
-
       # Retrieve all issues matching a given summary
       #
       # @param client [JIRA::Client]
@@ -90,12 +85,41 @@ module PuppetLabs
       def self.matching_summary(client, summary)
         query = %{summary ~ "#{summary}"}
 
+        jql(client, query)
+      end
+
+      # Look up an issue based on a webhook-id field embedded in an issue description
+      #
+      # This assumes that only one issue will ever have this exact string. If
+      # multiple issues have 'webhooks-id: checksum' (for instance if a
+      # description is copied then it'll fail. If this assertion fails, we
+      # probably can't distinguish issues by any other way, so we're already
+      # out of luck.
+      #
+      # @param sum [String] The MD5 used to identify the issue
+      def self.matching_webhook_id(client, sum)
+        query = %{description ~ "webhooks-id:+#{sum}"}
+
+        jql(client, query).first
+      end
+
+      # @api private
+      #
+      # @see https://confluence.atlassian.com/display/JIRA/Advanced+Searching+Functions#AdvancedSearchingFunctions-characters
+      JQL_RESERVED_CHARACTERS = ':()'
+
+      # @api private
+      #
+      # @param client [JIRA::Client]
+      # @param query [String] The JQL query to run.
+      def self.jql(client, query)
         escape_regex = Regexp.new("[#{JQL_RESERVED_CHARACTERS}]")
+
         # Each JQL reserved character must be escaped, but they have to be
         # escaped with two backslashes, and that has to be double escaped in
         # the ruby string. Furthermore, ruby explodes when you try to juxtapose
         # '\\' and '\1'.
-        query.gsub!(escape_regex) { |escapee| '\\\\' + escapee }
+        query = query.gsub(escape_regex) { |escapee| '\\\\' + escapee }
 
         JIRA::Resource::Issue.jql(client, query).map { |issue| new(issue) }
       end

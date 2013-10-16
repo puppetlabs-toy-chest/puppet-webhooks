@@ -31,9 +31,9 @@ describe PuppetLabs::Jira::Event::PullRequest::Reopen do
   let(:jira_issue) { double('PuppetLabs::Jira::Issue', :key => "#{project}-314") }
 
   it "adds a comment on the issue associated with the pull request" do
-    expect(PuppetLabs::Jira::Issue).to receive(:matching_summary).with(
+    expect(PuppetLabs::Jira::Issue).to receive(:matching_webhook_id).with(
       jira_client, an_instance_of(String)
-    ).and_return([jira_issue])
+    ).and_return(jira_issue)
 
     expect(jira_issue).to receive(:comment) do |str|
       expect(str).to match /Pull request.*reopened/

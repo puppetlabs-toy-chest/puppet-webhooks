@@ -46,6 +46,10 @@ describe PuppetLabs::Jira::Formatter do
     it "contains the body of the pull request message" do
       subject.should match pull_request.body
     end
+
+    it "contains a webhooks identifier field" do
+      subject.should match /\(webhooks-id: [\da-zA-Z]+\)/
+    end
   end
 
   describe 'formatting the summary' do
