@@ -11,16 +11,19 @@ class PuppetLabs::Jira::Event::PullRequest::Close
 
   include PuppetLabs::Jira::Client
 
-  def self.perform(project, pull_request, client = nil)
-    obj = new(project, pull_request)
+  def self.perform(pull_request, project, client = nil)
+    obj = new(pull_request, project)
     obj.client = client
     obj.perform
     obj
   end
 
-  def initialize(project, pull_request,  client = nil)
-    @project, @pull_request, @client = project, pull_request, client
+  def initialize(pull_request, project, client = nil)
+    @pull_request = pull_request
+    @project      = project
+    @client       = client
   end
+
 
   attr_accessor :project
   attr_accessor :pull_request

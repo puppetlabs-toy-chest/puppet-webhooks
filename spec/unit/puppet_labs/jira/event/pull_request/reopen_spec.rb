@@ -10,7 +10,7 @@ describe PuppetLabs::Jira::Event::PullRequest::Reopen do
   let(:jira_client) { double('JIRA::Client') }
   let(:project)  { 'TEST' }
 
-  subject { described_class.new(project, pull_request, jira_client) }
+  subject { described_class.new(pull_request, project, jira_client) }
 
   before :each do
     # Stub logging
