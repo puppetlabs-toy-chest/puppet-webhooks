@@ -16,7 +16,7 @@ module PuppetLabs
         when 'opened'
           Jira::Event::PullRequest::Open.perform(project, pull_request)
         when 'closed'
-          add_closed_comment
+          Jira::Event::PullRequest::Close.perform(project, pull_request)
         when 'reopened'
           add_reopened_comment
         else
@@ -28,13 +28,6 @@ module PuppetLabs
 
       def logger
         @logger ||= Logger.new(STDOUT)
-      end
-
-      def add_closed_comment
-        summary = PuppetLabs::Jira::Formatter.format_pull_request(pull_request)[:summary]
-        comment = "Pull request #{pull_request.title}(#{pull_request.action}) closed by #{pull_request.author}"
-
-        add_comment(summary, comment)
       end
 
       def add_reopened_comment

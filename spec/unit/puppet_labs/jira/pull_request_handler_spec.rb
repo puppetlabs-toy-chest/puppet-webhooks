@@ -28,15 +28,18 @@ describe PuppetLabs::Jira::PullRequestHandler do
     pr.stub(:github).and_return github_client
   end
 
-  describe "when a pull request is closed" do
-    it "adds a comment on the issue indicating the issue was closed"
+  {
+    'opened' => PuppetLabs::Jira::Event::PullRequest::Open,
+    'closed' => PuppetLabs::Jira::Event::PullRequest::Close,
+    'reopened' => PuppetLabs::Jira::Event::PullRequest::Reopen,
+  }.each_pair do |action, delegate|
+    it "calls #{delegate}.perform when the #{action} action is received" do
+      expect(pr).to receive(:action).at_least(:once).and_return action
+      expect(delegate).to receive(:perform)
+
+      subject.perform
+    end
   end
 
-  describe "when a pull request is reopened" do
-    it "adds a comment on the issue indicating the issue was reopened"
-  end
-
-  describe "with an unhandled pull request action" do
-    it "logs a warning"
-  end
+  it "logs a warning when an unrecognized action is called"
 end
