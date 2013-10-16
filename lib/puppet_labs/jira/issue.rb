@@ -10,6 +10,10 @@ module PuppetLabs
     # format.
     class Issue
 
+      def self.build(client)
+        new(client.Issue.build)
+      end
+
       def initialize(issue)
         @issue = issue
       end
