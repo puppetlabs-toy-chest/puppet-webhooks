@@ -5,3 +5,4 @@ setup.env
 .bundle/
 vendor/
 .rspec
+Gemfile.local

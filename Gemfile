@@ -47,4 +47,8 @@ end
 group :jira do
   gem 'jira-ruby', :require => 'jira'
 end
+
+if File.exists? "#{__FILE__}.local"
+  eval(File.read("#{__FILE__}.local"), binding)
+end
 # vim:ft=ruby
