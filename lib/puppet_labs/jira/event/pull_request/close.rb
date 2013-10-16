@@ -39,32 +39,15 @@ class PuppetLabs::Jira::Event::PullRequest::Close
 
 
   def add_closed_comment
-    summary = PuppetLabs::Jira::Formatter.format_pull_request(pull_request)[:summary]
-    comment = "Pull request #{pull_request.title}(#{pull_request.action}) closed by #{pull_request.author}"
+    identifier = PuppetLabs::Jira::Formatter.pull_request_id(pull_request)
 
-    add_comment(summary, comment)
-  end
+    logger.info "Looking up issue with identifier #{identifier}"
 
-  def add_comment(summary, comment)
-    logger.info "Looking up issue with summary #{summary}"
-
-    issue_list = PuppetLabs::Jira::Issue.matching_summary(client, summary)
-    if issue_list.size == 0
-      logger.error "Could not find issue with summary #{summary}: cannot add comment"
-    elsif issue_list.size == 1
-      issue = issue_list.first
-      logger.info "Adding comment to issue with key #{issue.key}"
+    if (issue = PuppetLabs::Jira::Issue.matching_webhook_id(client, identifier))
+      comment = "Pull request #{pull_request.title} has been closed."
       issue.comment(comment)
     else
-      logger.warn "Retrieved multiple issues with summary #{summary}. Only commenting on the first one"
-
-      issue = issue_list.first
-      logger.info "Adding comment to issue with key #{issue.key}"
-      issue.comment(comment)
+      logger.warn "Can't comment on pull request close event: no issue with webhook identifier #{identifier}"
     end
-
-  rescue JIRA::HTTPError => e
-    logger.error "Failed to add comment: #{e.response.body}"
   end
-
 end
