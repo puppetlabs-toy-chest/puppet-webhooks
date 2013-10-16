@@ -28,75 +28,18 @@ describe PuppetLabs::Jira::PullRequestHandler do
     pr.stub(:github).and_return github_client
   end
 
-  describe "when a pull request is opened" do
-    describe "and there is no existing Jira issue" do
-      let(:jira_issue) { double('PuppetLabs::Jira::Issue', :key => 'TEST-314') }
+  {
+    'opened' => PuppetLabs::Jira::Event::PullRequest::Open,
+    'closed' => PuppetLabs::Jira::Event::PullRequest::Close,
+    'reopened' => PuppetLabs::Jira::Event::PullRequest::Reopen,
+  }.each_pair do |action, delegate|
+    it "calls #{delegate}.perform when the #{action} action is received" do
+      expect(pr).to receive(:action).at_least(:once).and_return action
+      expect(delegate).to receive(:perform)
 
-      before do
-        jira_client.stub_chain(:Issue, :build)
-        allow(PuppetLabs::Jira::Issue).to receive(:new).and_return jira_issue
-      end
-
-      it "creates a new jira issue" do
-        allow(jira_issue).to receive(:remotelink)
-        expect(jira_issue).to receive(:create) do |*args|
-          expect(args[0]).to eq 'TEST'
-          expect(args[1]).to be_a_kind_of String
-          expect(args[2]).to be_a_kind_of String
-          expect(args[3]).to eq 'Task'
-        end
-
-        subject.perform
-      end
-
-      it "adds a link to the new issue referencing the pull request" do
-        allow(jira_issue).to receive(:create)
-        expect(jira_issue).to receive(:remotelink).with(pr.html_url, "Pull Request: #{pr.title}", 'Github', anything)
-
-        subject.perform
-      end
-    end
-
-    describe "and there is an existing Jira issue" do
-      let(:jira_issue) { double('PuppetLabs::Jira::Issue', :key => 'TEST-123') }
-
-      before :each do
-        allow(pr).to receive(:title).and_return '[TEST-123] Pull request titles should reference a jira key'
-        allow(PuppetLabs::Jira::Issue).to receive(:new).and_return jira_issue
-      end
-
-      let(:found_issue) { double('JIRA::Resource::Issue', :key => 'TEST-123') }
-
-      it "doesn't create a new pull request" do
-        expect(JIRA::Resource::Issue).to receive(:find).with(jira_client, 'TEST-123').and_return found_issue
-
-        expect(jira_issue).to receive(:create).never
-        allow(jira_issue).to receive(:remotelink)
-
-        subject.perform
-      end
-
-      it "adds the pull request as a new remote link" do
-        expect(JIRA::Resource::Issue).to receive(:find).with(jira_client, 'TEST-123').and_return found_issue
-
-        expect(jira_issue).to receive(:remotelink).once
-
-        subject.perform
-      end
-
-      it "adds a comment on the issue referencing the pull request"
+      subject.perform
     end
   end
 
-  describe "when a pull request is closed" do
-    it "adds a comment on the issue indicating the issue was closed"
-  end
-
-  describe "when a pull request is reopened" do
-    it "adds a comment on the issue indicating the issue was reopened"
-  end
-
-  describe "with an unhandled pull request action" do
-    it "logs a warning"
-  end
+  it "logs a warning when an unrecognized action is called"
 end
