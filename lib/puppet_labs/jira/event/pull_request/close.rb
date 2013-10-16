@@ -29,6 +29,8 @@ class PuppetLabs::Jira::Event::PullRequest::Close
     add_closed_comment
   end
 
+  attr_writer :logger
+
   private
 
   def logger

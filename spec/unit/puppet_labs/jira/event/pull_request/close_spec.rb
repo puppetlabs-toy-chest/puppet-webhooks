@@ -14,7 +14,7 @@ describe PuppetLabs::Jira::Event::PullRequest::Close do
 
   before :each do
     # Stub logging
-    subject.stub(:logger).and_return(double.as_null_object)
+    subject.logger = double.as_null_object
 
     # And the Github API
     github_account = {

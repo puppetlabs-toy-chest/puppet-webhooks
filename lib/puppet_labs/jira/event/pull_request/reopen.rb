@@ -29,7 +29,13 @@ class PuppetLabs::Jira::Event::PullRequest::Reopen
     add_reopened_comment
   end
 
+  attr_writer :logger
+
   private
+
+  def logger
+    @logger ||= Logger.new(STDOUT)
+  end
 
   def add_reopened_comment
     summary = PuppetLabs::Jira::Formatter.format_pull_request(pull_request)[:summary]

@@ -29,6 +29,8 @@ class PuppetLabs::Jira::Event::PullRequest::Open
     create_or_link
   end
 
+  attr_writer :logger
+
   private
 
   def logger
