@@ -6,6 +6,14 @@ module PuppetLabs
     # @see https://jira.atlassian.com/secure/WikiRendererHelpAction.jspa?section=all
     module Formatter
 
+      # Generate a unique string based on a pull request so that we can ID the
+      # pull request later
+      def pull_request_id(pr)
+        seed = "#{pr.repo_name} #{pr.number}"
+        Digest::MD5.hexdigest(seed)
+      end
+      module_function :pull_request_id
+
       # Format a pull request
       #
       # @param pr [PuppetLabs::Github::PullRequest]
@@ -25,6 +33,9 @@ module PuppetLabs
           ----
 
           #{pr.body}
+
+          ----
+          (webhooks-id: #{pull_request_id(pr)})
         DESC
 
         summary = "Pull Request (#{pr.number}): #{pr.title}"
