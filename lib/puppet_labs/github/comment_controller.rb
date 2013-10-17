@@ -25,16 +25,14 @@ class CommentController < Controller
       return [OK, {}, body]
     end
 
-    job.comment = comment
-    delayed_job = job.queue
-    logger.info "Successfully queued up the created comment on #{comment.repo_name}/#{comment.issue.number} as job #{delayed_job.id}"
-    body = {
-      'job_id' => delayed_job.id,
-      'queue' => delayed_job.queue,
-      'priority' => delayed_job.priority,
-      'created_at' => delayed_job.created_at,
-    }
+    body = enqueue_job(job, comment)
+
     return [ACCEPTED, {}, body]
+  end
+
+  def enqueue_job(job, event)
+    job.comment = event
+    super
   end
 end
 end

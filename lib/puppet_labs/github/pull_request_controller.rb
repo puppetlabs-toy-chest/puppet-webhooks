@@ -56,26 +56,17 @@ class PullRequestController < Controller
       return {'trello' => {'status' => 'failed', 'errors' => 'unhandled action'}}
     end
 
-    enqueue_job(job)
+    enqueue_job(job, @pull_request)
   end
 
   def run_jira
     job = PuppetLabs::Jira::PullRequestHandler.new
-    enqueue_job(job)
+    enqueue_job(job, @pull_request)
   end
 
-  def enqueue_job(job)
+  def enqueue_job(job, event)
     job.pull_request = @pull_request
-    delayed_job = job.queue
-
-    logger.info "Queued #{job.class} (#{pull_request.repo_name}/#{pull_request.number}) as job #{delayed_job.id}"
-    {
-      'status'     => 'ok',
-      'job_id'     => delayed_job.id,
-      'queue'      => delayed_job.queue,
-      'priority'   => delayed_job.priority,
-      'created_at' => delayed_job.created_at,
-    }
+    super
   end
 
   # Determine which event outputs should be used, based on the environment.
