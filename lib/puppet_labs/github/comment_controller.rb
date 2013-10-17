@@ -18,23 +18,40 @@ class CommentController < Controller
   #
   # @return [Array] containing the Sinatra route style [status, headers_hsh, body_hsh]
   def run
-    case comment.action
-    when "created"
-      job = PuppetLabs::Trello::TrelloCommentJob.new
-    else
-      logger.info "Ignoring comment on #{comment.repo_name}/#{comment.issue.number} because the action is #{comment.action}."
-      body = { 'message' => 'Action has been ignored.' }
-      return [OK, {}, body]
+    messages = {'outputs' => outputs}
+
+    if outputs.include? 'trello'
+      messages['trello'] = enqueue_trello
     end
 
-    body = enqueue_job(job, comment)
+    if outputs.include? 'jira'
+      messages['jira'] = enqueue_jira
+    end
 
-    return [ACCEPTED, {}, body]
+    return [ACCEPTED, {}, messages]
   end
 
   def enqueue_job(job, event)
     job.comment = event
     super
+  end
+
+  private
+
+  def enqueue_trello
+    case comment.action
+    when "created"
+      job = PuppetLabs::Trello::TrelloCommentJob.new
+      enqueue_job(job, comment)
+    else
+      logger.info "Ignoring comment on #{comment.repo_name}/#{comment.issue.number} because the action is #{comment.action}."
+      {'status' => 'failed', 'message' => 'Action has been ignored.'}
+    end
+  end
+
+  def enqueue_jira
+    job = PuppetLabs::Jira::CommentHandler.new
+    enqueue_job(job, comment)
   end
 end
 end
