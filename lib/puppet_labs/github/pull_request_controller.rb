@@ -22,15 +22,12 @@ class PullRequestController < Controller
   def run
     messages = {'outputs' => outputs}
 
-    jobs = []
     if outputs.include? 'trello'
-      output = run_trello
-      messages['trello'] = output
+      messages['trello'] = enqueue_trello
     end
 
     if outputs.include? 'jira'
-      output = run_jira
-      messages['jira'] = output
+      messages['jira'] = enqueue_jira
     end
 
     return [ACCEPTED, {}, messages]
@@ -38,7 +35,7 @@ class PullRequestController < Controller
 
   private
 
-  def run_trello
+  def enqueue_trello
     job = nil
     case pull_request.action
     when "opened"
@@ -49,13 +46,13 @@ class PullRequestController < Controller
       job = PuppetLabs::Trello::TrelloPullRequestClosedJob.new
     else
       logger.info "Ignoring pull request #{pull_request.repo_name}/#{pull_request.number}: action #{pull_request.action} is unhandled"
-      return {'trello' => {'status' => 'failed', 'errors' => 'unhandled action'}}
+      return {'status' => 'failed', 'errors' => 'unhandled action'}
     end
 
     enqueue_job(job, @pull_request)
   end
 
-  def run_jira
+  def enqueue_jira
     job = PuppetLabs::Jira::PullRequestHandler.new
     enqueue_job(job, @pull_request)
   end
