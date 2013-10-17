@@ -1,6 +1,8 @@
 require 'puppet_labs/trello/trello_comment_job'
 require 'puppet_labs/github/controller'
 
+require 'puppet_labs/jira/event/comment'
+
 module PuppetLabs
 module Github
 class CommentController < Controller
