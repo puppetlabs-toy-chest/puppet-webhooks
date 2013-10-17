@@ -29,12 +29,12 @@ class PullRequestController < Controller
     jobs = []
     if outputs.include? 'trello'
       output = run_trello
-      messages.merge!(output)
+      messages['trello'] = output
     end
 
     if outputs.include? 'jira'
       output = run_jira
-      messages.merge!(output)
+      messages['jira'] = output
     end
 
     return [ACCEPTED, {}, messages]
@@ -56,27 +56,25 @@ class PullRequestController < Controller
       return {'trello' => {'status' => 'failed', 'errors' => 'unhandled action'}}
     end
 
-    enqueue_job('trello', job)
+    enqueue_job(job)
   end
 
   def run_jira
     job = PuppetLabs::Jira::PullRequestHandler.new
-    enqueue_job('jira', job)
+    enqueue_job(job)
   end
 
-  def enqueue_job(name, job)
+  def enqueue_job(job)
     job.pull_request = @pull_request
     delayed_job = job.queue
 
     logger.info "Queued #{job.class} (#{pull_request.repo_name}/#{pull_request.number}) as job #{delayed_job.id}"
     {
-      name => {
-        'status'     => 'ok',
-        'job_id'     => delayed_job.id,
-        'queue'      => delayed_job.queue,
-        'priority'   => delayed_job.priority,
-        'created_at' => delayed_job.created_at,
-      }
+      'status'     => 'ok',
+      'job_id'     => delayed_job.id,
+      'queue'      => delayed_job.queue,
+      'priority'   => delayed_job.priority,
+      'created_at' => delayed_job.created_at,
     }
   end
 
