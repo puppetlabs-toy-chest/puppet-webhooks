@@ -39,6 +39,10 @@ class Comment
   def pull_request?
     !!issue.pull_request.html_url
   end
+
+  def event_description
+    "(comment) #{repo_name} #{issue.number}"
+  end
 end
 end
 end

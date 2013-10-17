@@ -39,7 +39,7 @@ class Controller
   def enqueue_job(job, event)
     delayed_job = job.queue
 
-    logger.info "Queued #{job.class} (#{event.repo_name}/#{event.number}) as job #{delayed_job.id}"
+    logger.info "Queued #{event.event_description} as job #{delayed_job.id}"
 
     {
       'status'     => 'ok',

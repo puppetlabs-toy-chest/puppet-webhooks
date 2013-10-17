@@ -37,6 +37,10 @@ class Issue
       'repository' => data['repository']
     }))
   end
+
+  def event_description
+    "(issue) #{repo_name} #{number}"
+  end
 end
 end
 end

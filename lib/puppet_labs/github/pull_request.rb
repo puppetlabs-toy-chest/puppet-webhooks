@@ -62,6 +62,10 @@ class PullRequest
       @author_avatar_url = sender['avatar_url']
     end
   end
+
+  def event_description
+    "(pull request) #{repo_name} #{number}"
+  end
 end
 end
 end
