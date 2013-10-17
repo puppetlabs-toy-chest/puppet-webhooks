@@ -1,0 +1,32 @@
+#!/bin/bash
+#
+# Delete a hook on a given github repository
+
+usage() {
+    cat <<DOC
+Usage: $(basename $0) username github_user github_repo hook_id
+
+Example:
+
+    $ $(basename $0) myaccount puppetlabs puppet 1234
+    Enter host password for user 'myaccount':
+    HTTP/1.1 204 No Content
+DOC
+}
+
+username=$1
+
+github_user=$2
+github_repo=$3
+hook_id=$4
+
+if [ -z "$1" -o -z "$2" -o -z "$3" -o -z "$4" ]; then
+    echo "Missing mandatory arguments."
+    echo
+    usage
+    exit 1
+fi
+
+url="https://api.github.com/repos/${github_user}/${github_repo}/hooks/${hook_id}"
+
+curl -X DELETE -i -u $username $url

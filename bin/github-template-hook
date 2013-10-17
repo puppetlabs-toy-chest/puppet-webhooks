@@ -1,0 +1,56 @@
+#!/bin/bash
+#
+# Generate the JSON needed for creating a new hook
+
+usage() {
+    cat <<DOC
+Usage: $(basename $0) file
+
+Example:
+
+    $ $(basename $0) template.json
+    {
+      "name": "web",
+      "active": true,
+      "events": [
+        "issues",
+        "issue_comment",
+        "pull_request",
+        "pull_request_review_comment"
+      ],
+      "config": {
+        "url": "http://example.com/webhook",
+        "secret": "9e49ae104b797518717e65ca8a6534ddc4fcb62709ed52ba9353251192b45dfa",
+        "content_type": "json"
+      }
+    }
+DOC
+}
+
+template_file=$1
+
+if [ -z "$1" ]; then
+    echo "Missing mandatory arguments."
+    echo
+    usage
+    exit 1
+fi
+
+tee $template_file <<TEMPLATE
+{
+  "name": "web",
+  "active": true,
+  "events": [
+    "issues",
+    "issue_comment",
+    "pull_request",
+    "pull_request_review_comment"
+  ],
+  "config": {
+    "url": "http://example.com/webhook",
+    "secret": "9e49ae104b797518717e65ca8a6534ddc4fcb62709ed52ba9353251192b45dfa",
+    "content_type": "json"
+  }
+}
+TEMPLATE
+

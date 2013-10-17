@@ -1,0 +1,32 @@
+#!/bin/bash
+#
+# Create a hook on a given github repository
+
+usage() {
+    cat <<DOC
+Usage: $(basename $0) username github_user github_repo file
+
+Example:
+
+    $ $(basename $0) myaccount puppetlabs puppet hook-data.json
+    Enter host password for user 'myaccount':
+DOC
+}
+
+username=$1
+
+github_user=$2
+github_repo=$3
+file=$4
+
+if [ -z "$1" -o -z "$2" -o -z "$3" -o -z "$4" ]; then
+    echo "Missing mandatory arguments."
+    echo
+    usage
+    exit 1
+fi
+
+url="https://api.github.com/repos/${github_user}/${github_repo}/hooks"
+
+curl -X POST -i -u $username $url -d "$(cat $file)"
+
