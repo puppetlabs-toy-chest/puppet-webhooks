@@ -13,11 +13,7 @@ class PullRequestController < Controller
     if pull_request = options[:pull_request]
       @pull_request = pull_request
     end
-
-    @outputs = outputs_from_env
   end
-
-  attr_accessor :outputs
 
   ##
   # run processes the pull request and queues up a pull request job.
@@ -67,15 +63,6 @@ class PullRequestController < Controller
   def enqueue_job(job, event)
     job.pull_request = @pull_request
     super
-  end
-
-  # Determine which event outputs should be used, based on the environment.
-  # Defaults to trello.
-  #
-  def outputs_from_env
-    str = (ENV['GITHUB_EVENT_OUTPUTS'] || 'trello')
-
-    str.split(/,/).map(&:strip)
   end
 end
 end

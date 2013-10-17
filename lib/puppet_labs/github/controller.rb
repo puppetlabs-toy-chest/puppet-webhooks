@@ -9,6 +9,10 @@ class Controller
     :route,
     :logger
 
+  # @!attribute [rw] outputs
+  #   @return [Array<String>] A list of outputs to use for this controller
+  attr_accessor :outputs
+
   def initialize(options = {})
     @options = options
     if request = options[:request]
@@ -22,6 +26,8 @@ class Controller
     else
       @logger = Logger.new(STDOUT)
     end
+
+    @outputs = default_outputs
   end
 
   # Generated a new delayed job
@@ -44,6 +50,17 @@ class Controller
     }
   end
 
+  private
+
+  # Get a list of default environments by checking the environment
+  #
+  # @param env [Hash] A representation of the environment variables represented
+  #   as a hash.
+  # @return [Array<String>] A list of the specified outputs
+  def default_outputs(env = ENV.to_hash)
+    values = (env['GITHUB_EVENT_OUTPUTS'] || 'trello')
+    values.split(/,/).map(&:strip)
+  end
 end
 end
 end
