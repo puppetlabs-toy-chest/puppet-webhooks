@@ -55,6 +55,8 @@ module PuppetLabs
       # @param json [String] The serialized JSON data to parse
       def load_json(json)
         @raw = JSON.load(json)
+
+        @action = @raw['action']
       end
     end
   end

@@ -34,7 +34,6 @@ class Issue < PuppetLabs::Github::EventBase
     @html_url = @raw['issue']['html_url']
     @body = @raw['issue']['body']
     @repo_name = @raw['repository']['name']
-    @action = @raw['action']
     @pull_request = ::PuppetLabs::Github::PullRequest.from_json(JSON.dump({
       'pull_request' => @raw['issue']['pull_request'],
       'repository' => @raw['repository']

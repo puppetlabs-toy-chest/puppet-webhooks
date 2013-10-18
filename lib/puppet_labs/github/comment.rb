@@ -19,7 +19,6 @@ class Comment < PuppetLabs::Github::EventBase
     super
 
     @body = @raw['comment']['body']
-    @action = @raw['action']
     @issue = ::PuppetLabs::Github::Issue.from_json(json)
     @pull_request = @issue.pull_request
     @repo_name = @issue.repo_name

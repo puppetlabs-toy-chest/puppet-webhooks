@@ -52,8 +52,13 @@ class PullRequest < PuppetLabs::Github::EventBase
     @body = pr['body']
     repo = data['repository'] || data['base']['repo']
     @repo_name = repo['name']
+
+    # In the case that we're importing existing pull requests, we will be
+    # directly querying the Github API which means the 'action' field will not
+    # be included in the JSON structure.
     @action = data['action']
     @action = 'opened' if action.nil? && data['state'] == 'open'
+
     @created_at = pr['created_at']
     sender = data['sender'] || data['user']
     if sender
