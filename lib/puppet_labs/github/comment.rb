@@ -1,4 +1,3 @@
-require 'json'
 require 'puppet_labs/github/issue'
 require 'puppet_labs/github/event_base'
 
@@ -17,14 +16,15 @@ class Comment < PuppetLabs::Github::EventBase
     :author_avatar_url
 
   def load_json(json)
-    data = JSON.load(json)
-    @body = data['comment']['body']
-    @action = data['action']
+    super
+
+    @body = @raw['comment']['body']
+    @action = @raw['action']
     @issue = ::PuppetLabs::Github::Issue.from_json(json)
     @pull_request = @issue.pull_request
     @repo_name = @issue.repo_name
-    @author_login = data['sender']['login']
-    @author_avatar_url = data['sender']['avatar_url']
+    @author_login = @raw['sender']['login']
+    @author_avatar_url = @raw['sender']['avatar_url']
   end
 
   # This determines whether the comment was on a Pull Request or Issue

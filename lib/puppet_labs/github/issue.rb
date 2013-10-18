@@ -1,4 +1,3 @@
-require 'json'
 require 'puppet_labs/github/pull_request'
 require 'puppet_labs/github/event_base'
 
@@ -30,16 +29,15 @@ class Issue < PuppetLabs::Github::EventBase
   def load_json(json)
     super
 
-    data = JSON.load(json)
-    @number = data['issue']['number']
-    @title = data['issue']['title']
-    @html_url = data['issue']['html_url']
-    @body = data['issue']['body']
-    @repo_name = data['repository']['name']
-    @action = data['action']
+    @number = @raw['issue']['number']
+    @title = @raw['issue']['title']
+    @html_url = @raw['issue']['html_url']
+    @body = @raw['issue']['body']
+    @repo_name = @raw['repository']['name']
+    @action = @raw['action']
     @pull_request = ::PuppetLabs::Github::PullRequest.from_json(JSON.dump({
-      'pull_request' => data['issue']['pull_request'],
-      'repository' => data['repository']
+      'pull_request' => @raw['issue']['pull_request'],
+      'repository' => @raw['repository']
     }))
   end
 

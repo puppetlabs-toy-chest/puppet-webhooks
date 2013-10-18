@@ -1,4 +1,3 @@
-require 'json'
 require 'puppet_labs/github/event_base'
 require 'puppet_labs/github/github_mix'
 
@@ -40,7 +39,7 @@ class PullRequest < PuppetLabs::Github::EventBase
   def load_json(json)
     super
 
-    load_data(JSON.load(json))
+    load_data(@raw)
   end
 
   def load_data(data)
