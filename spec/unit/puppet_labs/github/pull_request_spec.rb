@@ -82,8 +82,8 @@ describe 'PuppetLabs::Github::PullRequest' do
     it 'has a action' do
       subject.action.should == data['action']
     end
-    it 'has a message' do
-      subject.message.should == data
+    it 'has a raw field' do
+      subject.raw.should == data
     end
     it 'has a created_at' do
       subject.created_at.should == data['pull_request']['created_at']
@@ -118,8 +118,8 @@ describe 'PuppetLabs::Github::PullRequest' do
     it 'has a action' do
       subject.action.should == "opened"
     end
-    it 'has a message' do
-      subject.message.should == data
+    it 'has a raw field' do
+      subject.raw.should == data
     end
     it 'has a created_at' do
       subject.created_at.should == data['created_at']

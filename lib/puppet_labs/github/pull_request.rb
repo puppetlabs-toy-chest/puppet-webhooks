@@ -11,8 +11,6 @@ class PullRequest < PuppetLabs::Github::EventBase
   include GithubMix
   # Pull request data
   attr_reader :env,
-    :message,
-    :created_at,
     :author,
     :author_avatar_url
 
@@ -27,6 +25,10 @@ class PullRequest < PuppetLabs::Github::EventBase
   # @!attribute [r] html_url
   #   @return [String] The URL to the github issue
   attr_reader :html_url
+
+  # @!attribute [r] created_at
+  #   @return [String] The pull request creation date
+  attr_reader :created_at
 
   def self.from_data(data)
     new(:data => data)
@@ -53,7 +55,6 @@ class PullRequest < PuppetLabs::Github::EventBase
 
   def load_data(data)
 
-    @message = data
     pr = data['pull_request'] || data
     @number = pr['number']
     @title = pr['title']
