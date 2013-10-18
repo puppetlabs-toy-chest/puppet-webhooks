@@ -13,11 +13,7 @@ class PullRequestController < Controller
     if pull_request = options[:pull_request]
       @pull_request = pull_request
     end
-
-    @outputs = outputs_from_env
   end
-
-  attr_accessor :outputs
 
   ##
   # run processes the pull request and queues up a pull request job.
@@ -26,15 +22,12 @@ class PullRequestController < Controller
   def run
     messages = {'outputs' => outputs}
 
-    jobs = []
     if outputs.include? 'trello'
-      output = run_trello
-      messages['trello'] = output
+      messages['trello'] = enqueue_trello
     end
 
     if outputs.include? 'jira'
-      output = run_jira
-      messages['jira'] = output
+      messages['jira'] = enqueue_jira
     end
 
     return [ACCEPTED, {}, messages]
@@ -42,7 +35,7 @@ class PullRequestController < Controller
 
   private
 
-  def run_trello
+  def enqueue_trello
     job = nil
     case pull_request.action
     when "opened"
@@ -53,38 +46,20 @@ class PullRequestController < Controller
       job = PuppetLabs::Trello::TrelloPullRequestClosedJob.new
     else
       logger.info "Ignoring pull request #{pull_request.repo_name}/#{pull_request.number}: action #{pull_request.action} is unhandled"
-      return {'trello' => {'status' => 'failed', 'errors' => 'unhandled action'}}
+      return {'status' => 'failed', 'errors' => 'unhandled action'}
     end
 
-    enqueue_job(job)
+    enqueue_job(job, @pull_request)
   end
 
-  def run_jira
+  def enqueue_jira
     job = PuppetLabs::Jira::PullRequestHandler.new
-    enqueue_job(job)
+    enqueue_job(job, @pull_request)
   end
 
-  def enqueue_job(job)
+  def enqueue_job(job, event)
     job.pull_request = @pull_request
-    delayed_job = job.queue
-
-    logger.info "Queued #{job.class} (#{pull_request.repo_name}/#{pull_request.number}) as job #{delayed_job.id}"
-    {
-      'status'     => 'ok',
-      'job_id'     => delayed_job.id,
-      'queue'      => delayed_job.queue,
-      'priority'   => delayed_job.priority,
-      'created_at' => delayed_job.created_at,
-    }
-  end
-
-  # Determine which event outputs should be used, based on the environment.
-  # Defaults to trello.
-  #
-  def outputs_from_env
-    str = (ENV['GITHUB_EVENT_OUTPUTS'] || 'trello')
-
-    str.split(/,/).map(&:strip)
+    super
   end
 end
 end
