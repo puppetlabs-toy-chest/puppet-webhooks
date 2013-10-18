@@ -93,7 +93,7 @@ module PuppetLabs
       def fetch!
         github_user = client.user(login)
 
-        @name    = github_user['name']
+        @name    = (github_user['name'] || login) # Fall back to login if no name specified
         @company = github_user['company']
         @email   = github_user['email']
 
