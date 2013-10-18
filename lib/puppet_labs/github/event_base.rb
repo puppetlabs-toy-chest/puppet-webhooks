@@ -31,6 +31,10 @@ module PuppetLabs
           load_json(json)
         end
       end
+
+      # @!attribute [r] action
+      #   @return [String] The action represented in the event
+      attr_reader :action
     end
   end
 end

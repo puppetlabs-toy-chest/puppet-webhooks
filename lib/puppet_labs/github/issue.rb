@@ -16,8 +16,7 @@ class Issue < PuppetLabs::Github::EventBase
     :title,
     :html_url,
     :body,
-    :pull_request,
-    :action
+    :pull_request
 
   def load_json(json)
     data = JSON.load(json)
