@@ -39,6 +39,10 @@ module PuppetLabs
       # @!attribute [r] repo_name
       #   @return [String] The name of the github repository. (Sans the username)
       attr_reader :repo_name
+
+      # @!attribute [r] body
+      #   @return [String] The textual body of the event.
+      attr_reader :body
     end
   end
 end

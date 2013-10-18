@@ -14,7 +14,6 @@ class Issue < PuppetLabs::Github::EventBase
   attr_reader :number,
     :title,
     :html_url,
-    :body,
     :pull_request
 
   def load_json(json)

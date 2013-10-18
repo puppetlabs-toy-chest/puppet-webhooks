@@ -15,7 +15,6 @@ class PullRequest < PuppetLabs::Github::EventBase
     :env,
     :title,
     :html_url,
-    :body,
     :message,
     :created_at,
     :author,

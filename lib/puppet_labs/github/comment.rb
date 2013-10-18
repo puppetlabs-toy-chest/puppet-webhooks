@@ -5,13 +5,13 @@ require 'puppet_labs/github/event_base'
 module PuppetLabs
 module Github
 
-# This class provides a model of a GitHub comment.
+# This class provides a model of a GitHub comment. Comments on both Github
+# issues and events are handled as this class.
 #
 # @see http://developer.github.com/v3/issues/comments/
 class Comment < PuppetLabs::Github::EventBase
   # Comment data
-  attr_reader :body,
-    :issue,
+  attr_reader :issue,
     :pull_request,
     :author_login,
     :author_avatar_url
