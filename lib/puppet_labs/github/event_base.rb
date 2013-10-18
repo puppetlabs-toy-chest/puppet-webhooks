@@ -43,6 +43,16 @@ module PuppetLabs
       # @!attribute [r] body
       #   @return [String] The textual body of the event.
       attr_reader :body
+
+      # @!attribute [r] raw
+      #   @return [String] The raw parsed data from the JSON message.
+      #   @api private
+      attr_reader :raw
+
+      # Parse a JSON string and set the attributes on this object accordingly.
+      def load_json(json)
+        @raw = JSON.load(json)
+      end
     end
   end
 end

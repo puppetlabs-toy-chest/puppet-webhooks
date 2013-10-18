@@ -38,10 +38,13 @@ class PullRequest < PuppetLabs::Github::EventBase
   end
 
   def load_json(json)
+    super
+
     load_data(JSON.load(json))
   end
 
   def load_data(data)
+
     @message = data
     pr = data['pull_request'] || data
     @number = pr['number']

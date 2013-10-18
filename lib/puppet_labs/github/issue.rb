@@ -17,6 +17,8 @@ class Issue < PuppetLabs::Github::EventBase
     :pull_request
 
   def load_json(json)
+    super
+
     data = JSON.load(json)
     @number = data['issue']['number']
     @title = data['issue']['title']
