@@ -12,7 +12,6 @@ class Issue < PuppetLabs::Github::EventBase
 
   # Issue data
   attr_reader :number,
-    :repo_name,
     :title,
     :html_url,
     :body,

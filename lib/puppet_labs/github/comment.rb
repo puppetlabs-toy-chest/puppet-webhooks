@@ -14,8 +14,7 @@ class Comment < PuppetLabs::Github::EventBase
     :issue,
     :pull_request,
     :author_login,
-    :author_avatar_url,
-    :repo_name
+    :author_avatar_url
 
   def load_json(json)
     data = JSON.load(json)

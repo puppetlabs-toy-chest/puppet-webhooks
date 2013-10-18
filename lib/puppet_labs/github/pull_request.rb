@@ -13,7 +13,6 @@ class PullRequest < PuppetLabs::Github::EventBase
   # Pull request data
   attr_reader :number,
     :env,
-    :repo_name,
     :title,
     :html_url,
     :body,

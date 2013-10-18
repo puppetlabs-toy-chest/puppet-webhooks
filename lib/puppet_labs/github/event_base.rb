@@ -35,6 +35,10 @@ module PuppetLabs
       # @!attribute [r] action
       #   @return [String] The action represented in the event
       attr_reader :action
+
+      # @!attribute [r] repo_name
+      #   @return [String] The name of the github repository. (Sans the username)
+      attr_reader :repo_name
     end
   end
 end
