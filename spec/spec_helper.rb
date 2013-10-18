@@ -27,7 +27,10 @@ require 'rack/test'
 require 'json'
 require 'yaml'
 
-$LOAD_PATH.unshift(File.expand_path("../../lib", __FILE__))
+PROJECT_ROOT = File.expand_path("../../lib", __FILE__)
+SPEC_ROOT    = File.expand_path("../lib",    __FILE__)
+
+$LOAD_PATH.unshift(PROJECT_ROOT).unshift(SPEC_ROOT)
 
 require 'puppet_labs/webhook'
 
@@ -40,6 +43,8 @@ module Methods
 end
 end
 end
+
+require 'shared-contexts'
 
 # FIXME much of this configuration is duplicated in the :environment task in
 # the Rakefile

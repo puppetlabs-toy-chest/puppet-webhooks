@@ -2,8 +2,8 @@ require 'spec_helper'
 require 'puppet_labs/jira/pull_request_handler'
 
 describe PuppetLabs::Jira::PullRequestHandler do
-  let(:payload) { read_fixture("example_pull_request.json") }
-  let (:pr) { PuppetLabs::Github::PullRequest.new(:json => payload) }
+
+  include_context "Github pull request fixture"
 
   let(:jira_client) { double('JIRA::Client') }
 
@@ -15,14 +15,6 @@ describe PuppetLabs::Jira::PullRequestHandler do
     subject.client = jira_client
     subject.pull_request = pr
     subject.stub(:project).and_return 'TEST'
-
-    # And the Github API
-    github_account = {
-      'name' => 'Github user',
-      'email' => 'user@fqdn.blackhole',
-      'company' => 'Company Inc.',
-      'html_url' => 'fqdn.blackhole',
-    }
 
     github_client = double('PuppetLabs::Github::GithubAPI', :account => github_account)
     pr.stub(:github).and_return github_client
