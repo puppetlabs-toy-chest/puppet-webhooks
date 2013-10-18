@@ -10,14 +10,23 @@ module Github
 class PullRequest < PuppetLabs::Github::EventBase
   include GithubMix
   # Pull request data
-  attr_reader :number,
-    :env,
-    :title,
-    :html_url,
+  attr_reader :env,
     :message,
     :created_at,
     :author,
     :author_avatar_url
+
+  # @!attribute [r] number
+  #   @return [Numeric] The github issue number
+  attr_reader :number
+
+  # @!attribute [r] title
+  #   @return [String] The title field of the github issue
+  attr_reader :title
+
+  # @!attribute [r] html_url
+  #   @return [String] The URL to the github issue
+  attr_reader :html_url
 
   def self.from_data(data)
     new(:data => data)
