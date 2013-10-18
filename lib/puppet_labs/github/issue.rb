@@ -10,11 +10,22 @@ module Github
 # @see http://developer.github.com/v3/issues/
 class Issue < PuppetLabs::Github::EventBase
 
-  # Issue data
-  attr_reader :number,
-    :title,
-    :html_url,
-    :pull_request
+  # @!attribute [r] number
+  #   @return [Numeric] The github issue number
+  attr_reader :number
+
+  # @!attribute [r] title
+  #   @return [String] The title field of the github issue
+  attr_reader :title
+
+  # @!attribute [r] html_url
+  #   @return [String] The URL to the github issue
+  attr_reader :html_url
+
+  # @!attribute [r] pull_request
+  #   @return [PuppetLabs::Github::PullRequest] The pull request associated
+  #     with this issue if one is present.
+  attr_reader :pull_request
 
   def load_json(json)
     super
