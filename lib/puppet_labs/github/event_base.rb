@@ -46,11 +46,13 @@ module PuppetLabs
       attr_reader :body
 
       # @!attribute [r] raw
-      #   @return [String] The raw parsed data from the JSON message.
+      #   @return [Hash] The raw parsed data from the JSON message.
       #   @api private
       attr_reader :raw
 
       # Parse a JSON string and set the attributes on this object accordingly.
+      #
+      # @param json [String] The serialized JSON data to parse
       def load_json(json)
         @raw = JSON.load(json)
       end
