@@ -8,6 +8,7 @@ module Github
 # issues and events are handled as this class.
 #
 # @see http://developer.github.com/v3/issues/comments/
+# @see http://developer.github.com/guides/working-with-comments/
 class Comment < PuppetLabs::Github::EventBase
   # Comment data
   attr_reader :issue,

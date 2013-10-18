@@ -8,6 +8,8 @@ module PuppetLabs
     # @abstract
     #
     # @api private
+    #
+    # @see http://developer.github.com/v3/activity/events/types/
     class EventBase
 
       # Generate a object from the JSON representation.
