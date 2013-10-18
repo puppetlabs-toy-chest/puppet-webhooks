@@ -1,10 +1,14 @@
 require 'json'
 require 'puppet_labs/github/issue'
+require 'puppet_labs/github/event_base'
 
-# This class provides a model of a GitHub comment.
 module PuppetLabs
 module Github
-class Comment
+
+# This class provides a model of a GitHub comment.
+#
+# @see http://developer.github.com/v3/issues/comments/
+class Comment < PuppetLabs::Github::EventBase
   # Comment data
   attr_reader :body,
     :issue,
@@ -13,14 +17,6 @@ class Comment
     :author_avatar_url,
     :repo_name,
     :action
-
-  def self.from_json(json)
-    new(:json => json)
-  end
-
-  def initialize(options = {})
-    options[:json] && load_json(options[:json])
-  end
 
   def load_json(json)
     data = JSON.load(json)

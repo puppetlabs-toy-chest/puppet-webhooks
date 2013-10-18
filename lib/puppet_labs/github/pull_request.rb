@@ -1,10 +1,14 @@
 require 'json'
+require 'puppet_labs/github/event_base'
 require 'puppet_labs/github/github_mix'
 
-# This class provides a model of a pull rquest.
 module PuppetLabs
 module Github
-class PullRequest
+
+# This class provides a model of a pull rquest.
+#
+# @see http://developer.github.com/v3/pulls/
+class PullRequest < PuppetLabs::Github::EventBase
   include GithubMix
   # Pull request data
   attr_reader :number,
@@ -18,10 +22,6 @@ class PullRequest
     :created_at,
     :author,
     :author_avatar_url
-
-  def self.from_json(json)
-    new(:json => json)
-  end
 
   def self.from_data(data)
     new(:data => data)

@@ -1,10 +1,15 @@
 require 'json'
 require 'puppet_labs/github/pull_request'
+require 'puppet_labs/github/event_base'
 
-# This class provides a model of a github issue.
 module PuppetLabs
 module Github
-class Issue
+
+# This class provides a model of a github issue.
+#
+# @see http://developer.github.com/v3/issues/
+class Issue < PuppetLabs::Github::EventBase
+
   # Issue data
   attr_reader :number,
     :repo_name,
@@ -13,16 +18,6 @@ class Issue
     :body,
     :pull_request,
     :action
-
-  def self.from_json(json)
-    new(:json => json)
-  end
-
-  def initialize(options = {})
-    if json = options[:json]
-      load_json(json)
-    end
-  end
 
   def load_json(json)
     data = JSON.load(json)
