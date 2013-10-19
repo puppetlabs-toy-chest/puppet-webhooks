@@ -1,5 +1,4 @@
 require 'puppet_labs/github/event_base'
-require 'puppet_labs/github/github_mix'
 
 module PuppetLabs
 module Github

@@ -3,7 +3,7 @@ shared_context "Github pull request fixture" do
   include_context "Github API fixture"
 
   let(:payload) { read_fixture("example_pull_request.json") }
-  let (:pr) { PuppetLabs::Github::PullRequest.new(:json => payload) }
+  let(:pr) { PuppetLabs::Github::PullRequest.new(:json => payload) }
 
   before :each do
     allow(pr).to receive(:user).and_return(github_user)
@@ -15,11 +15,8 @@ shared_context "Github comment fixture" do
   include_context "Github API fixture"
 
   let(:payload) { read_fixture("example_comment.json") }
-  let (:comment) { PuppetLabs::Github::Comment.new(:json => payload) }
+  let(:comment) { PuppetLabs::Github::Comment.new(:json => payload) }
 
-  before do
-    comment.stub(:github).and_return(github_client)
-  end
 end
 
 shared_context "Github API fixture" do
@@ -38,6 +35,4 @@ shared_context "Github API fixture" do
       'avatar_url' => 'http://avatars.go.here',
     }
   end
-
-  let(:github_client) { double('PuppetLabs::Github::GithubAPI', :account => github_account) }
 end

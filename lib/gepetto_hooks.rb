@@ -1,7 +1,6 @@
 require 'gepetto_hooks/version'
 require 'puppet_labs/github/controller'
 require 'puppet_labs/event'
-require 'puppet_labs/github/github_api'
 require 'puppet_labs/github/github_controller'
 require 'puppet_labs/github/github_mix'
 require 'puppet_labs/github/github_utils'
