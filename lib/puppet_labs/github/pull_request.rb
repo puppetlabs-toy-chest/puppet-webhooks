@@ -10,8 +10,7 @@ module Github
 class PullRequest < PuppetLabs::Github::EventBase
   include GithubMix
   # Pull request data
-  attr_reader :env,
-    :author,
+  attr_reader :author,
     :author_avatar_url
 
   # @!attribute [r] number
