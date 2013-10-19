@@ -12,9 +12,11 @@ module Github
 class Comment < PuppetLabs::Github::EventBase
   # Comment data
   attr_reader :issue,
-    :pull_request,
-    :author_login,
-    :author_avatar_url
+    :pull_request
+
+  # @!attribute [r] user
+  #   @return [PuppetLabs::Github::User] The user that created this comment
+  attr_reader :user
 
   def load_json(json)
     super
@@ -23,8 +25,8 @@ class Comment < PuppetLabs::Github::EventBase
     @issue = ::PuppetLabs::Github::Issue.from_json(json)
     @pull_request = @issue.pull_request
     @repo_name = @issue.repo_name
-    @author_login = @raw['sender']['login']
-    @author_avatar_url = @raw['sender']['avatar_url']
+
+    @user = PuppetLabs::Github::User.from_hash(@raw['sender'])
   end
 
   # This determines whether the comment was on a Pull Request or Issue
@@ -36,6 +38,14 @@ class Comment < PuppetLabs::Github::EventBase
 
   def event_description
     "(comment) #{repo_name} #{issue.number}"
+  end
+
+  def author_login
+    user.login
+  end
+
+  def author_avatar_url
+    user.avatar_url
   end
 end
 end
