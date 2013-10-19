@@ -5,8 +5,8 @@ shared_context "Github pull request fixture" do
   let(:payload) { read_fixture("example_pull_request.json") }
   let (:pr) { PuppetLabs::Github::PullRequest.new(:json => payload) }
 
-  before do
-    pr.stub(:github).and_return(github_client)
+  before :each do
+    allow(pr).to receive(:user).and_return(github_user)
   end
 end
 
@@ -24,12 +24,18 @@ end
 
 shared_context "Github API fixture" do
 
+  def github_user
+    PuppetLabs::Github::User.from_hash(github_account)
+  end
+
   def github_account
     @github_account ||= {
-      'name' => 'Jeff McCune',
+      'login' => 'jeffmccune',
+      'name'  => 'Jeff McCune',
       'email' => 'jeff@puppetlabs.com',
       'company' => 'Puppet Labs',
       'html_url' => 'https://github.com/jeffmccune',
+      'avatar_url' => 'http://avatars.go.here',
     }
   end
 

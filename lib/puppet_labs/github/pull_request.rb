@@ -8,10 +8,6 @@ module Github
 #
 # @see http://developer.github.com/v3/pulls/
 class PullRequest < PuppetLabs::Github::EventBase
-  include GithubMix
-  # Pull request data
-  attr_reader :author,
-    :author_avatar_url
 
   # @!attribute [r] number
   #   @return [Numeric] The github issue number
@@ -28,6 +24,10 @@ class PullRequest < PuppetLabs::Github::EventBase
   # @!attribute [r] created_at
   #   @return [String] The pull request creation date
   attr_reader :created_at
+
+  # @!attribute [r] user
+  #   @return [PuppetLabs::Github::User] The user that created this pull request
+  attr_reader :user
 
   def self.from_data(data)
     new(:data => data)
@@ -71,14 +71,23 @@ class PullRequest < PuppetLabs::Github::EventBase
     @created_at = pr['created_at']
     sender = data['sender'] || data['user']
     if sender
-      @author = sender['login']
-      @author_avatar_url = sender['avatar_url']
+      @user = PuppetLabs::Github::User.from_hash(sender)
     end
   end
 
   def event_description
     "(pull request) #{repo_name} #{number}"
   end
+
+  extend Forwardable
+
+  def author;            user.login;      end
+  def author_avatar_url; user.avatar_url; end
+  def author_html_url;   user.html_url;   end
+
+  def author_name;    user.name;    end
+  def author_company; user.company; end
+  def author_email;   user.email;   end
 end
 end
 end

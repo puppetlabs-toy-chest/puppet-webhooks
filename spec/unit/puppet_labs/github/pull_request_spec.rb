@@ -94,6 +94,9 @@ describe 'PuppetLabs::Github::PullRequest' do
     it 'has a author_avatar_url' do
       subject.author_avatar_url.should == data['sender']['avatar_url']
     end
+    it "has a user" do
+      subject.user.should be_a_kind_of PuppetLabs::Github::User
+    end
   end
 
   context 'existing pull request' do
@@ -129,6 +132,9 @@ describe 'PuppetLabs::Github::PullRequest' do
     end
     it 'has a author_avatar_url' do
       subject.author_avatar_url.should == data['user']['avatar_url']
+    end
+    it "has a user" do
+      subject.user.should be_a_kind_of PuppetLabs::Github::User
     end
   end
 end
