@@ -10,7 +10,7 @@ require 'delayed_job_active_record'
 require 'workless'
 
 # App controllers
-require 'puppet_labs/github/github_controller'
+require 'puppet_labs/github'
 
 require 'logger'
 require 'ostruct'
