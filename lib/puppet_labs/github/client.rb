@@ -12,7 +12,7 @@ module PuppetLabs
       def self.client_env_options(env = ENV.to_hash)
         options = {
           :login       => env['GITHUB_ACCOUNT'],
-          :oauth_token => env['GITHUB_TOKEN'],
+          :password    => env['GITHUB_TOKEN'],
         }
 
         validate_options!(options)
@@ -26,7 +26,7 @@ module PuppetLabs
         missing = []
 
         missing << 'GITHUB_ACCOUNT' unless options[:login]
-        missing << 'GITHUB_TOKEN'   unless options[:oauth_token]
+        missing << 'GITHUB_TOKEN'   unless options[:password]
 
         if !missing.empty?
           raise EmptyVariableError, "Cannot use Github: missing required environment variables #{missing.join(', ')}"
