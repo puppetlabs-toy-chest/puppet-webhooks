@@ -4,8 +4,7 @@ require 'puppet_labs/trello/trello_comment_job'
 describe PuppetLabs::Trello::TrelloCommentJob do
   class FakeError < StandardError; end
 
-  let(:payload) { read_fixture("example_comment.json") }
-  let (:comment) { PuppetLabs::Github::Comment.new(:json => payload) }
+  include_context  "Github comment fixture"
 
   let :fake_api do
     fake_api = double(PuppetLabs::Trello::TrelloAPI)
@@ -23,19 +22,9 @@ describe PuppetLabs::Trello::TrelloCommentJob do
     job
   end
 
-  def github_account
-    @github_account ||= {
-      'name' => 'Jeff McCune',
-      'email' => 'jeff@puppetlabs.com',
-      'company' => 'Puppet Labs',
-      'html_url' => 'https://github.com/jeffmccune',
-    }
-  end
-
   before :each do
     subject.stub(:display_card)
     subject.stub(:trello_api).and_return(fake_api)
-    PuppetLabs::Github::GithubAPI.any_instance.stub(:account).with('jeffmccune').and_return(github_account)
   end
 
   it 'stores a comment' do

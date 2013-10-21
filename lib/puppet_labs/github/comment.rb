@@ -1,36 +1,32 @@
-require 'json'
 require 'puppet_labs/github/issue'
+require 'puppet_labs/github/event_base'
 
-# This class provides a model of a GitHub comment.
 module PuppetLabs
 module Github
-class Comment
+
+# This class provides a model of a GitHub comment. Comments on both Github
+# issues and events are handled as this class.
+#
+# @see http://developer.github.com/v3/issues/comments/
+# @see http://developer.github.com/guides/working-with-comments/
+class Comment < PuppetLabs::Github::EventBase
   # Comment data
-  attr_reader :body,
-    :issue,
-    :pull_request,
-    :author_login,
-    :author_avatar_url,
-    :repo_name,
-    :action
+  attr_reader :issue,
+    :pull_request
 
-  def self.from_json(json)
-    new(:json => json)
-  end
-
-  def initialize(options = {})
-    options[:json] && load_json(options[:json])
-  end
+  # @!attribute [r] user
+  #   @return [PuppetLabs::Github::User] The user that created this comment
+  attr_reader :user
 
   def load_json(json)
-    data = JSON.load(json)
-    @body = data['comment']['body']
-    @action = data['action']
+    super
+
+    @body = @raw['comment']['body']
     @issue = ::PuppetLabs::Github::Issue.from_json(json)
     @pull_request = @issue.pull_request
     @repo_name = @issue.repo_name
-    @author_login = data['sender']['login']
-    @author_avatar_url = data['sender']['avatar_url']
+
+    @user = PuppetLabs::Github::User.from_hash(@raw['sender'])
   end
 
   # This determines whether the comment was on a Pull Request or Issue
@@ -42,6 +38,14 @@ class Comment
 
   def event_description
     "(comment) #{repo_name} #{issue.number}"
+  end
+
+  def author_login
+    user.login
+  end
+
+  def author_avatar_url
+    user.avatar_url
   end
 end
 end

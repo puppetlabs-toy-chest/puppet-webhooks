@@ -3,29 +3,15 @@ require 'puppet_labs/jira/event/pull_request/reopen'
 
 describe PuppetLabs::Jira::Event::PullRequest::Reopen do
 
-  let (:pull_request) do
-    PuppetLabs::Github::PullRequest.new(:json => read_fixture("example_pull_request.json"))
-  end
+  include_context "Github pull request fixture"
 
   let(:jira_client) { double('JIRA::Client') }
   let(:project)  { 'TEST' }
 
-  subject { described_class.new(pull_request, project, jira_client) }
+  subject { described_class.new(pr, project, jira_client) }
 
   before :each do
-    # Stub logging
     subject.logger = double.as_null_object
-
-    # And the Github API
-    github_account = {
-      'name' => 'Github user',
-      'email' => 'user@fqdn.blackhole',
-      'company' => 'Company Inc.',
-      'html_url' => 'fqdn.blackhole',
-    }
-
-    github_client = double('PuppetLabs::Github::GithubAPI', :account => github_account)
-    pull_request.stub(:github).and_return github_client
   end
 
   let(:jira_issue) { double('PuppetLabs::Jira::Issue', :key => "#{project}-314") }

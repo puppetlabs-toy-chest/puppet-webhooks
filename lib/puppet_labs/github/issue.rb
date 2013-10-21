@@ -1,40 +1,42 @@
-require 'json'
 require 'puppet_labs/github/pull_request'
+require 'puppet_labs/github/event_base'
 
-# This class provides a model of a github issue.
 module PuppetLabs
 module Github
-class Issue
-  # Issue data
-  attr_reader :number,
-    :repo_name,
-    :title,
-    :html_url,
-    :body,
-    :pull_request,
-    :action
 
-  def self.from_json(json)
-    new(:json => json)
-  end
+# This class provides a model of a github issue.
+#
+# @see http://developer.github.com/v3/issues/
+class Issue < PuppetLabs::Github::EventBase
 
-  def initialize(options = {})
-    if json = options[:json]
-      load_json(json)
-    end
-  end
+  # @!attribute [r] number
+  #   @return [Numeric] The github issue number
+  attr_reader :number
+
+  # @!attribute [r] title
+  #   @return [String] The title field of the github issue
+  attr_reader :title
+
+  # @!attribute [r] html_url
+  #   @return [String] The URL to the github issue
+  attr_reader :html_url
+
+  # @!attribute [r] pull_request
+  #   @return [PuppetLabs::Github::PullRequest] The pull request associated
+  #     with this issue if one is present.
+  attr_reader :pull_request
 
   def load_json(json)
-    data = JSON.load(json)
-    @number = data['issue']['number']
-    @title = data['issue']['title']
-    @html_url = data['issue']['html_url']
-    @body = data['issue']['body']
-    @repo_name = data['repository']['name']
-    @action = data['action']
+    super
+
+    @number = @raw['issue']['number']
+    @title = @raw['issue']['title']
+    @html_url = @raw['issue']['html_url']
+    @body = @raw['issue']['body']
+    @repo_name = @raw['repository']['name']
     @pull_request = ::PuppetLabs::Github::PullRequest.from_json(JSON.dump({
-      'pull_request' => data['issue']['pull_request'],
-      'repository' => data['repository']
+      'pull_request' => @raw['issue']['pull_request'],
+      'repository' => @raw['repository']
     }))
   end
 
