@@ -6,3 +6,5 @@ setup.env
 vendor/
 .rspec
 Gemfile.local
+db/*.sqlite3
+db/schema.rb
