@@ -36,7 +36,7 @@ class PuppetLabs::Jira::Event::Comment::Create
   end
 
   def add_comment
-    identifier = PuppetLabs::Jira::Formatter.pull_request_id(comment.issue)
+    identifier = comment.issue.identifier
 
     logger.info "Looking up issue with identifier #{identifier}"
 

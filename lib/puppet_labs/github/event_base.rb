@@ -1,4 +1,5 @@
 require 'json'
+require 'digest/md5'
 
 module PuppetLabs
   module Github
@@ -67,6 +68,14 @@ module PuppetLabs
         @raw = JSON.load(json)
 
         @action = @raw['action']
+      end
+
+      # Define a unique identifier for this event.
+      #
+      # @return [String] A unique string representing this event.
+      def identifier
+        seed = "#{@full_name}:#{@number}"
+        Digest::MD5.hexdigest(seed)
       end
     end
   end

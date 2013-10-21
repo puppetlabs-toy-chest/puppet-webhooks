@@ -80,7 +80,7 @@ class PuppetLabs::Jira::Event::PullRequest::Open
 
     link_issue(jira_issue)
 
-    identifier = PuppetLabs::Jira::Formatter.pull_request_id(pull_request)
+    identifier = pull_request.identifier
 
     logger.info "Created jira issue with webhook-id #{identifier}"
   rescue JIRA::HTTPError => e

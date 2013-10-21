@@ -42,7 +42,7 @@ class PuppetLabs::Jira::Event::PullRequest::Close
 
 
   def add_closed_comment
-    identifier = PuppetLabs::Jira::Formatter.pull_request_id(pull_request)
+    identifier = pull_request.identifier
 
     logger.info "Looking up issue with identifier #{identifier}"
 
