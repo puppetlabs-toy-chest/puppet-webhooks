@@ -46,7 +46,7 @@ class PuppetLabs::Jira::Event::Comment::Create
       #{comment.body}
     COMMENT
 
-    if (issue = PuppetLabs::Jira::Issue.matching_webhook_id(client, identifier))
+    if (issue = PuppetLabs::Jira::Issue.matching_webhook_id(client, project, identifier))
       issue.comment(message)
     else
       logger.warn "Can't comment on github comment event: no issue with webhook identifier #{identifier}"

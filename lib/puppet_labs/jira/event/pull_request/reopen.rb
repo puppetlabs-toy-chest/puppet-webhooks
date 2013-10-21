@@ -43,7 +43,7 @@ class PuppetLabs::Jira::Event::PullRequest::Reopen
 
     logger.info "Looking up issue with identifier #{identifier}"
 
-    if (issue = PuppetLabs::Jira::Issue.matching_webhook_id(client, identifier))
+    if (issue = PuppetLabs::Jira::Issue.matching_webhook_id(client, project, identifier))
       comment = "Pull request #{pull_request.title} has been reopened."
       issue.comment(comment)
     else

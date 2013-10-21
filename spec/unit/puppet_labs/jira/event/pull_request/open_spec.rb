@@ -12,6 +12,9 @@ describe PuppetLabs::Jira::Event::PullRequest::Open do
 
   before :each do
     subject.logger = double.as_null_object
+
+    allow(jira_issue).to receive(:project=)
+    allow(jira_issue).to receive(:issuetype=)
   end
 
   describe "and there is no existing pull request" do
@@ -19,15 +22,14 @@ describe PuppetLabs::Jira::Event::PullRequest::Open do
 
     before do
       allow(PuppetLabs::Jira::Issue).to receive(:build).and_return jira_issue
+      allow(subject).to receive(:find_issue).and_return nil
     end
 
     it "creates a new jira issue" do
       allow(jira_issue).to receive(:remotelink)
       expect(jira_issue).to receive(:create) do |*args|
-        expect(args[0]).to eq project
+        expect(args[0]).to be_a_kind_of String
         expect(args[1]).to be_a_kind_of String
-        expect(args[2]).to be_a_kind_of String
-        expect(args[3]).to eq 'Task'
       end
 
       subject.perform
@@ -47,6 +49,7 @@ describe PuppetLabs::Jira::Event::PullRequest::Open do
     before :each do
       allow(pr).to receive(:title).and_return "[#{project}-123] Pull request titles should reference a jira key"
       allow(PuppetLabs::Jira::Issue).to receive(:new).and_return jira_issue
+      allow(subject).to receive(:find_issue)
     end
 
     let(:found_issue) { double('JIRA::Resource::Issue', :key => "#{project}-123") }
