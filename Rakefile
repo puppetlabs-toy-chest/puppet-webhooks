@@ -127,7 +127,8 @@ namespace :import do
     ActiveRecord::Base.establish_connection dbconfig
     url = "https://api.github.com/repos/#{ENV['REPO']}/pulls"
     url << '/' << ENV['PR'] if ENV['PR']
-    response = JSON.parse(RestClient.get(url))
+    resource = RestClient::Resource.new(url, :user => ENV['GITHUB_ACCOUNT'], :password => ENV['GITHUB_TOKEN'])
+    response = JSON.parse(resource.get)
     response = [response] if ENV['PR']
     response.reverse.each do |pr|
       queued = PuppetLabs::Github::PullRequestController.new(:pull_request => PuppetLabs::Github::PullRequest.from_data(pr)).run
