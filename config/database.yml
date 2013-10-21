@@ -1,11 +1,6 @@
 development:
   adapter: sqlite3
-  host:
-  encoding:
-  database: ":memory:"
-  pool: 5
-  username:
-  password:
+  database: db/dev-db.sqlite3
 test:
   adapter: sqlite3
   host:
