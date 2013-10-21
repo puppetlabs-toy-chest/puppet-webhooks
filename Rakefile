@@ -111,7 +111,7 @@ namespace :jobs do
   desc "Update the finished card summary (uses GITHUB_SUMMARY_GIST_ID,TRELLO_FINISHED_LIST_ID,SUMMARY_TEMPLATE_URL)"
   task :summary => :environment do
     puts "Summarizing completed cards..."
-    job = PuppetLabs::TrelloSummaryJob.new(:template_url => ENV['SUMMARY_TEMPLATE_URL'])
+    job = PuppetLabs::Trello::TrelloSummaryJob.new(:template_url => ENV['SUMMARY_TEMPLATE_URL'])
     summary_time = Benchmark.measure do
       job.perform
     end
@@ -130,7 +130,7 @@ namespace :import do
     response = JSON.parse(RestClient.get(url))
     response = [response] if ENV['PR']
     response.each do |pr|
-      queued = PuppetLabs::PullRequestController.new(:pull_request => PuppetLabs::PullRequest.from_data(pr)).run
+      queued = PuppetLabs::Github::PullRequestController.new(:pull_request => PuppetLabs::Github::PullRequest.from_data(pr)).run
       raise StandardError, "Failed to queue PR##{pr.number}: #{queued.inspect}" unless queued[0].to_s[0] == '2'
     end
   end
