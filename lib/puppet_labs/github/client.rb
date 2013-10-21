@@ -21,7 +21,15 @@ module PuppetLabs
       end
 
       # Validate that required configuration options for a Github API object are
-      # all present
+      # all present.
+      #
+      # Note that this forces the application to authenticate against Github,
+      # though most most queries can be run without authentication. However
+      # unauthenticated accounts only get 60 requests an hour, which is trivial
+      # to blow through. For the sake of sanity we require these up front
+      # rather than failing later.
+      #
+      # @see http://developer.github.com/changes/2012-10-14-rate-limit-changes/
       def self.validate_options!(options)
         missing = []
 
