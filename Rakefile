@@ -129,7 +129,7 @@ namespace :import do
     url << '/' << ENV['PR'] if ENV['PR']
     response = JSON.parse(RestClient.get(url))
     response = [response] if ENV['PR']
-    response.each do |pr|
+    response.reverse.each do |pr|
       queued = PuppetLabs::Github::PullRequestController.new(:pull_request => PuppetLabs::Github::PullRequest.from_data(pr)).run
       raise StandardError, "Failed to queue PR##{pr.number}: #{queued.inspect}" unless queued[0].to_s[0] == '2'
     end
