@@ -39,7 +39,9 @@ class PuppetLabs::Jira::Event::PullRequest::Open
   end
 
   def create_or_link
-    if (issue = issue_for_pull_request)
+    if (issue = find_issue)
+      logger.debug "Pull request with id #{pull_request.identifier} already exists as #{issue.key}"
+    elsif (issue = referenced_issue)
       link_issue(PuppetLabs::Jira::Issue.new(issue))
     else
       create_issue
@@ -92,7 +94,7 @@ class PuppetLabs::Jira::Event::PullRequest::Open
   # This searches the title of a pull request for a Jira issue in the
   # related project. If the key is found, a lookup is performed on that
   # key and the issue is returned if found.
-  def issue_for_pull_request
+  def referenced_issue
     pattern = %r[\b#{self.project}-(?:\d+)\b]
 
     keys = pull_request.title.scan(pattern)
@@ -101,5 +103,17 @@ class PuppetLabs::Jira::Event::PullRequest::Open
       logger.info "Extracted JIRA key #{key} from #{pull_request.title}"
       ::JIRA::Resource::Issue.find(client, key)
     end
+  end
+
+  # Fetch a Jira issue associated with this pull request.
+  #
+  # This will return a value if the pull request has already been created
+  # or imported.
+  #
+  # @return [PuppetLabs::Jira::Issue]
+  def find_issue
+    identifier = pull_request.identifier
+
+    PuppetLabs::Jira::Issue.matching_webhook_id(client, identifier)
   end
 end
