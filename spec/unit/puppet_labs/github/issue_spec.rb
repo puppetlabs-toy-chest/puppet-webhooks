@@ -42,7 +42,7 @@ describe 'PuppetLabs::Github::Issue' do
     subject { PuppetLabs::Github::Issue.new(:json => payload) }
 
     it "is an instance of PuppetLabs::Github::PullRequest" do
-      expect(subject.pull_request.instance_of?(PuppetLabs::Github::PullRequest)).to be
+      expect(subject.pull_request).to be_a_kind_of PuppetLabs::Github::PullRequest
     end
   end
 
