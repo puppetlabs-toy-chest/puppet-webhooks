@@ -7,7 +7,9 @@ gem 'rake'
 # in the Gemfile. This populates the DATABASE_URL environment var.
 gem 'sinatra'
 gem 'ruby-trello'
-gem 'octokit' # github
+gem 'jira-ruby', :require => 'jira'
+gem 'octokit'
+
 gem 'json'
 gem 'liquid'
 
@@ -44,9 +46,6 @@ group :production do
   gem 'pg'
 end
 
-group :jira do
-  gem 'jira-ruby', :require => 'jira'
-end
 
 if File.exists? "#{__FILE__}.local"
   eval(File.read("#{__FILE__}.local"), binding)
