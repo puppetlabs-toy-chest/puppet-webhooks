@@ -64,5 +64,8 @@ describe 'PuppetLabs::Github::Issue' do
     it 'has a body' do
       subject.body.should == data['issue']['body']
     end
+    it 'has a full name' do
+      subject.full_name.should == data['repository']['full_name']
+    end
   end
 end

@@ -41,7 +41,15 @@ module PuppetLabs
 
       # @!attribute [r] repo_name
       #   @return [String] The name of the github repository. (Sans the username)
+      #   @example
+      #     event.repo_name #=> "puppet-webhooks"
       attr_reader :repo_name
+
+      # @!attribute [r] full_name
+      #   @return [String] The full name of the repository
+      #   @example
+      #     event.name #=> "puppetlabs/puppet-webhooks"
+      attr_reader :full_name
 
       # @!attribute [r] body
       #   @return [String] The textual body of the event.

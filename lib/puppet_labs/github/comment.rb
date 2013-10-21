@@ -25,6 +25,7 @@ class Comment < PuppetLabs::Github::EventBase
     @issue = ::PuppetLabs::Github::Issue.from_json(json)
     @pull_request = @issue.pull_request
     @repo_name = @issue.repo_name
+    @full_name = @issue.full_name
 
     @user = PuppetLabs::Github::User.from_hash(@raw['sender'])
   end
