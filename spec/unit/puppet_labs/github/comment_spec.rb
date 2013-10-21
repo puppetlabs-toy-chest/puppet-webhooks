@@ -94,5 +94,9 @@ describe 'PuppetLabs::Github::Comment' do
     it 'has an author avatar url' do
       subject.author_avatar_url.should == data['sender']['avatar_url']
     end
+
+    it 'has a full name' do
+      subject.full_name.should == data['repository']['full_name']
+    end
   end
 end

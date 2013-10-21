@@ -25,6 +25,7 @@ class Comment < PuppetLabs::Github::EventBase
     @issue = ::PuppetLabs::Github::Issue.from_json(json)
     @pull_request = @issue.pull_request
     @repo_name = @issue.repo_name
+    @full_name = @issue.full_name
 
     @user = PuppetLabs::Github::User.from_hash(@raw['sender'])
   end
@@ -46,6 +47,12 @@ class Comment < PuppetLabs::Github::EventBase
 
   def author_avatar_url
     user.avatar_url
+  end
+
+  # Delegate the identifier for this event to the issue so that we can find the
+  # issue associated with this comment.
+  def identifier
+    issue.identifier
   end
 end
 end

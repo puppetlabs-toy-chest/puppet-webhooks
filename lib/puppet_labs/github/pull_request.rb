@@ -61,6 +61,7 @@ class PullRequest < PuppetLabs::Github::EventBase
     @body = pr['body']
     repo = data['repository'] || data['base']['repo']
     @repo_name = repo['name']
+    @full_name = repo['full_name']
 
     # In the case that we're importing existing pull requests, we will be
     # directly querying the Github API which means the 'action' field will not

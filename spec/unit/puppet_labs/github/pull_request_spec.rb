@@ -97,6 +97,9 @@ describe 'PuppetLabs::Github::PullRequest' do
     it "has a user" do
       subject.user.should be_a_kind_of PuppetLabs::Github::User
     end
+    it "has a full name" do
+      subject.full_name.should == data['repository']['full_name']
+    end
   end
 
   context 'existing pull request' do
@@ -135,6 +138,9 @@ describe 'PuppetLabs::Github::PullRequest' do
     end
     it "has a user" do
       subject.user.should be_a_kind_of PuppetLabs::Github::User
+    end
+    it "has a full name" do
+      subject.full_name.should == data['base']['repo']['full_name']
     end
   end
 end

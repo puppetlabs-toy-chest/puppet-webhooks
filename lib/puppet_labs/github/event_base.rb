@@ -1,4 +1,5 @@
 require 'json'
+require 'digest/md5'
 
 module PuppetLabs
   module Github
@@ -41,7 +42,15 @@ module PuppetLabs
 
       # @!attribute [r] repo_name
       #   @return [String] The name of the github repository. (Sans the username)
+      #   @example
+      #     event.repo_name #=> "puppet-webhooks"
       attr_reader :repo_name
+
+      # @!attribute [r] full_name
+      #   @return [String] The full name of the repository
+      #   @example
+      #     event.name #=> "puppetlabs/puppet-webhooks"
+      attr_reader :full_name
 
       # @!attribute [r] body
       #   @return [String] The textual body of the event.
@@ -59,6 +68,14 @@ module PuppetLabs
         @raw = JSON.load(json)
 
         @action = @raw['action']
+      end
+
+      # Define a unique identifier for this event.
+      #
+      # @return [String] A unique string representing this event.
+      def identifier
+        seed = "#{@full_name}:#{@number}"
+        Digest::MD5.hexdigest(seed)
       end
     end
   end
