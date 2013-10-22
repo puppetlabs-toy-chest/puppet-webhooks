@@ -10,8 +10,33 @@ module PuppetLabs
     # format.
     class Issue
 
+      # Generate a new issue
+      #
+      # This method should be used when generating a new issue so that the issue
+      # is always associated with a pull request.
+      #
+      # @param client [JIRA::Client]
+      # @param project [String] The project to associate this issue with
       def self.build(client, project)
         new(client.Issue.build, project)
+      end
+
+      extend Forwardable
+      def_delegator :@issue, :key
+
+      # @!attribute [rw] issuetype
+      #   @return [String] The Jira issuetype for this issue
+      #   @see https://confluence.atlassian.com/display/JIRA/What+is+an+Issue#WhatisanIssue-IssueType
+      #   @see https://confluence.atlassian.com/display/JIRA/Defining+'Issue+Type'+Field+Values
+      attr_accessor :issuetype
+
+      # @!attribute [rw] project
+      #   @return [String] The project ID that this issue belongs to
+      attr_reader :project
+
+      # @return [JIRA::Resource::Issue] The wrapped jira issue
+      def wrapped
+        @issue
       end
 
       # @param issue [JIRA::Resource::Issue]
@@ -21,22 +46,6 @@ module PuppetLabs
 
         @issuetype = 'Task'
       end
-
-      def wrapped
-        @issue
-      end
-
-      extend Forwardable
-      def_delegator :@issue, :key
-
-
-      # @!attribute [rw] issuetype
-      #   @return [String] The Jira issuetype for this issue
-      #   @see https://confluence.atlassian.com/display/JIRA/What+is+an+Issue#WhatisanIssue-IssueType
-      #   @see https://confluence.atlassian.com/display/JIRA/Defining+'Issue+Type'+Field+Values
-      attr_accessor :issuetype
-
-      attr_reader :project
 
       # Create a new issue in a given JIRA project
       #
