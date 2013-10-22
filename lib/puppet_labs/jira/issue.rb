@@ -34,6 +34,10 @@ module PuppetLabs
       #   @return [String] The project ID that this issue belongs to
       attr_reader :project
 
+      # @!attribute [rw] labels
+      #   @return [Array<String>] A list of strings to use as labels for the issue
+      attr_accessor :labels
+
       # @return [JIRA::Resource::Issue] The wrapped jira issue
       def wrapped
         @issue
@@ -45,6 +49,7 @@ module PuppetLabs
         @project = project
 
         @issuetype = 'Task'
+        @labels    = []
       end
 
       # Create a new issue in a given JIRA project
@@ -58,6 +63,7 @@ module PuppetLabs
             'summary'     => summary,
             'description' => description,
             'issuetype'   => {'name' => @issuetype},
+            'labels'      => @labels
           }
         })
       end
