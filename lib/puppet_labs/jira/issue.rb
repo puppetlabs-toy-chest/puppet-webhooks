@@ -10,34 +10,60 @@ module PuppetLabs
     # format.
     class Issue
 
-      def self.build(client)
-        new(client.Issue.build)
-      end
-
-      def initialize(issue)
-        @issue = issue
-      end
-
-      def wrapped
-        @issue
+      # Generate a new issue
+      #
+      # This method should be used when generating a new issue so that the issue
+      # is always associated with a pull request.
+      #
+      # @param client [JIRA::Client]
+      # @param project [String] The project to associate this issue with
+      def self.build(client, project)
+        new(client.Issue.build, project)
       end
 
       extend Forwardable
       def_delegator :@issue, :key
 
+      # @!attribute [rw] issuetype
+      #   @return [String] The Jira issuetype for this issue
+      #   @see https://confluence.atlassian.com/display/JIRA/What+is+an+Issue#WhatisanIssue-IssueType
+      #   @see https://confluence.atlassian.com/display/JIRA/Defining+'Issue+Type'+Field+Values
+      attr_accessor :issuetype
+
+      # @!attribute [rw] project
+      #   @return [String] The project ID that this issue belongs to
+      attr_reader :project
+
+      # @!attribute [rw] labels
+      #   @return [Array<String>] A list of strings to use as labels for the issue
+      attr_accessor :labels
+
+      # @return [JIRA::Resource::Issue] The wrapped jira issue
+      def wrapped
+        @issue
+      end
+
+      # @param issue [JIRA::Resource::Issue]
+      def initialize(issue, project = nil)
+        @issue   = issue
+        @project = project
+
+        @issuetype = 'Task'
+        @labels    = []
+      end
+
       # Create a new issue in a given JIRA project
       #
-      # @param project [String] The project key
       # @param summary [String] The issue summary
       # @param description [String] The issue description
-      # @param issuetype [String] The issue type
-      def create(project, summary, description, issuetype)
+      def create(summary, description)
         @issue.save!({
           'fields' => {
-            'project'     => {'key' => project},
+            'project'     => {'key' => @project},
             'summary'     => summary,
             'description' => description,
-            'issuetype'   => {'name' => issuetype},
+            'issuetype'   => {'name' => @issuetype},
+            'labels'      => @labels
           }
         })
       end
@@ -69,23 +95,11 @@ module PuppetLabs
 
       # Add a comment to an existing issue
       #
-      # @todo make this idempotent
-      #
       # @param comment_body [String]
       # @return [void]
       def comment(comment_body)
         comment = @issue.comments.build
         comment.save!({'body' => comment_body})
-      end
-
-      # Retrieve all issues matching a given summary
-      #
-      # @param client [JIRA::Client]
-      # @param summary [String] The string to be used for the JQL query
-      def self.matching_summary(client, summary)
-        query = %{summary ~ "#{summary}"}
-
-        jql(client, query)
       end
 
       # Look up an issue based on a webhook-id field embedded in an issue description
@@ -96,9 +110,12 @@ module PuppetLabs
       # probably can't distinguish issues by any other way, so we're already
       # out of luck.
       #
+      # @param client [JIRA::Client] The API client to use for the query
+      # @param project [String] The project to search
       # @param sum [String] The MD5 used to identify the issue
-      def self.matching_webhook_id(client, sum)
-        query = %{description ~ "webhooks-id:+#{sum}"}
+      #
+      def self.matching_webhook_id(client, project, sum)
+        query = %{description ~ "webhooks-id:+#{sum} and project = '#{project}'"}
 
         jql(client, query).first
       end
@@ -110,7 +127,7 @@ module PuppetLabs
 
       # @api private
       #
-      # @param client [JIRA::Client]
+      # @param client [JIRA::Client] The API client to use for the query
       # @param query [String] The JQL query to run.
       def self.jql(client, query)
         escape_regex = Regexp.new("[#{JQL_RESERVED_CHARACTERS}]")

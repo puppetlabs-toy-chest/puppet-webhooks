@@ -70,21 +70,15 @@ class PuppetLabs::Jira::Event::PullRequest::Open
   def create_issue
     logger.info "Creating new issue in project #{self.project}: #{pull_request.title}"
 
-    jira_issue = PuppetLabs::Jira::Issue.build(client)
-    formatted = PuppetLabs::Jira::Formatter.format_pull_request(pull_request)
+    jira_issue = PuppetLabs::Jira::Issue.build(client, project)
+    fields = PuppetLabs::Jira::Formatter.format_pull_request(pull_request)
 
-    jira_issue.create(
-      self.project,
-      formatted[:summary],
-      formatted[:description],
-      'Task'
-    )
+    jira_issue.project = project
 
+    jira_issue.create(fields[:summary], fields[:description])
     link_issue(jira_issue)
 
-    identifier = pull_request.identifier
-
-    logger.info "Created jira issue with webhook-id #{identifier}"
+    logger.info "Created jira issue with webhook-id #{pull_request.identifier}"
   rescue JIRA::HTTPError => e
     logger.error "Failed to save #{pull_request.title}: #{e.response.body}"
   end
@@ -114,6 +108,6 @@ class PuppetLabs::Jira::Event::PullRequest::Open
   def find_issue
     identifier = pull_request.identifier
 
-    PuppetLabs::Jira::Issue.matching_webhook_id(client, identifier)
+    PuppetLabs::Jira::Issue.matching_webhook_id(client, project, identifier)
   end
 end
