@@ -32,7 +32,7 @@ module PuppetLabs
 
       # @!attribute [rw] project
       #   @return [String] The project ID that this issue belongs to
-      attr_reader :project
+      attr_accessor :project
 
       # @!attribute [rw] labels
       #   @return [Array<String>] A list of strings to use as labels for the issue
@@ -57,7 +57,7 @@ module PuppetLabs
       # @param summary [String] The issue summary
       # @param description [String] The issue description
       def create(summary, description)
-        @issue.save!({
+        body = {
           'fields' => {
             'project'     => {'key' => @project},
             'summary'     => summary,
@@ -65,7 +65,9 @@ module PuppetLabs
             'issuetype'   => {'name' => @issuetype},
             'labels'      => @labels
           }
-        })
+        }
+
+        @issue.save!(body)
       end
 
       # Add a remotelink to an existing issue
@@ -115,7 +117,7 @@ module PuppetLabs
       # @param sum [String] The MD5 used to identify the issue
       #
       def self.matching_webhook_id(client, project, sum)
-        query = %{description ~ "webhooks-id:+#{sum} and project = '#{project}'"}
+        query = %{description ~ "webhooks-id:+#{sum}" and project = '#{project}'}
 
         jql(client, query).first
       end
