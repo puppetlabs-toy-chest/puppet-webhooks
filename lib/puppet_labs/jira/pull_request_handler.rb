@@ -1,6 +1,8 @@
 require 'puppet_labs/jira'
 require 'puppet_labs/jira/event'
 
+require 'puppet_labs/project'
+
 require 'logger'
 
 module PuppetLabs
@@ -30,6 +32,16 @@ module PuppetLabs
         @logger ||= Logger.new(STDOUT)
       end
 
+      def project
+        querystr = 'full_name = ? AND jira_project IS NOT NULL'
+        result = PuppetLabs::Project.where(querystr, pull_request.full_name).first
+
+        if result
+          result.jira_project
+        else
+          ENV['JIRA_PROJECT']
+        end
+      end
     end
   end
 end

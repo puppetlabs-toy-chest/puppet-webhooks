@@ -27,6 +27,17 @@ module PuppetLabs
       def logger
         @logger ||= Logger.new(STDOUT)
       end
+
+      def project
+        querystr = 'full_name = ? AND jira_project IS NOT NULL'
+        result = PuppetLabs::Project.where(querystr, comment.full_name).first
+
+        if result
+          result.jira_project
+        else
+          ENV['JIRA_PROJECT']
+        end
+      end
     end
   end
 end
