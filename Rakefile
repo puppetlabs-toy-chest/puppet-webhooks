@@ -40,32 +40,21 @@ task :pry => :environment do
 end
 
 
-# Delayed Job database
 namespace :db do
-  desc "Create the database"
-  task(:create) do
-    require 'active_record'
-    require 'pg'
-    require 'yaml'
+  namespace :pg do
+    desc "Create the database"
+    task :create => :environment do
+      ar_dbconfig = PuppetLabs::Webhook.dbconfig(ENV['RACK_ENV'])
 
-    dbconfig = YAML.load(ERB.new(File.read('config/database.yml')).result)
-    ar_dbconfig = dbconfig[ENV['RACK_ENV']]
-    ar_dbconfig_sys = ar_dbconfig.merge(
-      'database' => 'postgres',
-      'schema_search_path' => 'public'
-    )
-    # drops and create need to be performed with a connection to the 'postgres'
-    # (system) database
-    ActiveRecord::Base.establish_connection ar_dbconfig_sys
-    # drop the old database (if it exists)
-    ActiveRecord::Base.connection.drop_database ar_dbconfig['database']
-    # Create the database
-    ActiveRecord::Base.connection.create_database ar_dbconfig['database']
-    puts "Created empty database #{ar_dbconfig['database']}"
+      # drop the old database if it exists
+      ActiveRecord::Base.connection.drop_database ar_dbconfig['database']
+      ActiveRecord::Base.connection.create_database ar_dbconfig['database']
+      puts "Created empty database #{ar_dbconfig['database']}"
+    end
   end
 
   desc "Migrate the database"
-  task(:migrate => :environment) do
+  task :migrate => :environment do
     ActiveRecord::Base.logger = Logger.new(STDOUT)
     ActiveRecord::Migration.verbose = true
     ActiveRecord::Migrator.migrate("db/migrate")
@@ -122,9 +111,8 @@ end
 
 namespace :import do
   desc "Import existing PRs from a GitHub repo (use REPO=puppetlabs/puppet, optionally PR=123)"
-  task :prs do
-    dbconfig = YAML.load(ERB.new(File.read('config/database.yml')).result)[ENV['RACK_ENV']]
-    ActiveRecord::Base.establish_connection dbconfig
+  task :prs => :environment do
+
     url = "https://api.github.com/repos/#{ENV['REPO']}/pulls"
     url << '/' << ENV['PR'] if ENV['PR']
     resource = RestClient::Resource.new(url, :user => ENV['GITHUB_ACCOUNT'], :password => ENV['GITHUB_TOKEN'])
