@@ -5,10 +5,8 @@
 require 'delayed_job_active_record'
 require 'workless'
 # The rest of the libraries come after workless
-require 'puppet_labs/trello/trello_pull_request_job'
 require 'active_record'
 require 'active_support/core_ext'
-require 'pg'
 require 'logger'
 require 'erb'
 
