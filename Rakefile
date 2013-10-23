@@ -13,8 +13,6 @@ if not ENV['RACK_ENV']
   ENV['RACK_ENV'] ||= 'test'
 end
 
-pwd = File.expand_path('..', __FILE__)
-
 task :default => :help
 
 desc 'List tasks (rake -T)'
