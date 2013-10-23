@@ -247,6 +247,7 @@ DEPENDENCIES
   sqlite3
   terminal-notifier
   thin
+  thor
   watchr
   wirb
   workless (= 1.1.3)

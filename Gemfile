@@ -3,8 +3,8 @@ source 'https://rubygems.org'
 gem 'gepetto_hooks', '>= 0', :path => File.expand_path('.'), :require => false
 
 gem 'rake'
-# A dev database add-on is provisioned if the Ruby application has the pg gem
-# in the Gemfile. This populates the DATABASE_URL environment var.
+gem 'thor'
+
 gem 'sinatra'
 gem 'ruby-trello'
 gem 'jira-ruby', :require => 'jira'
@@ -44,6 +44,8 @@ end
 group :production do
   gem 'thin'
   gem 'pg'
+  # A dev database add-on is provisioned if the Ruby application has the pg gem
+  # in the Gemfile. This populates the DATABASE_URL environment var.
 end
 
 
