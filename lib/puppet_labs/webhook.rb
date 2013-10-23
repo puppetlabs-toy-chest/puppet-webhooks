@@ -35,7 +35,7 @@ class Webhook
     Delayed::Backend::ActiveRecord::Job.send(:include, Delayed::Workless::Scaler)
 
     case rack_env
-    when 'test'
+    when 'development', 'test'
       ActiveRecord::Base.logger.level = Logger::ERROR
       Delayed::Worker.logger.level = Logger::ERROR
       Delayed::Job.scaler = :null
