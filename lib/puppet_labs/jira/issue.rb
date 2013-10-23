@@ -117,7 +117,7 @@ module PuppetLabs
       # @param sum [String] The MD5 used to identify the issue
       #
       def self.matching_webhook_id(client, project, sum)
-        query = %{description ~ "webhooks-id:+#{sum} and project = '#{project}'"}
+        query = %{description ~ "webhooks-id:+#{sum}" and project = '#{project}'}
 
         jql(client, query).first
       end
