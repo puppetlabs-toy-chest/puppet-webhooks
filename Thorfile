@@ -38,6 +38,16 @@ class ProjectConfig < Thor
     ]
   end
 
+  desc "delete REPO_NAME", "Delete a project definition"
+  def delete(repo_name)
+    PuppetLabs::Webhook.setup_environment(ENV['RACK_ENV'])
+
+    project = PuppetLabs::Project.find_by_full_name(repo_name)
+
+    project.destroy
+    say "Successfully deleted #{repo_name}"
+  end
+
   def self.banner(task, namespace = true, subcommand = false)
     "#{basename} #{task.formatted_usage(self, true, subcommand)}"
   end
