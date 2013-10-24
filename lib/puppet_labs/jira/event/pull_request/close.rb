@@ -1,45 +1,18 @@
 require 'puppet_labs/jira/event/pull_request'
+require 'puppet_labs/jira/event/pull_request/base'
 
-require 'puppet_labs/jira/client'
 require 'puppet_labs/jira/issue'
-require 'puppet_labs/jira/formatter'
 
 # Orchestrate the actions needed to close a pull request.
 #
 # @api private
-class PuppetLabs::Jira::Event::PullRequest::Close
-
-  include PuppetLabs::Jira::Client
-
-  def self.perform(pull_request, project, client = nil)
-    obj = new(pull_request, project)
-    obj.client = client
-    obj.perform
-    obj
-  end
-
-  def initialize(pull_request, project, client = nil)
-    @pull_request = pull_request
-    @project      = project
-    @client       = client
-  end
-
-
-  attr_accessor :project
-  attr_accessor :pull_request
+class PuppetLabs::Jira::Event::PullRequest::Close < PuppetLabs::Jira::Event::PullRequest::Base
 
   def perform
     add_closed_comment
   end
 
-  attr_writer :logger
-
   private
-
-  def logger
-    @logger ||= Logger.new(STDOUT)
-  end
-
 
   def add_closed_comment
     identifier = pull_request.identifier
