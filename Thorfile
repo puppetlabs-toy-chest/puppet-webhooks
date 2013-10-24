@@ -22,7 +22,7 @@ class ProjectConfig < Thor
   end
 
   desc "create REPO_NAME JIRA_PROJECT JIRA_LABELS", "Create a new project definition"
-  def create(repo_name, jira_project, jira_labels)
+  def create(repo_name, jira_project, jira_labels = '')
     PuppetLabs::Webhook.setup_environment(ENV['RACK_ENV'])
 
     project = PuppetLabs::Project.new
