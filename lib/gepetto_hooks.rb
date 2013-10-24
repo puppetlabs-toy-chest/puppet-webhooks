@@ -6,5 +6,4 @@ require 'puppet_labs/jira'
 
 require 'puppet_labs/event'
 require 'puppet_labs/pull_request_app'
-require 'puppet_labs/sinatra_dj'
 require 'puppet_labs/webhook'
