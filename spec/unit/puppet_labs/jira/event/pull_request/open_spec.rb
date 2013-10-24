@@ -6,7 +6,8 @@ describe PuppetLabs::Jira::Event::PullRequest::Open do
   include_context "Github pull request fixture"
 
   let(:jira_client) { double('JIRA::Client') }
-  let(:project)  { 'TEST' }
+  let(:project)     { 'TEST' }
+  let(:jira_issue)  { double('PuppetLabs::Jira::Issue', :key => "#{project}-314") }
 
   subject { described_class.new(pr, project, jira_client) }
 
@@ -18,11 +19,11 @@ describe PuppetLabs::Jira::Event::PullRequest::Open do
   end
 
   describe "and there is no existing pull request" do
-    let(:jira_issue) { double('PuppetLabs::Jira::Issue', :key => "#{project}-314") }
 
     before do
       allow(PuppetLabs::Jira::Issue).to receive(:build).and_return jira_issue
-      allow(subject).to receive(:find_issue).and_return nil
+      allow(subject).to receive(:issue_by_title).and_return nil
+      allow(subject).to receive(:issue_by_id).and_return nil
     end
 
     it "creates a new jira issue" do
@@ -43,19 +44,14 @@ describe PuppetLabs::Jira::Event::PullRequest::Open do
     end
   end
 
-  describe "and there is an existing pull request" do
-    let(:jira_issue) { double('PuppetLabs::Jira::Issue', :key => "#{project}-314") }
+  describe "and the pull request references a Jira issue" do
 
     before :each do
-      allow(pr).to receive(:title).and_return "[#{project}-123] Pull request titles should reference a jira key"
-      allow(PuppetLabs::Jira::Issue).to receive(:new).and_return jira_issue
-      allow(subject).to receive(:find_issue)
+      allow(subject).to receive(:issue_by_id)
     end
 
-    let(:found_issue) { double('JIRA::Resource::Issue', :key => "#{project}-123") }
-
     it "doesn't create a new pull request" do
-      expect(JIRA::Resource::Issue).to receive(:find).with(jira_client, 'TEST-123').and_return found_issue
+      allow(subject).to receive(:issue_by_title).and_return jira_issue
 
       expect(jira_issue).to receive(:create).never
       allow(jira_issue).to receive(:remotelink)
@@ -64,7 +60,7 @@ describe PuppetLabs::Jira::Event::PullRequest::Open do
     end
 
     it "adds the pull request as a new remote link" do
-      expect(JIRA::Resource::Issue).to receive(:find).with(jira_client, 'TEST-123').and_return found_issue
+      allow(subject).to receive(:issue_by_title).and_return jira_issue
 
       expect(jira_issue).to receive(:remotelink).once
 
@@ -72,5 +68,21 @@ describe PuppetLabs::Jira::Event::PullRequest::Open do
     end
 
     it "adds a comment on the issue referencing the pull request"
+  end
+
+  describe "and the pull request already has a linked issue" do
+    before do
+      allow(subject).to receive(:issue_by_id).and_return jira_issue
+    end
+
+    it "doesn't create a new pull request" do
+      expect(jira_issue).to receive(:create_issue).never
+      subject.perform
+    end
+
+    it "doesn't create a new issue link" do
+      expect(jira_issue).to receive(:link_issue).never
+      subject.perform
+    end
   end
 end
