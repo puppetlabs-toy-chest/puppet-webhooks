@@ -19,11 +19,11 @@ class PuppetLabs::Jira::Event::PullRequest::Close < PuppetLabs::Jira::Event::Pul
 
     logger.info "Looking up issue with identifier #{identifier}"
 
-    if (issue = PuppetLabs::Jira::Issue.matching_webhook_id(client, project, identifier))
+    if (issue = issue_for_pull_request)
       comment = "Pull request #{pull_request.title} has been closed."
       issue.comment(comment)
     else
-      logger.warn "Can't comment on pull request close event: no issue with webhook identifier #{identifier}"
+      logger.warn "Can't comment on pull request reopen event: no issue matches the pull request"
     end
   end
 end
