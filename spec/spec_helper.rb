@@ -49,7 +49,7 @@ require 'shared-contexts'
 # FIXME much of this configuration is duplicated in the :environment task in
 # the Rakefile
 RSpec.configure do |config|
-  ENV['RACK_ENV'] ||= 'test'
+  ENV['RACK_ENV'] = 'test'
   include WebHook::Test::Methods
 
   config.mock_with :rspec
