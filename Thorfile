@@ -23,6 +23,7 @@ class ProjectConfig < Thor
 
   desc "create REPO_NAME JIRA_PROJECT", "Create a new project definition"
   method_option :jira_labels,     :type => :array, :default => []
+  method_option :jira_components, :type => :array, :default => []
   def create(repo_name, jira_project)
     PuppetLabs::Webhook.setup_environment(ENV['RACK_ENV'])
 
@@ -31,6 +32,7 @@ class ProjectConfig < Thor
     project.jira_project = jira_project
 
     project.jira_labels     = options[:jira_labels]
+    project.jira_components = options[:jira_components]
     project.save
 
     say "Successfully created new project."
