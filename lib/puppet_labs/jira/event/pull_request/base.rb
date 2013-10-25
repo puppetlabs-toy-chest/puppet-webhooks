@@ -17,7 +17,12 @@ class PuppetLabs::Jira::Event::PullRequest::Base
     @client       = client
   end
 
+  # @!attribute [rw] project
+  #   @return [PuppetLabs::Project]
   attr_accessor :project
+
+  # @!attribute [rw] pull_request
+  #   @return [PuppetLabs::Github::PullRequest]
   attr_accessor :pull_request
 
   attr_writer :logger
