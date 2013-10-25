@@ -16,7 +16,11 @@ module PuppetLabs
     #
     # @param rack_env [String] The rack environment, usually one of 'production',
     #   'test', 'development'
-    def self.setup_environment(rack_env='production')
+    def self.setup_environment(rack_env)
+      if rack_env.nil? or rack_env.empty?
+        raise "Cannot setup environment: RACK_ENV must be explicitly set"
+      end
+
       setup_logging(rack_env)
       setup_delayed_job(rack_env)
       setup_database(rack_env)
