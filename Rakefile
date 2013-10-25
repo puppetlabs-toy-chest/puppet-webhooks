@@ -121,6 +121,23 @@ namespace :import do
       raise StandardError, "Failed to queue PR##{pr.number}: #{queued.inspect}" unless queued[0].to_s[0] == '2'
     end
   end
+
+  desc "Import existing pull requests in the foreground"
+  task :foreground => :environment do
+    url = "https://api.github.com/repos/#{ENV['REPO']}/pulls"
+    url << '/' << ENV['PR'] if ENV['PR']
+    resource = RestClient::Resource.new(url, :user => ENV['GITHUB_ACCOUNT'], :password => ENV['GITHUB_TOKEN'])
+    response = JSON.parse(resource.get)
+    response = [response] if ENV['PR']
+    response.reverse.each do |data|
+      pull_request = PuppetLabs::Github::PullRequest.from_data(data)
+
+      jira = PuppetLabs::Jira::PullRequestHandler.new
+      jira.pull_request = pull_request
+
+      jira.perform
+    end
+  end
 end
 
 desc "Run the examples in spec/"
