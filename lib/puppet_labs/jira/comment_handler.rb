@@ -2,6 +2,7 @@ require 'puppet_labs/jira'
 
 require 'puppet_labs/jira/handler'
 require 'puppet_labs/jira/event'
+require 'puppet_labs/jira/errors'
 
 require 'logger'
 
@@ -32,11 +33,11 @@ module PuppetLabs
         querystr = 'full_name = ? AND jira_project IS NOT NULL'
         result = PuppetLabs::Project.where(querystr, comment.full_name).first
 
-        if result
-          result.jira_project
-        else
-          ENV['JIRA_PROJECT']
+        if result.nil?
+          raise PuppetLabs::Jira::NoProjectError, "Project #{pull_request.full_name} doesn't have an associated Jira project"
         end
+
+        result
       end
     end
   end

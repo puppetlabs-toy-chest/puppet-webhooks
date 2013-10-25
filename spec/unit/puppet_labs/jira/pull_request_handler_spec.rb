@@ -5,14 +5,10 @@ describe PuppetLabs::Jira::PullRequestHandler do
 
   include_context "Github pull request fixture"
 
-  let(:jira_client) { double('JIRA::Client') }
-
   before :each do
     # Stub logging
     subject.stub(:logger).and_return(double.as_null_object)
 
-    # And the JIRA API
-    subject.client = jira_client
     subject.pull_request = pr
     subject.stub(:project).and_return 'TEST'
 

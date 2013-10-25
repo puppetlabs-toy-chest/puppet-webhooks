@@ -1,4 +1,5 @@
 require 'puppet_labs/jira'
+require 'puppet_labs/jira/errors'
 
 require 'forwardable'
 
@@ -16,7 +17,7 @@ module PuppetLabs
       # is always associated with a pull request.
       #
       # @param client [JIRA::Client]
-      # @param project [String] The project to associate this issue with
+      # @param project [PuppetLabs::Project] The project to associate this issue with
       def self.build(client, project)
         new(client.Issue.build, project)
       end
@@ -44,12 +45,13 @@ module PuppetLabs
       end
 
       # @param issue [JIRA::Resource::Issue]
+      # @param project [PuppetLabs::Project]
       def initialize(issue, project = nil)
         @issue   = issue
         @project = project
 
         @issuetype = 'Task'
-        @labels    = []
+        @labels    = project.jira_labels
       end
 
       # Create a new issue in a given JIRA project
@@ -59,7 +61,7 @@ module PuppetLabs
       def create(summary, description)
         body = {
           'fields' => {
-            'project'     => {'key' => @project},
+            'project'     => {'key' => @project.jira_project},
             'summary'     => summary,
             'description' => description,
             'issuetype'   => {'name' => @issuetype},
@@ -67,7 +69,9 @@ module PuppetLabs
           }
         }
 
-        @issue.save!(body)
+        status = @issue.save!(body)
+      rescue JIRA::HTTPError => e
+        raise PuppetLabs::Jira::APIError, "#{e.code} #{e.message}: #{e.response.body}", e.backtrace
       end
 
       # Add a remotelink to an existing issue
@@ -102,6 +106,8 @@ module PuppetLabs
       def comment(comment_body)
         comment = @issue.comments.build
         comment.save!({'body' => comment_body})
+      rescue JIRA::HTTPError => e
+        raise PuppetLabs::Jira::APIError, "#{e.code} #{e.message}: #{e.response.body}", e.backtrace
       end
 
       # Look up an issue based on a webhook-id field embedded in an issue description
@@ -142,7 +148,17 @@ module PuppetLabs
 
         JIRA::Resource::Issue.jql(client, query).map { |issue| new(issue) }
       rescue JIRA::HTTPError => e
-        raise RuntimeError, "#{e.code} #{e.message}: #{e.response.body}", e.backtrace
+        raise PuppetLabs::Jira::APIError, "#{e.code} #{e.message}: #{e.response.body}", e.backtrace
+      end
+
+      # Proxy issue find requests to the Jira API
+      #
+      # @param client [JIRA::Client]
+      # @param key [String] The Jira issue key
+      #
+      # @return [Jira::Resource::Issue
+      def self.find(client, key)
+        ::JIRA::Resource::Issue.find(client, key).map { |isue| new(issue) }
       end
     end
   end

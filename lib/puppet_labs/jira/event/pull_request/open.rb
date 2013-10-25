@@ -47,22 +47,16 @@ class PuppetLabs::Jira::Event::PullRequest::Open < PuppetLabs::Jira::Event::Pull
   # Generate a new Jira issue based on the given pull request, and attach
   # a link to the pull request
   def create_issue
-    logger.info "Creating new issue in project #{self.project}: #{pull_request.title}"
+    logger.info "Creating new issue in project #{project.jira_project}: #{pull_request.title}"
 
     jira_issue = PuppetLabs::Jira::Issue.build(client, project)
     fields = PuppetLabs::Jira::Formatter.format_pull_request(pull_request)
-
-    if (query = PuppetLabs::Project.where(:full_name => pull_request.full_name).first)
-      jira_issue.labels = query.jira_labels
-    end
-
-    jira_issue.project = project
 
     jira_issue.create(fields[:summary], fields[:description])
     link_issue(jira_issue)
 
     logger.info "Created jira issue with webhook-id #{pull_request.identifier}"
-  rescue JIRA::HTTPError => e
-    logger.error "Failed to save #{pull_request.title}: #{e.response.body}"
+  rescue PuppetLabs::Jira::APIError => e
+    logger.error "Failed to save #{pull_request.title}: #{e.message}"
   end
 end

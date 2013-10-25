@@ -15,11 +15,7 @@ class PuppetLabs::Jira::Event::PullRequest::Reopen < PuppetLabs::Jira::Event::Pu
   private
 
   def add_reopened_comment
-    identifier = pull_request.identifier
-
-    logger.info "Looking up issue with identifier #{identifier}"
-
-    if (issue = issue_for_pull_request)
+    if (issue = issue_for_event(pull_request.title, pull_request.identifier))
       comment = "Pull request #{pull_request.title} has been reopened."
       issue.comment(comment)
     else

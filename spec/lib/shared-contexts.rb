@@ -36,3 +36,14 @@ shared_context "Github API fixture" do
     }
   end
 end
+
+shared_context "Jira project fixture" do
+
+  let(:project) do
+    double(PuppetLabs::Project,
+      :full_name    => 'puppetlabs/puppet-webhooks',
+      :jira_project => 'TEST',
+      :jira_labels  => []
+    )
+  end
+end
