@@ -29,7 +29,7 @@ class ProjectConfig < Thor
     project.full_name    = repo_name
     project.jira_project = jira_project
     project.jira_labels  = jira_labels.split /\s*,\s*/
-    project.save!
+    project.save
 
     say "Successfully created new project."
     print_table [
