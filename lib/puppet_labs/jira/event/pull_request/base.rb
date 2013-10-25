@@ -51,7 +51,7 @@ class PuppetLabs::Jira::Event::PullRequest::Base
   def issue_by_id
     identifier = @pull_request.identifier
 
-    PuppetLabs::Jira::Issue.matching_webhook_id(client, project, identifier)
+    PuppetLabs::Jira::Issue.matching_webhook_id(client, project.jira_project, identifier)
   end
 
   # Try to look up a Jira issue based on the first matching Jira issue in the
@@ -64,7 +64,7 @@ class PuppetLabs::Jira::Event::PullRequest::Base
   #   #=> #<PuppetLabs::Jira::Issue:0xdeadbeef key='WH-123'>
   #
   def issue_by_title
-    pattern = %r[\b#{@project}-(?:\d+)\b]
+    pattern = %r[\b#{@project.jira_project}-(?:\d+)\b]
 
     key = @pull_request.title.scan(pattern).first
 

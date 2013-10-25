@@ -37,11 +37,11 @@ module PuppetLabs
         querystr = 'full_name = ? AND jira_project IS NOT NULL'
         result = PuppetLabs::Project.where(querystr, pull_request.full_name).first
 
-        if result
-          result.jira_project
-        else
+        if result.nil?
           raise PuppetLabs::Jira::NoProjectError, "Project #{pull_request.full_name} doesn't have an associated Jira project"
         end
+
+        result
       end
     end
   end

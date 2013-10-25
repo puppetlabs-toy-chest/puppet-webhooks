@@ -4,9 +4,10 @@ require 'puppet_labs/jira/event/pull_request/open'
 describe PuppetLabs::Jira::Event::PullRequest::Open do
 
   include_context "Github pull request fixture"
+  include_context "Jira project fixture"
 
   let(:jira_client) { double('JIRA::Client') }
-  let(:project)     { 'TEST' }
+
   let(:jira_issue)  { double('PuppetLabs::Jira::Issue', :key => "#{project}-314") }
 
   subject { described_class.new(pr, project, jira_client) }

@@ -4,9 +4,17 @@ require 'puppet_labs/jira/event/pull_request/reopen'
 describe PuppetLabs::Jira::Event::PullRequest::Reopen do
 
   include_context "Github pull request fixture"
+  include_context "Jira project fixture"
 
   let(:jira_client) { double('JIRA::Client') }
-  let(:project)  { 'TEST' }
+
+  let(:project) do
+    double(PuppetLabs::Project,
+      :full_name    => 'puppetlabs/puppet-webhooks',
+      :jira_project => 'TEST',
+      :jira_labels  => []
+    )
+  end
 
   subject { described_class.new(pr, project, jira_client) }
 
@@ -27,6 +35,4 @@ describe PuppetLabs::Jira::Event::PullRequest::Reopen do
 
     subject.perform
   end
-
 end
-
