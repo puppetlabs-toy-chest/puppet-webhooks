@@ -34,11 +34,15 @@ class PuppetLabs::Jira::Event::PullRequest::Base
   # working with existing issues takes priority over creating a new issue. This
   # is mainly significant for commenting on existing Jira issues with a linked
   # Github pull request.
+  #
+  # @return [PuppetLabs::Jira::Issue]
   def issue_for_pull_request
     @jira_issue ||= (issue_by_title || issue_by_id)
   end
 
   # Look up a Jira issue containing a string unique to this pull_request
+  #
+  # @return [PuppetLabs::Jira::Issue]
   def issue_by_id
     identifier = @pull_request.identifier
 
@@ -60,7 +64,7 @@ class PuppetLabs::Jira::Event::PullRequest::Base
     key = @pull_request.title.scan(pattern).first
 
     if key
-      ::JIRA::Resource::Issue.find(client, key)
+      PuppetLabs::Jira::Issue.find(client, key)
     end
   end
 end
