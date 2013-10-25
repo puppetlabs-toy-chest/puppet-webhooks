@@ -4,8 +4,6 @@ require 'puppet_labs/delayable'
 module PuppetLabs
   module Jira
     class Handler
-      include PuppetLabs::Jira::Client
-
       include PuppetLabs::Delayable
 
       def project
