@@ -62,7 +62,7 @@ class PuppetLabs::Jira::Event::PullRequest::Open < PuppetLabs::Jira::Event::Pull
     link_issue(jira_issue)
 
     logger.info "Created jira issue with webhook-id #{pull_request.identifier}"
-  rescue JIRA::HTTPError => e
-    logger.error "Failed to save #{pull_request.title}: #{e.response.body}"
+  rescue PuppetLabs::Jira::APIError => e
+    logger.error "Failed to save #{pull_request.title}: #{e.message}"
   end
 end

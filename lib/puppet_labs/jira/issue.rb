@@ -68,7 +68,9 @@ module PuppetLabs
           }
         }
 
-        @issue.save!(body)
+        status = @issue.save!(body)
+      rescue JIRA::HTTPError => e
+        raise PuppetLabs::Jira::APIError, "#{e.code} #{e.message}: #{e.response.body}", e.backtrace
       end
 
       # Add a remotelink to an existing issue
@@ -103,6 +105,8 @@ module PuppetLabs
       def comment(comment_body)
         comment = @issue.comments.build
         comment.save!({'body' => comment_body})
+      rescue JIRA::HTTPError => e
+        raise PuppetLabs::Jira::APIError, "#{e.code} #{e.message}: #{e.response.body}", e.backtrace
       end
 
       # Look up an issue based on a webhook-id field embedded in an issue description
@@ -143,7 +147,7 @@ module PuppetLabs
 
         JIRA::Resource::Issue.jql(client, query).map { |issue| new(issue) }
       rescue JIRA::HTTPError => e
-        raise RuntimeError, "#{e.code} #{e.message}: #{e.response.body}", e.backtrace
+        raise PuppetLabs::Jira::APIError, "#{e.code} #{e.message}: #{e.response.body}", e.backtrace
       end
     end
   end
