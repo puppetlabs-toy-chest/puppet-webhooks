@@ -2,6 +2,7 @@ require 'puppet_labs/jira'
 
 require 'puppet_labs/jira/handler'
 require 'puppet_labs/jira/event'
+require 'puppet_labs/jira/errors'
 
 require 'logger'
 
@@ -35,7 +36,7 @@ module PuppetLabs
         if result
           result.jira_project
         else
-          ENV['JIRA_PROJECT']
+          raise PuppetLabs::Jira::NoProjectError, "Project #{pull_request.full_name} doesn't have an associated Jira project"
         end
       end
     end

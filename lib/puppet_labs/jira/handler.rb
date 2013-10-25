@@ -5,10 +5,6 @@ module PuppetLabs
   module Jira
     class Handler
       include PuppetLabs::Delayable
-
-      def project
-        ENV['JIRA_PROJECT']
-      end
     end
   end
 end

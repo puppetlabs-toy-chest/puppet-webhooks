@@ -1,4 +1,5 @@
 require 'puppet_labs/jira'
+require 'puppet_labs/jira/errors'
 
 require 'forwardable'
 
