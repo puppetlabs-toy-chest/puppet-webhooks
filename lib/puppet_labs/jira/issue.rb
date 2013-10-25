@@ -141,6 +141,8 @@ module PuppetLabs
         query = query.gsub(escape_regex) { |escapee| '\\\\' + escapee }
 
         JIRA::Resource::Issue.jql(client, query).map { |issue| new(issue) }
+      rescue JIRA::HTTPError => e
+        raise RuntimeError, "#{e.code} #{e.message}: #{e.response.body}", e.backtrace
       end
     end
   end
