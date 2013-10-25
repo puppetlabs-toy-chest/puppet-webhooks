@@ -3,10 +3,12 @@ require 'puppet_labs/jira/event/comment'
 require 'puppet_labs/jira/client'
 require 'puppet_labs/jira/issue'
 require 'puppet_labs/jira/formatter'
+require 'puppet_labs/jira/issue_matcher'
 
 class PuppetLabs::Jira::Event::Comment::Create
 
   include PuppetLabs::Jira::Client
+  include PuppetLabs::Jira::IssueMatcher
 
   def self.perform(comment, project, client = nil)
     obj = new(comment, project, client)
@@ -20,7 +22,12 @@ class PuppetLabs::Jira::Event::Comment::Create
     @client  = client
   end
 
+  # @!attribute [rw] project
+  #   @return [PuppetLabs::Project]
   attr_accessor :project
+
+  # @!attribute [rw] comment
+  #   @return [PuppetLabs::Github::Comment]
   attr_accessor :comment
 
   def perform
@@ -36,9 +43,8 @@ class PuppetLabs::Jira::Event::Comment::Create
   end
 
   def add_comment
+    title = comment.issue.title
     identifier = comment.issue.identifier
-
-    logger.info "Looking up issue with identifier #{identifier}"
 
     message = <<-COMMENT.gsub(/ {6}/, '')
       #{comment.author_login} commented:
@@ -46,7 +52,7 @@ class PuppetLabs::Jira::Event::Comment::Create
       #{comment.body}
     COMMENT
 
-    if (issue = PuppetLabs::Jira::Issue.matching_webhook_id(client, project, identifier))
+    if (issue = issue_for_event(title, identifier))
       issue.comment(message)
     else
       logger.warn "Can't comment on github comment event: no issue with webhook identifier #{identifier}"
