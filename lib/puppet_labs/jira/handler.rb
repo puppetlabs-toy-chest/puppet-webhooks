@@ -8,10 +8,6 @@ module PuppetLabs
 
       include PuppetLabs::Delayable
 
-      def queue_name
-        'jira'
-      end
-
       def project
         ENV['JIRA_PROJECT']
       end
