@@ -17,6 +17,9 @@ describe 'PuppetLabs::PullRequestApp' do
 
   before :each do
     PuppetLabs::PullRequestApp.any_instance.stub(:authenticate!)
+
+    PuppetLabs::Github::Controller.any_instance.stub(:logger).and_return(double.as_null_object)
+    app.any_instance.stub(:logger).and_return(double.as_null_object)
   end
 
   it 'says hello' do
@@ -37,7 +40,7 @@ describe 'PuppetLabs::PullRequestApp' do
     let (:job) { PuppetLabs::Trello::TrelloIssueJob.new }
 
     describe '/event/github' do
-      it "responds to /event/github", :focus => true do
+      it "responds to /event/github" do
         post route, params, env
         last_response.should have_status 202
       end
