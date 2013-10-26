@@ -9,10 +9,6 @@ require 'delayed/tasks'
 require 'puppet_labs/webhook'
 require 'rest_client'
 
-if not ENV['RACK_ENV']
-  ENV['RACK_ENV'] ||= 'test'
-end
-
 task :default => :help
 
 desc 'List tasks (rake -T)'

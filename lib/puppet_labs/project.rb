@@ -27,5 +27,12 @@ module PuppetLabs
     #     project.jira_labels #=> ["github", "webhook"]
 
     serialize :jira_labels, Array
+
+    # @!attribute jira_components
+    #   @return [Array<String>] A list of jira components to apply to an issue
+    #   @example
+    #     project.components #=> ["community"]
+
+    serialize :jira_components, Array
   end
 end
