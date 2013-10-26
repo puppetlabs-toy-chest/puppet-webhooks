@@ -65,7 +65,8 @@ module PuppetLabs
             'summary'     => summary,
             'description' => description,
             'issuetype'   => {'name' => @issuetype},
-            'labels'      => @labels
+            'labels'      => @labels,
+            'components'  => @project.jira_components.map { |c| {'name' => c} },
           }
         }
 

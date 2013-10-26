@@ -13,7 +13,13 @@ class ProjectConfig < Thor
     PuppetLabs::Webhook.setup_environment(ENV['RACK_ENV'])
 
     projects = PuppetLabs::Project.all.map do |project|
-      [project.id, project.full_name, project.jira_project, project.jira_labels]
+      [
+        project.id,
+        project.full_name,
+        project.jira_project,
+        project.jira_labels,
+        project.jira_components
+      ]
     end
 
     projects.unshift TABLE_HEADER
@@ -38,7 +44,13 @@ class ProjectConfig < Thor
     say "Successfully created new project."
     print_table [
       TABLE_HEADER,
-      [project.id, project.full_name, project.jira_project, project.jira_labels]
+      [
+        project.id,
+        project.full_name,
+        project.jira_project,
+        project.jira_labels,
+        project.jira_components
+      ]
     ]
   end
 
@@ -56,5 +68,11 @@ class ProjectConfig < Thor
     "#{basename} #{task.formatted_usage(self, true, subcommand)}"
   end
 
-  TABLE_HEADER = ['ID', 'Full name', 'Jira project', 'Jira labels']
+  TABLE_HEADER = [
+    'ID',
+    'Full name',
+    'Jira project',
+    'Jira labels',
+    'Jira components'
+  ]
 end
