@@ -21,7 +21,7 @@ module PuppetLabs::Jira::IssueMatcher
   #
   # @return [PuppetLabs::Jira::Issue]
   def issue_by_id(id)
-    PuppetLabs::Jira::Issue.matching_webhook_id(client, project.jira_project, id)
+    PuppetLabs::Jira::Issue.matching_webhook_id(client, project, id)
   end
 
   # Try to look up a Jira issue based on the first matching Jira issue in the
@@ -39,7 +39,7 @@ module PuppetLabs::Jira::IssueMatcher
     key = title.scan(pattern).first
 
     if key
-      PuppetLabs::Jira::Issue.find(client, key)
+      PuppetLabs::Jira::Issue.find(client, project, key).first
     end
   end
 end

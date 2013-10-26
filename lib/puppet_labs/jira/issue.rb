@@ -46,7 +46,7 @@ module PuppetLabs
 
       # @param issue [JIRA::Resource::Issue]
       # @param project [PuppetLabs::Project]
-      def initialize(issue, project = nil)
+      def initialize(issue, project)
         @issue   = issue
         @project = project
 
@@ -119,13 +119,14 @@ module PuppetLabs
       # out of luck.
       #
       # @param client [JIRA::Client] The API client to use for the query
-      # @param project [String] The project to search
+      # @param project [PuppetLabs::Project] The project to search for
       # @param sum [String] The MD5 used to identify the issue
       #
+      # @return [Array<PuppetLabs::Jira::Issue>]
       def self.matching_webhook_id(client, project, sum)
-        query = %{description ~ "webhooks-id:+#{sum}" and project = '#{project}'}
+        query = %{description ~ "webhooks-id:+#{sum}" and project = '#{project.jira_project}'}
 
-        jql(client, query).first
+        jql(client, project, query).first
       end
 
       # @api private
@@ -133,11 +134,16 @@ module PuppetLabs
       # @see https://confluence.atlassian.com/display/JIRA/Advanced+Searching+Functions#AdvancedSearchingFunctions-characters
       JQL_RESERVED_CHARACTERS = ':()'
 
-      # @api private
+      # Create Jira issues based on a JQL query
       #
       # @param client [JIRA::Client] The API client to use for the query
+      # @param project [PuppetLabs::Project]
       # @param query [String] The JQL query to run.
-      def self.jql(client, query)
+      #
+      # @api private
+      #
+      # @return [Array<PuppetLabs::Jira::Issue>]
+      def self.jql(client, project, query)
         escape_regex = Regexp.new("[#{JQL_RESERVED_CHARACTERS}]")
 
         # Each JQL reserved character must be escaped, but they have to be
@@ -146,7 +152,7 @@ module PuppetLabs
         # '\\' and '\1'.
         query = query.gsub(escape_regex) { |escapee| '\\\\' + escapee }
 
-        JIRA::Resource::Issue.jql(client, query).map { |issue| new(issue) }
+        JIRA::Resource::Issue.jql(client, query).map { |issue| new(issue, project) }
       rescue JIRA::HTTPError => e
         []
       end
@@ -154,6 +160,7 @@ module PuppetLabs
       # Proxy issue find requests to the Jira API
       #
       # @param client [JIRA::Client]
+      # @param project [PuppetLabs::Project]
       # @param key [String] The Jira issue key
       #
       # @return [Array<PuppetLabs::Jira::Issue>]
