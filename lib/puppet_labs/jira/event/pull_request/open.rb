@@ -18,9 +18,12 @@ class PuppetLabs::Jira::Event::PullRequest::Open < PuppetLabs::Jira::Event::Pull
   private
 
   def create_or_link
-    if (issue = issue_by_id)
+    identifier = pull_request.identifier
+    title      = pull_request.title
+
+    if (issue = issue_by_id(identifier))
       logger.debug "Pull request with id #{pull_request.identifier} already exists as #{issue.key}"
-    elsif (issue = issue_by_title)
+    elsif (issue = issue_by_title(title))
       link_issue(issue)
     else
       create_issue
