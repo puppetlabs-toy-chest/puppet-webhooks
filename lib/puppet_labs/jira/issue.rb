@@ -148,7 +148,7 @@ module PuppetLabs
 
         JIRA::Resource::Issue.jql(client, query).map { |issue| new(issue) }
       rescue JIRA::HTTPError => e
-        raise PuppetLabs::Jira::APIError, "#{e.code} #{e.message}: #{e.response.body}", e.backtrace
+        []
       end
 
       # Proxy issue find requests to the Jira API
@@ -156,9 +156,11 @@ module PuppetLabs
       # @param client [JIRA::Client]
       # @param key [String] The Jira issue key
       #
-      # @return [Jira::Resource::Issue
-      def self.find(client, key)
-        ::JIRA::Resource::Issue.find(client, key).map { |isue| new(issue) }
+      # @return [Array<PuppetLabs::Jira::Issue>]
+      def self.find(client, project, key)
+        ::JIRA::Resource::Issue.find(client, key).map { |isue| new(issue, project) }
+      rescue JIRA::HTTPError
+        []
       end
     end
   end
