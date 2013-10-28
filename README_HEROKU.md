@@ -4,6 +4,8 @@ puppet-webhooks in Heroku
 Quick Start
 ---
 
+[quickstart]: https://devcenter.heroku.com/articles/quickstart
+
 First, review the [Heroku Quickstart][quickstart] guide. Create an account and
 install the Toolbelt. To use this code on Heroku you'll need to verify your
 account by adding a valid credit card, even if you use the free facilities.
@@ -17,6 +19,8 @@ Next, we simply need to create a copy of this application.  run `heroku create`
 which will add a git remote named `heroku` to the git repository.  Deployments
 will happen with a simple `git push heroku`.
 
+[dashboard]: https://dashboard.heroku.com/apps
+
 Here's what the first step, `heroku create` looks like.  An application name
 and URL will automatically be chosen for you.  The application name may be
 changed in the [Heroku Dashboard][dashboard].
@@ -26,7 +30,7 @@ changed in the [Heroku Dashboard][dashboard].
     http://fierce-meadow-9708.herokuapp.com/ | git@heroku.com:fierce-meadow-9708.git
     Git remote heroku added
 
-Next, push the application to [Heroku][heroku] with `git push heroku HEAD:master`.
+Next, push the application to Heroku with `git push heroku HEAD:master`.
 
     $ git push heroku HEAD:master
     Counting objects: 195, done.
@@ -69,6 +73,8 @@ READMEs for Github, Trello, and Jira.
 
 ### PostgreSQL Database
 
+[heroku-postgresql]: https://devcenter.heroku.com/articles/heroku-postgresql
+
 To configure an SQL database: (More detailed information at [heroku
 postgresql][heroku-postgresql].)
 
@@ -86,6 +92,8 @@ above command.
 
     heroku pg:promote HEROKU_POSTGRESQL_GREEN_URL
     Promoting HEROKU_POSTGRESQL_GREEN_URL to DATABASE_URL... done
+
+[BuildBehavior]: https://devcenter.heroku.com/articles/ruby-support#build-behavior
 
 If developing locally, the database configuration should be stored in
 `config/database.yml`.  Heroku will automatically replace this file according
@@ -167,6 +175,8 @@ This job will be cleared when you run `rake jobs:work`.
 Workless
 ----
 
+[workless]: https://github.com/lostboy/workless
+
 To use [workless][workless] the Heroku API key is required.  This is obtainable
 using the following commands.  (TODO Make this a rake task).  The API key is
 the password field of `~/.netrc` for the host api.heroku.com.
@@ -174,8 +184,3 @@ the password field of `~/.netrc` for the host api.heroku.com.
     heroku config:add \
       HEROKU_API_KEY=$HEROKU_API_KEY \
       APP_NAME=fierce-meadow-9708
-
-[workless]: https://github.com/lostboy/workless
-[heroku-postgresql]: https://devcenter.heroku.com/articles/heroku-postgresql
-[BuildBehavior]: https://devcenter.heroku.com/articles/ruby-support#build-behavior
-
