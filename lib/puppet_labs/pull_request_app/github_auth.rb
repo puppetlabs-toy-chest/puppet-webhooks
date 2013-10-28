@@ -13,6 +13,7 @@ module PuppetLabs::PullRequestApp::GithubAuth
   # http://sinatra.restafari.org/book.html#authentication
   #
   # @see http://developer.github.com/v3/repos/hooks/#pubsubhubbub
+  # @see http://pubsubhubbub.googlecode.com/git/pubsubhubbub-core-0.3.html#authednotify
   def authenticate_github(request)
     request.body.rewind
     request_body = request.body.read
