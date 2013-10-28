@@ -131,6 +131,39 @@ the 'pg' gem is in use and will should have provisioned a database
 automatically.  This can be checked with `heroku pg:info`.  If not, please add
 the database using the following information.
 
+### Listing Jobs
+
+If you're curious to see how jobs are getting queued, start up a server
+locally, then submit some fake pull requests using the rake tasks:
+
+    $ rake api:run
+    foreman start
+    18:19:13 web.1  | started with pid 60414
+
+Then, in another terminal, submit a fake pull request webhook just as Github
+will:
+
+    $ rake api:pull_request
+    curl -i --data "payload=$(cat spec/unit/fixtures/example_pull_request.json)" http://localhost:5000/event/pull_request
+    HTTP/1.1 200 OK
+    Content-Type: text/html;charset=utf-8
+    Content-Length: 0
+    Connection: keep-alive
+    Server: thin 1.5.0 codename Knife
+
+You should now see this job in your PostgreSQL database:
+
+    jeff=# \c "puppet_webhooks_dev"
+    You are now connected to database "puppet_webhooks_dev" as user "jeff".
+    puppet_webhooks_dev=# select id,last_error,run_at,queue from delayed_jobs;
+     id | last_error |           run_at           |    queue
+    ----+------------+----------------------------+--------------
+      6 |            | 2012-12-30 18:22:10.964711 | pull_request
+    (1 row)
+
+This job will be cleared when you run `rake jobs:work`.
+
+
 Workless
 ----
 

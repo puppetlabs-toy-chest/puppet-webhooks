@@ -3,60 +3,9 @@ Puppet WebHooks
 
 [![Build Status](https://travis-ci.org/puppetlabs/puppet-webhooks.png?branch=master)](https://travis-ci.org/puppetlabs/puppet-webhooks)
 
-This project performs a job or jobs when a pull request event occurs on
-[Github](https://github.com/).  Current implemented behaviors are:
-
- * [✓] Create a Trello Card when a Pull Request is created or synchronized.
- * [✓] Avoid duplicate cards being created when a pull request is synchronized or closed.
- * [✓] Check the `X-Hub-Signature` created by the [web service hook][web-service-hook].
- * [✓] Queue work and perform jobs asynchronously.
- * [✓] Auto-scale the number of workers to zero when there are no jobs to perform.
- * [✓] Auto-scale the number of workers to one when there are jobs to perform.
- * [✓] Near real-time behavior, no polling intervals involved.
- * [✓] Archive a Trello Card when a Pull Request is closed if `ARCHIVE_CARD` is
-   `true` or `yes`.
- * [✓] Check multiple boards for the existence of a card if `TRELLO_BOARDS`
-   contains a comma separated list of board ID's.
- * [✓] Set the card due date to 2 PM next business day when a card is created
-   if `TRELLO_SET_TARGET_RESPONSE_TIME=true`.
- * [✓] Summarize finished cards on a periodic basis using `$ bundle exec rake
-   jobs:summary`
- * [✓] Copy a comment to the card when a comment is added to the pull request.
-
-[web-service-hook]: https://github.com/github/github-services/blob/master/lib/services/web.rb
-
-Listing Jobs
-----
-
-If you're curious to see how jobs are getting queued, start up a server
-locally, then submit some fake pull requests using the rake tasks:
-
-    $ rake api:run
-    foreman start
-    18:19:13 web.1  | started with pid 60414
-
-Then, in another terminal, submit a fake pull request webhook just as Github
-will:
-
-    $ rake api:pull_request
-    curl -i --data "payload=$(cat spec/unit/fixtures/example_pull_request.json)" http://localhost:5000/event/pull_request
-    HTTP/1.1 200 OK
-    Content-Type: text/html;charset=utf-8
-    Content-Length: 0
-    Connection: keep-alive
-    Server: thin 1.5.0 codename Knife
-
-You should now see this job in your PostgreSQL database:
-
-    jeff=# \c "puppet_webhooks_dev"
-    You are now connected to database "puppet_webhooks_dev" as user "jeff".
-    puppet_webhooks_dev=# select id,last_error,run_at,queue from delayed_jobs;
-     id | last_error |           run_at           |    queue
-    ----+------------+----------------------------+--------------
-      6 |            | 2012-12-30 18:22:10.964711 | pull_request
-    (1 row)
-
-This job will be cleared when you run `rake jobs:work`.
+puppet-webhooks acts as a relay from Github and other services to Jira and
+Trello, so that events on a Github project automatically create and update Jira
+issues or Trello cards.
 
 Importing
 ----
