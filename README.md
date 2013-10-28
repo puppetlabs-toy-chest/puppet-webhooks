@@ -143,47 +143,6 @@ is accomplished using a migration rake task:
        (1.0ms)  INSERT INTO "schema_migrations" ("version") VALUES ('1')
        (4.8ms)  COMMIT
 
-Finally, set the configuration variables that contain the Trello API keys and
-Github shared secret.  First, the shared secret so we can authenticate Github
-requests:
-
-Github Shared Secret
-----
-
-In order to provide some authentication of the request a secret key may be
-configured in GitHub and in Heroku.  This shared secret key may then be used to
-validate a digital signature of the body of the request in the
-`X-Hub-Signature` header.  Validating the signature should just be a matter of
-comparing the value of the header with the computed value.
-
-See [web service hook][web-service-hook] for more information.  To configure
-the secret, make sure the `secret` key in the `config` hash posted to
-`https://api.github.com/repos/<account>/<repository>/hooks` matches the
-`GITHUB_X_HUB_SIGNATURE_SECRET` configuration setting in Heroku.
-
-To set these from the shell:
-
-    url="https://fierce-meadow-9708.herokuapp.com/event/github"
-    secret="$(dd if=/dev/random bs=1k count=1 | openssl sha256 | awk '{print $2}')"
-
-Then configure this hook URL and shared secret on Github:
-
-    curl -i -u jeffmccune -d '
-    {
-      "name": "web",
-      "active": true,
-      "events": ["pull_request", "issues"],
-      "config": {
-        "url": "'"${url}"'",
-        "secret": "'"${secret}"'",
-        "content_type": "json"
-      }
-    }' https://api.github.com/repos/puppetlabs/puppet/hooks
-
-And finally the setting in heroku:
-
-    heroku config:set GITHUB_X_HUB_SIGNATURE_SECRET="$secret"
-
 Trello OAuth Tokens
 ----
 
@@ -282,15 +241,12 @@ GitHub Setup
 The WebHook URL's in a repository's admin interface only fire with branches are
 pushed.  The API must be used to trigger generic WebHooks for other events.
 
-See:
+See also:
 
  * [Repo Hooks API](http://developer.github.com/v3/repos/hooks/)
- * [Add a github repo webhook for pull
-   requests](https://gist.github.com/2726012)
- * [github-services
-   web.rb](https://github.com/github/github-services/blob/master/services/web.rb)
- * [github OAuth token for command line
-   use](https://help.github.com/articles/creating-an-oauth-token-for-command-line-use)
+ * [Add a github repo webhook for pull requests](https://gist.github.com/2726012)
+ * [github-services web.rb](https://github.com/github/github-services/blob/master/services/web.rb)
+ * [github OAuth token for command line use](https://help.github.com/articles/creating-an-oauth-token-for-command-line-use)
    (Our app will use this token to interact with github)
  * [github scopes](http://developer.github.com/v3/oauth/#scopes)
 
