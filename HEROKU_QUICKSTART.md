@@ -57,25 +57,28 @@ more information, consult the application specific README.
       HEROKU_API_KEY=your-heroku-api-key \
       APP_NAME=puppet-webhooks
 
-#### Set up Github webhook handlers and shared secret:
+#### Set up Github webhook handlers and shared secret
 
-##### Create the github webhook handler with a shared secret
+##### Configure Heroku with the shared secret
 
     $ bin/github-gen-secret
     54eac79fdea8fa16458f5b7c5ca757748143008c043ed7dce9b8b1deae92270d
     # Hang on to this; you'll need it for the Github webhooks and the
     # heroku configuration
+    $ heroku config:set --app puppet-webhooks-demo GITHUB_X_HUB_SIGNATURE_SECRET=54eac79fdea8fa16458f5b7c5ca757748143008c043ed7dce9b8b1deae92270d
+    Setting config vars and restarting puppet-webhooks-demo... done, v7
+
+##### Create the github webhook handler with a shared secret
+
     $ bin/github-template-hook hook-template.json
     [...]
     $ vim hook-template.json
+    # Configure the hook template to your needs
     $ bin/github-new-hook adrienthebo puppetlabs puppet hook-template.json
     Enter host password for user 'adrienthebo':
     HTTP/1.1 201 Created
 
 ##### Configure heroku with the same shared secret
-
-    $ heroku config:set --app puppet-webhooks-demo GITHUB_X_HUB_SIGNATURE_SECRET=54eac79fdea8fa16458f5b7c5ca757748143008c043ed7dce9b8b1deae92270d
-    Setting config vars and restarting puppet-webhooks-demo... done, v7
 
 #### Configure Github credentials (required)
 
