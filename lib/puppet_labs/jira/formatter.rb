@@ -30,7 +30,7 @@ module PuppetLabs
           (webhooks-id: #{pr.identifier})
         DESC
 
-        summary = "Pull Request (#{pr.number}): #{pr.title}"
+        summary = "PR (#{pr.number}): #{pr.title}"
 
         {
           :description => description,
