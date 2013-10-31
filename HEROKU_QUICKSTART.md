@@ -78,8 +78,6 @@ more information, consult the application specific README.
     Enter host password for user 'adrienthebo':
     HTTP/1.1 201 Created
 
-##### Configure heroku with the same shared secret
-
 #### Configure Github credentials (required)
 
     # Only list the outputs you want to use
