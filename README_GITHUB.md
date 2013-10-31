@@ -6,6 +6,9 @@ puppet-webhooks supports Github as an event source.
 Environment variables
 ---
 
+In order for puppet-webhooks to function, the following configuration options
+need to be specified.
+
 ### GITHUB_ACCOUNT and GITHUB_TOKEN
 
 The `GITHUB_ACCOUNT` and `GITHUB_TOKEN` variables are used to authenticate
