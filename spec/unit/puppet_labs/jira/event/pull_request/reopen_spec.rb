@@ -26,7 +26,7 @@ describe PuppetLabs::Jira::Event::PullRequest::Reopen do
 
   it "adds a comment on the issue associated with the pull request" do
     expect(PuppetLabs::Jira::Issue).to receive(:matching_webhook_id).with(
-      jira_client, an_instance_of(String),an_instance_of(String)
+      jira_client, project, an_instance_of(String)
     ).and_return(jira_issue)
 
     expect(jira_issue).to receive(:comment) do |str|
