@@ -216,7 +216,7 @@ GEM
       heroku-api
       rails
       rush
-    yard (0.8.7.2)
+    yard (0.9.20)
     zucker (13.1)
 
 PLATFORMS
